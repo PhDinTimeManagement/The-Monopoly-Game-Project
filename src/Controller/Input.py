@@ -1,11 +1,11 @@
-# Responsible for capturing and processing user input
-# Converting it into actions that the GameController can use to update the game state.
+# This model defines methods to get the user input and pass it to the model and view
 
 class InputHandler:
     def __init__(self):
         pass
 
     # Used for the start of the game, get user settings for this game
+    @staticmethod
     def get_name_or_players(self, prompt):
         while True:
             user_input = input(prompt).strip()
@@ -24,6 +24,7 @@ class InputHandler:
                 else:
                     print("The name should be less than 20 characters.")
 
+    @staticmethod
     # Player can roll the dice to generate a random name
     def generate_name(self):
         import random
