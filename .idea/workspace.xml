@@ -4,15 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e63f52e8-b5e2-4b82-8eb0-ddb8c465611b" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Controller/Game.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Controller/Game_Controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Controller/GameController.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Controller/Input.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Controller/Input_Handler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Controller/InputHandler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/View/GUI.py" beforeDir="false" />
-    </list>
+    <list default="true" id="e63f52e8-b5e2-4b82-8eb0-ddb8c465611b" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -61,7 +53,7 @@
       <workItem from="1729176832503" duration="5256000" />
       <workItem from="1729208392045" duration="43000" />
       <workItem from="1729208528178" duration="342000" />
-      <workItem from="1729219218447" duration="145000" />
+      <workItem from="1729219218447" duration="198000" />
     </task>
     <servers />
   </component>
