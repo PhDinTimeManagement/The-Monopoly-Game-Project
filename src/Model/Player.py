@@ -11,7 +11,7 @@ class Player:
         return self.username
 
     def get_current_money(self):
-        return self.currentMoney
+        return self.current_money
 
     def get_jail_status(self):
         return self.jail_status
@@ -28,11 +28,14 @@ class Player:
     def remove_money(self, money):
         self.current_money -= money
 
-    def change_jail_status(self):
-        self.jail_status = not self.get_jail_status()
+    def is_jailed(self, state):
+        self.jail_status = state
 
     def set_in_jail_turns(self,new_turns):
         self.in_jail_turns = new_turns
+
+    def set_current_square(self, position):
+        self.current_square = position
 
     def add_properties(self,new_properties):
         pass #define Properties Class First

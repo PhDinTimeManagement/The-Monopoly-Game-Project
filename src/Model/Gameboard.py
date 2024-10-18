@@ -1,5 +1,5 @@
 import random
-import math
+
 
 class Tile:
     """Parent class for all tiles"""
@@ -55,7 +55,7 @@ class Property(Tile):
         """ if property has no owner can be bought, then checks player balance
             if enough: removes money, adds property to player, sets property new owner
             returns 0 for not enough money, 1 for success """
-        if (player.get_current_money() >= self.price):
+        if player.get_current_money() >= self.price:
             player.remove_money(self.price)
             player.add_properties(self.name)
             self.set_owner(player)
@@ -87,13 +87,12 @@ class Property(Tile):
 
 class Jail(Tile):
     """Initialize the empty array of jailed players"""
-    def __init__(self):
-        super().__init__("Jail", 6)
-        self.jailed_players = []
+    def __init__(self, board_pos, jailed_players):
+        super().__init__("Jail", board_pos)
+        self.jailed_players = jailed_players
 
     def set_jailed_players(self, jailed_players):
-        for i in range(0, 6):
-            self.jailed_players.append(jailed_players[i])
+        self.jailed_players = jailed_players.copy()
 
     def free_player(self, player):
         self.jailed_players.remove(player)
@@ -105,12 +104,9 @@ class Jail(Tile):
 
 class Go(Tile):
     """Initialize the prize for passing amount"""
-    def __init__(self):
-        super().__init__("Go", 1)
-        self.pass_prize = 1500
-
-    def set_pass_prize(self, pass_prize):
-        self.pass_prize = pass_prize
+    def __init__(self, prize):
+        super().__init__("Go", 0)
+        self.pass_prize = prize
 
     def get_pass_prize(self):
         return self.pass_prize
@@ -120,16 +116,25 @@ class Go(Tile):
         player.add_money(self.get_pass_prize())
 
 
-class GoToJail(Tile):
-    super().__init__("Go To Jail", 16)
+#Global Array containing list of all jail objects
+list_of_jails = []
 
-    """player status change, turns in jail added, moved to jail pos,
-        added to jail player list, """
+class GoToJail(Tile):
+    def __init__(self, board_pos):
+        super().__init__("Go To Jail", board_pos)
+
+    #randomly chooses one of the jails on the board and returns it
+    def select_jail(self):
+        list_len = len(list_of_jails)
+        chosen_jail = int(random.random() * list_len)
+        return list_of_jails[chosen_jail]
+
     def arrest_player(self, player):
-        player.change_jail_status()
-        player.set_in_jail_turns(3)
-        player.current_square = Jail.get_board_pos()
-        Jail.jailed_players.append(player)
+        jail = self.select_jail()       #selects one of the possible jails
+        player.is_jailed(True)          #sets player status to IN JAIL
+        player.set_in_jail_turns(3)     #sets max turns to spend in jail
+        player.set_current_square(jail.get_tile_position())     #the player position is updated to the jail position
+        jail.jailed_players.append(player)      #puts the player name in the jail list of detainees
         print(f"{player.name} has been locked up")
 
     def player_landed(self, player):
@@ -141,30 +146,28 @@ class Chance(Tile):
         super().__init__("Chance", board_pos)
 
     def player_landed(self, player):
-        good_chance = """GENERATE TRUE OR FALSE"""
+        good_chance = int(random.random() * 2)
         if good_chance:
-            amount = """GENERATE RANDOM BETWEEN 1 AND 20""" * 10
+            amount = int(random.random() * 21) * 10
             player.add_money(amount)
         else:
-            amount = """GENERATE RANDOM BETWEEN 1 AND 30""" * 10
+            amount = int(random.random() * 31) * 10
             player.remove_money(amount)
 
 
 class IncomeTax(Tile):
-    def __init__(self):
-        super().__init__("IncomeTax", 4)
-        self.tax_pct = 10
-
-    def set_new_tax_pct(self, new_tax_pct):
-        self.tax_pct = new_tax_pct
+    def __init__(self, board_pos, new_tax_percentage):
+        super().__init__("IncomeTax", board_pos)
+        self.tax_percentage = new_tax_percentage
 
     def player_landed(self, player):
-        tax_amount = """10% ROUNDED DOWN TO NEAREST 10x"""
+        tax_amount = int(player.get_current_money() / 100) * 10 #10% ROUNDED DOWN TO NEAREST 10x
         player.remove_money(tax_amount)
 
 
 class FreeParking(Tile):
-    super().__init__("FreeParking", 11)
+    def __init__(self, board_pos):
+        super().__init__("Free Parking", board_pos)
 
     def player_landed(self, player):
         pass
@@ -172,4 +175,24 @@ class FreeParking(Tile):
 
 class Gameboard:
     def __init__(self):
-        tiles = []     #Stores different Tile Objects. Can be customized by the user
+        tiles = [   Go(1500),
+                    Property("Central", 1, 800, 90, None, "Blue"),
+                    Property("Wan Chai", 2, 700, 65, None, "Blue"),
+                    IncomeTax(3, 10),
+                    Property("Stanley", 4, 600, 60, None, "Blue"),
+                    Jail(5, []),
+                    Property("Shek-O", 6, 400, 10, None, "Red"),
+                    Property("Mong Kok", 7, 500, 40, None, "Red"),
+                    Chance(8),
+                    Property("Tsing Yi", 9, 400, 15, None, "Red"),
+                    FreeParking(10),
+                    Property("Shatin", 11, 700, 75, None, "Green"),
+                    Chance(12),
+                    Property("Tuen Mun", 13, 400, 20, None, "Green"),
+                    Property("Tai Po", 14, 500, 25, None, "Green"),
+                    GoToJail(15),
+                    Property("Sai Kung", 16, 400, 10, None, "Yellow"),
+                    Property("Yuen Long", 17, 400, 25, None, "Yellow"),
+                    Chance(18),
+                    Property("Tai O", 19, 600, 25, None, "Yellow")
+                ]     #Stores different Tile Objects. Can be customized by the user
