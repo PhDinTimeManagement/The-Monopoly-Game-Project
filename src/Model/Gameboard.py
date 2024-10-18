@@ -1,5 +1,5 @@
 import random
-
+import math
 
 class Tile:
     """Parent class for all tiles"""
