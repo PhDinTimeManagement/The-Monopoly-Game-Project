@@ -1,5 +1,5 @@
 class Player:
-    def __init__(self,username):
+    def __init__(self, username):
         self.username = username
         self.current_money = 1500
         self.jail_status = False

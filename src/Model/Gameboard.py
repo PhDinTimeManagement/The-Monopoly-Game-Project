@@ -119,6 +119,7 @@ class Go(Tile):
 #Global Array containing list of all jail objects
 list_of_jails = []
 
+
 class GoToJail(Tile):
     def __init__(self, board_pos):
         super().__init__("Go To Jail", board_pos)
