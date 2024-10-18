@@ -5,7 +5,7 @@ class InputHandler:
         pass
 
     # Used for the start of the game, get user settings for this game
-    #@staticmethod
+    @staticmethod
     def get_name_or_players(self, prompt):
         while True:
             user_input = input(prompt).strip()
