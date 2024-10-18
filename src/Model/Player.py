@@ -1,7 +1,7 @@
 class Player:
     def __init__(self,username):
         self.username = username
-        self.currentMoney = 1500
+        self.current_money = 1500
         self.jail_status = False
         self.current_square = 1
         self.in_jail_turns = 0
@@ -22,11 +22,14 @@ class Player:
     def get_in_jail_turns(self):
         return self.in_jail_turns
 
-    def change_current_money(self,money):
+    def add_money(self,money):
         self.currentMoney += money
 
-    def change_jail_status(self,new_status):
-        self.jail_status = new_status
+    def remove_money(self, money):
+        self.current_money -= money
+
+    def change_jail_status(self):
+        self.jail_status = not self.get_jail_status()
 
     def set_in_jail_turns(self,new_turns):
         self.in_jail_turns = new_turns
