@@ -59,11 +59,11 @@ class Property(Tile):
             player.remove_money(self.price)
             player.add_properties(self)
             self.set_owner(player)
-            print(f"{player.getname()} bought {self.name} for {self.get_price()} HKD")
-            return 1
+            message = f"{player.getname()} bought {self.name} for {self.get_price()} HKD"
+            return 1, message
         else:
-            print(f"{player.getname()} balance is not enough to buy {self.name}")
-            return 0
+            message = f"{player.getname()} balance is not enough to buy {self.name}"
+            return 0,message
 
     def pay_rent(self, player):
         """checks if the curr player has enough money,
@@ -78,11 +78,13 @@ class Property(Tile):
     def player_landed(self, player):
         """provides option to the player"""
         if self.owner is None:
-            print(f"{self.name} is available for purchase. Listed at {self.get_price()} HKD")
+            message = f"{self.name} is available for purchase. Listed at {self.get_price()} HKD"
             """GET INPUT FROM PLAYER if INPUT == BUY TILE: self.buy(player)"""
+            return message
         else:
-            print(f"{self.name} is owned by {self.get_owner()}. {player.getname()} owes {self.get_price()} HKD")
+            message = f"{self.name} is owned by {self.get_owner()}. {player.getname()} owes {self.get_price()} HKD"
             self.pay_rent(player)
+            return message
 
 
 class Jail(Tile):
@@ -96,7 +98,8 @@ class Jail(Tile):
 
     def free_player(self, player):
         self.jailed_players.remove(player)
-        print(f"{player.name} is freed from Jail")
+        message = f"{player.name} is freed from Jail"
+        return message
 
     def player_landed(self, player):
         pass
@@ -137,10 +140,11 @@ class GoToJail(Tile):
         player.set_in_jail_turns(3)     #sets max turns to spend in jail
         player.set_current_square(jail.get_tile_position())     #the player position is updated to the jail position
         jail.jailed_players.append(player)      #puts the player name in the jail list of detainees
-        print(f"{player.name} has been locked up")
+        message = f"{player.name} has been locked up"
+        return message
 
     def player_landed(self, player):
-        self.arrest_player(player)
+        return self.arrest_player(player)
 
 
 class Chance(Tile):
