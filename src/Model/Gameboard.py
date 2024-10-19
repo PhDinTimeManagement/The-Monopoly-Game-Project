@@ -60,7 +60,7 @@ class Property(Tile):
             player.add_properties(self)
             self.set_owner(player)
             message = f"{player.getname()} bought {self.name} for {self.get_price()} HKD"
-            return 1, message
+            return 1,message
         else:
             message = f"{player.getname()} balance is not enough to buy {self.name}"
             return 0,message
@@ -140,6 +140,7 @@ class GoToJail(Tile):
         player.set_in_jail_turns(3)     #sets max turns to spend in jail
         player.set_current_square(jail.get_tile_position())     #the player position is updated to the jail position
         jail.jailed_players.append(player)      #puts the player name in the jail list of detainees
+
         message = f"{player.name} has been locked up"
         return message
 
