@@ -138,6 +138,7 @@ class GoToJail(Tile):
         player.set_current_square(jail.get_tile_position())     #the player position is updated to the jail position
         jail.jailed_players.append(player)      #puts the player name in the jail list of detainees
         print(f"{player.name} has been locked up")
+        #TODO here the view need to get updated
 
     def player_landed(self, player):
         self.arrest_player(player)
