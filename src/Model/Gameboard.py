@@ -57,7 +57,7 @@ class Property(Tile):
             returns 0 for not enough money, 1 for success """
         if player.get_current_money() >= self.price:
             player.remove_money(self.price)
-            player.add_properties(self.name)
+            player.add_properties(self)
             self.set_owner(player)
             print(f"{player.getname()} bought {self.name} for {self.get_price()} HKD")
             return 1
@@ -82,7 +82,7 @@ class Property(Tile):
             """GET INPUT FROM PLAYER if INPUT == BUY TILE: self.buy(player)"""
         else:
             print(f"{self.name} is owned by {self.get_owner()}. {player.getname()} owes {self.get_price()} HKD")
-            pay_rent(player)
+            self.pay_rent(player)
 
 
 class Jail(Tile):
@@ -132,7 +132,8 @@ class GoToJail(Tile):
 
     def arrest_player(self, player):
         jail = self.select_jail()       #selects one of the possible jails
-        player.is_jailed(True)          #sets player status to IN JAIL
+        player.is_jailed(True)
+        player.set_residing_jail(jail)#sets player status to IN JAIL
         player.set_in_jail_turns(3)     #sets max turns to spend in jail
         player.set_current_square(jail.get_tile_position())     #the player position is updated to the jail position
         jail.jailed_players.append(player)      #puts the player name in the jail list of detainees
