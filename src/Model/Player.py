@@ -5,7 +5,6 @@ class Player:
     def __init__(self, username):
         self.username = username
         self.current_money = 1500
-        self.residing_jail = None
         self.jail_status = False
         self.fine_payed = False
         self.current_square = 1
@@ -17,12 +16,6 @@ class Player:
 
     def get_current_money(self):
         return self.current_money
-
-    def get_residing_jail(self):
-        return self.residing_jail
-
-    def set_residing_jail(self, jail):
-        self.residing_jail = jail
 
     def get_jail_status(self):
         return self.jail_status

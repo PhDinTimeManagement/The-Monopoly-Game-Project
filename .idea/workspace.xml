@@ -5,7 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e63f52e8-b5e2-4b82-8eb0-ddb8c465611b" name="Changes" comment="Classes V1 created&#10;standard Gameboard initialized and objects created">
+      <change beforePath="$PROJECT_DIR$/.idea/Source Code.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Source Code.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Model/Gameboard.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Model/Gameboard.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Model/Player.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Model/Player.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -15,7 +18,6 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-    <option name="UPDATE_TYPE" value="REBASE" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -71,6 +73,9 @@
       <workItem from="1729217094305" duration="939000" />
       <workItem from="1729258610543" duration="706000" />
       <workItem from="1729259351895" duration="10538000" />
+      <workItem from="1729515491755" duration="234000" />
+      <workItem from="1729661586409" duration="244000" />
+      <workItem from="1729934612284" duration="1746000" />
     </task>
     <task id="LOCAL-00001" summary="gameboard functions">
       <created>1729259402457</created>

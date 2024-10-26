@@ -1,17 +1,14 @@
-import random
-
-
 class Tile:
     """Parent class for all tiles"""
     def __init__(self, name, board_pos):
         self.name = name
         self.board_pos = board_pos
 
-    def set_tile_position(self, new_position):
-        self.board_pos = new_position
-
     def get_tile_position(self):
         return self.board_pos
+
+    def set_tile_name(self, new_name):
+        self.name = new_name
 
     """Manages what happens to a player that lands on the tile"""
     # noinspection PyStatementEffect
@@ -36,20 +33,26 @@ class Property(Tile):
         self.owner = owner
         self.__color = color
 
-    def set_owner(self, owner):
-        self.owner = owner
-
     def get_property_name(self):
         return self.name
 
     def get_rent(self):
         return self.rent
 
+    def set_rent(self, new_rent):
+        self.rent = new_rent
+
     def get_price(self):
         return self.price
 
+    def set_price(self, new_price):
+        self.price = new_price
+
     def get_owner(self):
         return self.owner
+
+    def set_owner(self, owner):
+        self.owner = owner
 
     def buy(self, player):
         """ if property has no owner can be bought, then checks player balance
@@ -103,6 +106,8 @@ class Jail(Tile):
     def player_landed(self, player):
         pass
 
+#initialized here in order to be hardcoded into go to jail tile
+JailTile = Jail(5, [])
 
 class Go(Tile):
     """Initialize the prize for passing amount"""
@@ -112,6 +117,9 @@ class Go(Tile):
 
     def get_pass_prize(self):
         return self.pass_prize
+
+    def set_pass_prize(self, new_prize):
+        self.pass_prize = new_prize
 
     """When called adds pass_prize to the player balance"""
     def player_landed(self, player):
@@ -126,19 +134,11 @@ class GoToJail(Tile):
     def __init__(self, board_pos):
         super().__init__("Go To Jail", board_pos)
 
-    #randomly chooses one of the jails on the board and returns it
-    def select_jail(self):
-        list_len = len(list_of_jails)
-        chosen_jail = int(random.random() * list_len)
-        return list_of_jails[chosen_jail]
-
     def arrest_player(self, player):
-        jail = self.select_jail()       #selects one of the possible jails
         player.is_jailed(True)
-        player.set_residing_jail(jail)#sets player status to IN JAIL
         player.set_in_jail_turns(3)     #sets max turns to spend in jail
-        player.set_current_square(jail.get_tile_position())     #the player position is updated to the jail position
-        jail.jailed_players.append(player)      #puts the player name in the jail list of detainees
+        player.set_current_square(JailTile.get_tile_position())     #the player position is updated to the jail position which cannot be changed
+        JailTile.jailed_players.append(player)      #puts the player name in the jail list of detainees
 
         message = f"{player.name} has been locked up"
         return message
@@ -166,6 +166,9 @@ class IncomeTax(Tile):
         super().__init__("IncomeTax", board_pos)
         self.tax_percentage = new_tax_percentage
 
+    def set_income_tax(self, new_tax):
+        self.tax_percentage = new_tax
+
     def player_landed(self, player):
         tax_amount = int(player.get_current_money() / 100) * 10 #10% ROUNDED DOWN TO NEAREST 10x
         player.remove_money(tax_amount)
@@ -186,7 +189,7 @@ class Gameboard:
                     Property("Wan Chai", 2, 700, 65, None, "Blue"),
                     IncomeTax(3, 10),
                     Property("Stanley", 4, 600, 60, None, "Blue"),
-                    Jail(5, []),
+                    JailTile, #inizialized globally after Jail class in order to be hardcoded into goToJail tile behaviour
                     Property("Shek-O", 6, 400, 10, None, "Red"),
                     Property("Mong Kok", 7, 500, 40, None, "Red"),
                     Chance(8),
