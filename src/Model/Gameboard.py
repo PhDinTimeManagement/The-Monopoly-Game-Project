@@ -1,3 +1,5 @@
+import random
+
 class Tile:
     """Parent class for all tiles"""
     def __init__(self, name, board_pos):
