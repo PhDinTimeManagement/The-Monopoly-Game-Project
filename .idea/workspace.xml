@@ -4,10 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e63f52e8-b5e2-4b82-8eb0-ddb8c465611b" name="Changes" comment="Updated gameboard and player functions to NEW US8">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Model/Gameboard.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Model/Gameboard.py" afterDir="false" />
-    </list>
+    <list default="true" id="e63f52e8-b5e2-4b82-8eb0-ddb8c465611b" name="Changes" comment="Updated gameboard and player functions to NEW US8 v2" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -73,7 +70,7 @@
       <workItem from="1729515491755" duration="234000" />
       <workItem from="1729661586409" duration="244000" />
       <workItem from="1729934612284" duration="1836000" />
-      <workItem from="1730004190962" duration="895000" />
+      <workItem from="1730004190962" duration="1040000" />
     </task>
     <task id="LOCAL-00001" summary="gameboard functions">
       <created>1729259402457</created>
@@ -103,7 +100,14 @@
       <option name="project" value="LOCAL" />
       <updated>1729936455309</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Updated gameboard and player functions to NEW US8 v2">
+      <created>1730006659690</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1730006659690</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -140,7 +144,8 @@
     <MESSAGE value="test" />
     <MESSAGE value="Classes V1 created&#10;standard Gameboard initialized and objects created" />
     <MESSAGE value="Updated gameboard and player functions to NEW US8" />
-    <option name="LAST_COMMIT_MESSAGE" value="Updated gameboard and player functions to NEW US8" />
+    <MESSAGE value="Updated gameboard and player functions to NEW US8 v2" />
+    <option name="LAST_COMMIT_MESSAGE" value="Updated gameboard and player functions to NEW US8 v2" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
