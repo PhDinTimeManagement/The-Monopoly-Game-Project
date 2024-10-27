@@ -17,6 +17,9 @@ class Player:
     def get_current_money(self):
         return self.current_money
 
+    def set_current_money(self, new_balance):
+        self.current_money = new_balance
+
     def get_jail_status(self):
         return self.jail_status
 

@@ -1,10 +1,12 @@
 import random
 
+
 class Tile:
     """Parent class for all tiles"""
+
     def __init__(self, name, board_pos):
         self.name = name
-        self.board_pos = board_pos
+        self.board_pos = int(board_pos)
 
     def get_tile_position(self):
         return self.board_pos
@@ -24,10 +26,9 @@ class Tile:
 
 
 class Property(Tile):
-    """
-    Property has the following attributes
-    All attributes have to be passed when initialized
-    """
+    """  Property has the following attributes
+    All attributes have to be passed when initialized """
+
     def __init__(self, name, board_pos, price, rent, owner, color):
         super().__init__(name, board_pos)
         self.price = price
@@ -53,8 +54,8 @@ class Property(Tile):
     def get_owner(self):
         return self.owner
 
-    def set_owner(self, owner):
-        self.owner = owner
+    def set_owner(self, new_owner):
+        self.owner = new_owner
 
     def buy(self, player):
         """ if property has no owner can be bought, then checks player balance
@@ -64,21 +65,20 @@ class Property(Tile):
             player.remove_money(self.price)
             player.add_properties(self)
             self.set_owner(player)
-            message = f"{player.getname()} bought {self.name} for {self.get_price()} HKD"
-            return 1,message
+            print(f"{player.getname()} bought {self.name} for {self.get_price()} HKD")
+            return True
         else:
-            message = f"{player.getname()} balance is not enough to buy {self.name}"
-            return 0,message
+            print(f"{player.getname()}'s balance is not enough to buy {self.name}")
+            return False
 
     def pay_rent(self, player):
-        """checks if the curr player has enough money,
-            if NOT ENOUGH will add to the owner player all curr player can give.
-            then removes balance from curr player, adds balance to tile owner """
-        rent_amount = self.get_rent()
-        if player.get_current_money() < rent_amount:
-            rent_amount = player.get_current_money()
-        player.remove_money(self.get_rent())
-        self.owner.add_money(rent_amount)
+        rent_amount = self.get_rent()   # gets rent value
+        if player.get_current_money() < rent_amount:    # checks if player has enough money to pay
+            rent_amount = player.get_current_money()  # if not gets all the player can give
+        player.remove_money(self.get_rent())    # removes from the player total what is owed
+        self.owner.add_money(rent_amount)  # all money available is added to the owner
+        print(f"{player.getname()} payed {rent_amount} HKD to {self.owner.getname()}")
+        return player.get_current_money()   # current player amount is retured (only for testing)
 
     def player_landed(self, player):
         """provides option to the player"""
@@ -100,16 +100,20 @@ class Jail(Tile):
     def set_jailed_players(self, jailed_players):
         self.jailed_players = jailed_players.copy()
 
+    def get_jailed_players(self):
+        return self.jailed_players
+
     def free_player(self, player):
         self.jailed_players.remove(player)
-        message = f"{player.name} is freed from Jail"
-        return message
+        print(f"{player.getname()} is freed from Jail")
 
     def player_landed(self, player):
         pass
 
-#initialized here in order to be hardcoded into go to jail tile
+
+# initialized here in order to be hardcoded into go to jail tile
 JailTile = Jail(5, [])
+
 
 class Go(Tile):
     """Initialize the prize for passing amount"""
@@ -127,11 +131,6 @@ class Go(Tile):
     def player_landed(self, player):
         player.add_money(self.get_pass_prize())
 
-
-#Global Array containing list of all jail objects
-list_of_jails = []
-
-
 class GoToJail(Tile):
     def __init__(self, board_pos):
         super().__init__("Go To Jail", board_pos)
@@ -141,9 +140,7 @@ class GoToJail(Tile):
         player.set_in_jail_turns(3)     #sets max turns to spend in jail
         player.set_current_square(JailTile.get_tile_position())     #the player position is updated to the jail position which cannot be changed
         JailTile.jailed_players.append(player)      #puts the player name in the jail list of detainees
-
-        message = f"{player.name} has been locked up"
-        return message
+        print(f"{player.getname()} has been locked up")
 
     def player_landed(self, player):
         return self.arrest_player(player)
@@ -171,8 +168,11 @@ class IncomeTax(Tile):
     def set_income_tax(self, new_tax):
         self.tax_percentage = new_tax
 
+    def calculate_tax(self, player):
+        return int(player.get_current_money() / 100) * 10 #10% ROUNDED DOWN TO NEAREST 10x
+
     def player_landed(self, player):
-        tax_amount = int(player.get_current_money() / 100) * 10 #10% ROUNDED DOWN TO NEAREST 10x
+        tax_amount = self.calculate_tax(player)
         player.remove_money(tax_amount)
 
 
@@ -186,7 +186,7 @@ class FreeParking(Tile):
 
 class Gameboard:
     def __init__(self):
-        tiles = [   Go(1500),
+        self.tiles = [   Go(1500),
                     Property("Central", 1, 800, 90, None, "Blue"),
                     Property("Wan Chai", 2, 700, 65, None, "Blue"),
                     IncomeTax(3, 10),
