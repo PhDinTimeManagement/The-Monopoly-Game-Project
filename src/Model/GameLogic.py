@@ -1,10 +1,31 @@
 import random
 
 
-class GameLogic:
-    round = 1
-    """Get the number rolled from the two dices by a player"""
 
+class GameLogic:
+    """a private variable stating the amount of fine needed to be paid for getting out of jail"""
+    _fine = 150
+
+    @staticmethod
+    def get_fine():
+        return GameLogic._fine
+
+    @staticmethod
+    def  set_fine(fine):
+        GameLogic._fine = fine
+
+
+    _current_round = 1
+
+    @staticmethod
+    def get_current_round():
+        return GameLogic._current_round
+
+    @staticmethod
+    def set_current_round(round):
+        GameLogic._current_round = round
+
+    """Get the number rolled from the two dices by a player"""
     @staticmethod
     def roll_dice():
         return random.randint(1, 4), random.randint(1, 4)
@@ -14,13 +35,13 @@ class GameLogic:
     @staticmethod
     def player_move(dice_number, player, gameboard):
         for i in range(0, dice_number):
-            player.current_square += 1
-            if player.current_square > 19:
+            player.update_square(1)
+            if player.get_square() > 19:
                 player.current_square = 0
-            if gameboard.tiles[player.current_square - 1].name == "Go" and i != dice_number - 1:
-                gameboard.tiles[player.current_square - 1].player_landed(player)  # Import Logic for 'Go'
+            if gameboard.tiles[player.get_square() - 1].name == "Go" and i != dice_number - 1:
+                gameboard.tiles[player.get_square() - 1].player_landed(player)  # Import Logic for 'Go'
 
-        gameboard.tiles[player.current_square - 1].player_landed(player)  # Run other logic when the player lands
+        gameboard.tiles[player.get_square() - 1].player_landed(player)  # Run other logic when the player lands
 
     """Three functions are for in jail"""
 
@@ -54,13 +75,13 @@ class GameLogic:
         player.set_in_jail_turns(0)
         player.is_jailed(False)
         player.set_fine_payed(False)
-        player.get_residing_jail().free_jail(player)
+        gameboard.get_jail_tile().free_player(player)
 
     """Pay the fine of 150 in jail"""
 
     @staticmethod
     def pay_fine(player):
-        player.remove_money(150)
+        player.remove_money(GameLogic.get_fine())
         player.set_fine_payed(True)
 
     """Check if player is broke, negative money"""
@@ -79,7 +100,7 @@ class GameLogic:
 
     @staticmethod
     def game_ends(player_list):
-        return round == 100 or player_list.len() == 1
+        return GameLogic.get_current_round() == 100 or len(player_list)== 1
 
     @staticmethod
     def store_current_game(self):

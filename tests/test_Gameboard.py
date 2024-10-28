@@ -87,4 +87,7 @@ class TestIncomeTax(TestCase):
         starting_balance = player1.get_current_money()
         tax_calculated = taxTile.calculate_tax(player1)
         taxTile.player_landed(player1)
-        self.assertEqual(starting_balance-player1.get_current_money(), tax_calculated)
+        self.assertEqual(starting_balance - player1.get_current_money(), tax_calculated)
+
+    def test_get_jail_tile(self):
+        self.assertTrue(gameboard.get_jail_tile().name,"Jail")

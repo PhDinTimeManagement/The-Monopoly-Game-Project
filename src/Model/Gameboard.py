@@ -210,3 +210,8 @@ class Gameboard:
                       Chance(18),
                       Property("Tai O", 19, 600, 25, None, "Yellow")
                       ]     # Stores different Tile Objects. Can be customized by the user
+
+    def get_jail_tile(self):
+        for i in range (0,len(self.tiles)):
+            if self.tiles[i].name == "Jail":
+                return self.tiles[i]
