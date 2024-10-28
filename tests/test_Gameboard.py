@@ -11,6 +11,7 @@ go_to_jail = GoToJail(12)
 
 gameboard = Gameboard()
 
+
 class TestProperty(TestCase):
     def test_construction(self):
         assert Property("Wan Chai", 3, 1000, 100, None, "Red")
@@ -87,4 +88,3 @@ class TestIncomeTax(TestCase):
         tax_calculated = taxTile.calculate_tax(player1)
         taxTile.player_landed(player1)
         self.assertEqual(starting_balance-player1.get_current_money(), tax_calculated)
-
