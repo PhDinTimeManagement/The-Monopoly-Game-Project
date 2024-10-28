@@ -78,7 +78,7 @@ class Property(Tile):
         player.remove_money(self.get_rent())    # removes from the player total what is owed
         self.owner.add_money(rent_amount)  # all money available is added to the owner
         print(f"{player.getname()} payed {rent_amount} HKD to {self.owner.getname()}")
-        return player.get_current_money()   # current player amount is retured (only for testing)
+        return player.get_current_money()   # current player amount is returned (only for testing)
 
     def player_landed(self, player):
         """provides option to the player"""
@@ -131,15 +131,17 @@ class Go(Tile):
     def player_landed(self, player):
         player.add_money(self.get_pass_prize())
 
+
 class GoToJail(Tile):
     def __init__(self, board_pos):
         super().__init__("Go To Jail", board_pos)
 
-    def arrest_player(self, player):
+    @staticmethod
+    def arrest_player(player):
         player.is_jailed(True)
-        player.set_in_jail_turns(3)     #sets max turns to spend in jail
-        player.set_current_square(JailTile.get_tile_position())     #the player position is updated to the jail position which cannot be changed
-        JailTile.jailed_players.append(player)      #puts the player name in the jail list of detainees
+        player.set_in_jail_turns(3)     # sets max turns to spend in jail
+        player.set_current_square(JailTile.get_tile_position())    # the player position is updated to the jail position
+        JailTile.jailed_players.append(player)      # puts the player name in the jail list of detainees
         print(f"{player.getname()} has been locked up")
 
     def player_landed(self, player):
@@ -168,8 +170,9 @@ class IncomeTax(Tile):
     def set_income_tax(self, new_tax):
         self.tax_percentage = new_tax
 
-    def calculate_tax(self, player):
-        return int(player.get_current_money() / 100) * 10 #10% ROUNDED DOWN TO NEAREST 10x
+    @staticmethod
+    def calculate_tax(player):
+        return int(player.get_current_money() / 100) * 10   # 10% ROUNDED DOWN TO NEAREST 10x
 
     def player_landed(self, player):
         tax_amount = self.calculate_tax(player)
@@ -186,24 +189,24 @@ class FreeParking(Tile):
 
 class Gameboard:
     def __init__(self):
-        self.tiles = [   Go(1500),
-                    Property("Central", 1, 800, 90, None, "Blue"),
-                    Property("Wan Chai", 2, 700, 65, None, "Blue"),
-                    IncomeTax(3, 10),
-                    Property("Stanley", 4, 600, 60, None, "Blue"),
-                    JailTile, #inizialized globally after Jail class in order to be hardcoded into goToJail tile behaviour
-                    Property("Shek-O", 6, 400, 10, None, "Red"),
-                    Property("Mong Kok", 7, 500, 40, None, "Red"),
-                    Chance(8),
-                    Property("Tsing Yi", 9, 400, 15, None, "Red"),
-                    FreeParking(10),
-                    Property("Shatin", 11, 700, 75, None, "Green"),
-                    Chance(12),
-                    Property("Tuen Mun", 13, 400, 20, None, "Green"),
-                    Property("Tai Po", 14, 500, 25, None, "Green"),
-                    GoToJail(15),
-                    Property("Sai Kung", 16, 400, 10, None, "Yellow"),
-                    Property("Yuen Long", 17, 400, 25, None, "Yellow"),
-                    Chance(18),
-                    Property("Tai O", 19, 600, 25, None, "Yellow")
-                ]     #Stores different Tile Objects. Can be customized by the user
+        self.tiles = [Go(1500),
+                      Property("Central", 1, 800, 90, None, "Blue"),
+                      Property("Wan Chai", 2, 700, 65, None, "Blue"),
+                      IncomeTax(3, 10),
+                      Property("Stanley", 4, 600, 60, None, "Blue"),
+                      JailTile,     # initialized globally after Jail to be used in goToJail
+                      Property("Shek-O", 6, 400, 10, None, "Red"),
+                      Property("Mong Kok", 7, 500, 40, None, "Red"),
+                      Chance(8),
+                      Property("Tsing Yi", 9, 400, 15, None, "Red"),
+                      FreeParking(10),
+                      Property("Shatin", 11, 700, 75, None, "Green"),
+                      Chance(12),
+                      Property("Tuen Mun", 13, 400, 20, None, "Green"),
+                      Property("Tai Po", 14, 500, 25, None, "Green"),
+                      GoToJail(15),
+                      Property("Sai Kung", 16, 400, 10, None, "Yellow"),
+                      Property("Yuen Long", 17, 400, 25, None, "Yellow"),
+                      Chance(18),
+                      Property("Tai O", 19, 600, 25, None, "Yellow")
+                      ]     # Stores different Tile Objects. Can be customized by the user

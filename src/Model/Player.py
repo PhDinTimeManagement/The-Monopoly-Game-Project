@@ -1,6 +1,8 @@
 """Lists that store the existing players and the player who is broke"""
 players_list = []
 broke_list = []
+
+
 class Player:
     def __init__(self, username):
         self.username = username
@@ -35,7 +37,7 @@ class Player:
     def get_in_jail_turns(self):
         return self.in_jail_turns
 
-    def add_money(self,money):
+    def add_money(self, money):
         self.current_money += money
 
     def remove_money(self, money):
@@ -44,19 +46,20 @@ class Player:
     def is_jailed(self, state):
         self.jail_status = state
 
-    def set_in_jail_turns(self,new_turns):
+    def set_in_jail_turns(self, new_turns):
         self.in_jail_turns = new_turns
 
     def set_current_square(self, position):
         self.current_square = position
 
-    def add_properties(self,properties):
+    def add_properties(self, properties):
         self.properties[properties] = properties.get_rent()
 
-    def delete_properties(self,new_properties):
+    def delete_properties(self, new_properties):
         pass
 
     """Delete all properties when the player is broke"""
+
     def delete_all_properties(self):
         for key in self.properties:
             key.set_owner(None)
