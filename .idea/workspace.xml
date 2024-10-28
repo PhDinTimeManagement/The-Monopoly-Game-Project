@@ -4,12 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e63f52e8-b5e2-4b82-8eb0-ddb8c465611b" name="Changes" comment="Updated gameboard and player functions to NEW US8 v3&#10;&#10;Added Unit tests to Gameboard.py">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Model/GameLogic.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Model/GameLogic.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Model/Gameboard.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Model/Gameboard.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Model/Player.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Model/Player.py" afterDir="false" />
-    </list>
+    <list default="true" id="e63f52e8-b5e2-4b82-8eb0-ddb8c465611b" name="Changes" comment="Touch Ups on Gameboard.py v5" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -165,7 +160,7 @@
       <workItem from="1730024143686" duration="7972000" />
       <workItem from="1730109912025" duration="33000" />
       <workItem from="1730110856482" duration="230000" />
-      <workItem from="1730111961934" duration="980000" />
+      <workItem from="1730111961934" duration="1279000" />
     </task>
     <task id="LOCAL-00001" summary="gameboard functions">
       <created>1729259402457</created>
@@ -216,7 +211,14 @@
       <option name="project" value="LOCAL" />
       <updated>1730032008562</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Touch Ups on Gameboard.py v5">
+      <created>1730113203511</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1730113203511</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -255,7 +257,8 @@
     <MESSAGE value="Updated gameboard and player functions to NEW US8" />
     <MESSAGE value="Updated gameboard and player functions to NEW US8 v2" />
     <MESSAGE value="Updated gameboard and player functions to NEW US8 v3&#10;&#10;Added Unit tests to Gameboard.py" />
-    <option name="LAST_COMMIT_MESSAGE" value="Updated gameboard and player functions to NEW US8 v3&#10;&#10;Added Unit tests to Gameboard.py" />
+    <MESSAGE value="Touch Ups on Gameboard.py v5" />
+    <option name="LAST_COMMIT_MESSAGE" value="Touch Ups on Gameboard.py v5" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -264,11 +267,6 @@
           <url>file://$PROJECT_DIR$/Source Code/Source Code/Model/Gameboard.py</url>
           <line>33</line>
           <option name="timeStamp" value="1" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/tests/test_Gameboard.py</url>
-          <line>35</line>
-          <option name="timeStamp" value="2" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
