@@ -5,8 +5,9 @@ class InputHandler:
     def __init__(self):
         pass
 
+    @staticmethod
     # Used for the start of the game, get user settings for this game
-    def get_name_or_players(self, prompt):
+    def get_name_or_players(prompt):
         while True:
             user_input = input(prompt).strip()
 
@@ -16,16 +17,20 @@ class InputHandler:
                 if 2 <= user_input <= 6:
                     return user_input
                 else:
-                    print("The number of players must be between 1 and 6.")
+                    message = "The number of players must be between 1 and 6."
+                    return message
             # Handle as a string input
             else:
                 if len(user_input) < 20:
                     return user_input
                 else:
-                    print("The name should be less than 20 characters.")
+                    message = "The name should be less than 20 characters."
+                    return message
 
+
+    @staticmethod
     # Player can roll the dice to generate a random name
-    def generate_name(self):
+    def generate_name():
         import random
         import string
         name = ''.join(random.choices(string.ascii_uppercase + string.ascii_lowercase, k=10))
