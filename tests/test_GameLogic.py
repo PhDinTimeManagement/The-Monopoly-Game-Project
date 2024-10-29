@@ -7,7 +7,7 @@ from src.Model.Gameboard import *
 player1 = Player("Den")
 player2 = Player("Ben")
 gameboard = Gameboard()
-gameboard.tiles[4] = Jail(4,player2)
+gameboard.tiles[4] = Jail(4, [player1])
 
 
 class TestGameLogic(TestCase):

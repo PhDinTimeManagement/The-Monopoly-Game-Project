@@ -163,16 +163,15 @@ class Chance(Tile):
 
 
 class IncomeTax(Tile):
-    def __init__(self, board_pos, new_tax_percentage):
+    def __init__(self, board_pos, new_tax):
         super().__init__("IncomeTax", board_pos)
-        self.tax_percentage = new_tax_percentage
+        self.tax_percentage = new_tax
 
     def set_income_tax(self, new_tax):
         self.tax_percentage = new_tax
 
-    @staticmethod
-    def calculate_tax(player):
-        return int(player.get_current_money() / 100) * 10   # 10% ROUNDED DOWN TO NEAREST 10x
+    def calculate_tax(self, player):
+        return int(player.get_current_money() / 100) * self.tax_percentage  # tax_percentage ROUNDED DOWN TO NEAREST 10x
 
     def player_landed(self, player):
         tax_amount = self.calculate_tax(player)
