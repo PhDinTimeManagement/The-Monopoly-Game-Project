@@ -87,4 +87,8 @@ class TestGameLogic(TestCase):
     def test_store_current_game(self):
         self.fail()
 
+    def test_display_winner(self):
+        Player.players_list.append(player1)
+        self.assertEqual(GameLogic.display_winner(Player.players_list))
+
 
