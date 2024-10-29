@@ -28,4 +28,3 @@ class GameController:
         print("Players initialized successfully.\n")
 
     def end_game(self):
-        if
