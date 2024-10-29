@@ -4,11 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e63f52e8-b5e2-4b82-8eb0-ddb8c465611b" name="Changes" comment="Touch Ups on Gameblogic">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Controller/GameController.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Controller/GameController.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Model/InputHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Model/InputHandler.py" afterDir="false" />
+    <list default="true" id="e63f52e8-b5e2-4b82-8eb0-ddb8c465611b" name="Changes" comment="Touch Ups on InputHandker">
+      <change beforePath="$PROJECT_DIR$/src/Model/GameLogic.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Model/GameLogic.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -245,7 +242,15 @@
       <option name="project" value="LOCAL" />
       <updated>1730113203511</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="Touch Ups on InputHandker">
+      <option name="closed" value="true" />
+      <created>1730192567664</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1730192567665</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -285,7 +290,8 @@
     <MESSAGE value="Updated gameboard and player functions to NEW US8 v2" />
     <MESSAGE value="Updated gameboard and player functions to NEW US8 v3&#10;&#10;Added Unit tests to Gameboard.py" />
     <MESSAGE value="Touch Ups on Gameboard.py v5" />
-    <option name="LAST_COMMIT_MESSAGE" value="Touch Ups on Gameboard.py v5" />
+    <MESSAGE value="Touch Ups on InputHandker" />
+    <option name="LAST_COMMIT_MESSAGE" value="Touch Ups on InputHandker" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

@@ -103,5 +103,22 @@ class GameLogic:
         return GameLogic.get_current_round() == 100 or len(player_list)== 1
 
     @staticmethod
+    def display_winner(player_list):
+        if GameLogic.get_current_round() == 100:
+            winner_list =[]
+            message = "The winner is: "
+            value  = -1
+            for player in player_list:
+                if player.get_current_money() >= value:
+                    winner_list.append(player)
+                    message += f"{player.getname()}, "
+                    value = player.get_current_money()
+            message = f"{message}with {winner_list[0].get_current_money()} money."
+            return message
+        else:
+            message = f"The winner is: {player_list[0]}, with {player_list[0].get_current_money()} money."
+            return message
+
+    @staticmethod
     def store_current_game(self):
         pass
