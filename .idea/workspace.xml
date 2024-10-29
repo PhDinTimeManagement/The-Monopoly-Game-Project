@@ -29,12 +29,12 @@
     &quot;assignee&quot;: &quot;PhDinTimeManagement&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/PhDinTimeManagement/The-Monopoly-Game-Project.git&quot;,
-    &quot;accountId&quot;: &quot;92e91e34-3118-423c-bd88-520f2a36a0e6&quot;
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/PhDinTimeManagement/The-Monopoly-Game-Project.git",
+    "accountId": "7275c221-0702-42d6-abcb-979f6509acc0"
   }
-}</component>
+}]]></component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
@@ -53,6 +53,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Python tests.Python tests for test_GameLogic.TestGameLogic.executor": "Run",
+    "Python tests.Python tests for test_GameLogic.TestGameLogic.test_display_winner.executor": "Run",
     "Python tests.Python tests for test_GameLogic.TestGameLogic.test_player_out.executor": "Run",
     "Python tests.Python tests for test_Gameboard.TestProperty.executor": "Run",
     "Python tests.Python tests in tests.executor": "Run",
@@ -76,7 +77,7 @@
       <recent name="D:\PolyU\PolyU Year 3\COMP3211 Software Engineering\Project Github\src\Model" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Python tests.Python tests for test_GameLogic.TestGameLogic.test_display_winner">
     <configuration name="Python tests for test_GameLogic.TestGameLogic" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
       <module name="Source Code" />
       <option name="ENV_FILES" value="" />
@@ -90,6 +91,22 @@
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
       <option name="_new_target" value="&quot;test_GameLogic.TestGameLogic&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Python tests for test_GameLogic.TestGameLogic.test_display_winner" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="Source Code" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;test_GameLogic.TestGameLogic.test_display_winner&quot;" />
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
@@ -125,22 +142,6 @@
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
-    <configuration name="Python tests in test_Gameboard.py" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
-      <module name="Source Code" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;$PROJECT_DIR$/tests/test_Gameboard.py&quot;" />
-      <option name="_new_targetType" value="&quot;PATH&quot;" />
-      <method v="2" />
-    </configuration>
     <configuration name="Python tests in tests" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
       <module name="Source Code" />
       <option name="ENV_FILES" value="" />
@@ -159,11 +160,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python tests.Python tests for test_GameLogic.TestGameLogic.test_display_winner" />
         <item itemvalue="Python tests.Python tests for test_GameLogic.TestGameLogic" />
         <item itemvalue="Python tests.Python tests for test_GameLogic.TestGameLogic.test_player_out" />
         <item itemvalue="Python tests.Python tests for test_Gameboard.TestProperty" />
         <item itemvalue="Python tests.Python tests in tests" />
-        <item itemvalue="Python tests.Python tests in test_Gameboard.py" />
       </list>
     </recent_temporary>
   </component>
@@ -199,6 +200,7 @@
       <workItem from="1730111961934" duration="1279000" />
       <workItem from="1730120246622" duration="12973000" />
       <workItem from="1730199675463" duration="26000" />
+      <workItem from="1730208733155" duration="322000" />
     </task>
     <task id="LOCAL-00001" summary="gameboard functions">
       <created>1729259402457</created>

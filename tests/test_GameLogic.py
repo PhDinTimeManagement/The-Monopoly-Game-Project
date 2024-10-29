@@ -88,7 +88,14 @@ class TestGameLogic(TestCase):
         self.fail()
 
     def test_display_winner(self):
+        Player.players_list.clear()
         Player.players_list.append(player1)
-        self.assertEqual(GameLogic.display_winner(Player.players_list))
+        player1.set_current_money(1000)
+        self.assertEqual(GameLogic.display_winner(Player.players_list),f"The winner is: Den, with {Player.players_list[0].get_current_money()} money.")
+        Player.players_list.append(player2)
+        player2.set_current_money(1000)
+        GameLogic.set_current_round(100)
+        self.assertEqual(GameLogic.display_winner(Player.players_list),f"The winner is: Den, Ben, with {Player.players_list[0].get_current_money()} money.")
+
 
 
