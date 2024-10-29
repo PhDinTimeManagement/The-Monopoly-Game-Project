@@ -5,12 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e63f52e8-b5e2-4b82-8eb0-ddb8c465611b" name="Changes" comment="Touch Ups on Gameboard.py v5">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/View/gui.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/View/gui.py" afterDir="false" />
     </list>
-    <list id="b53ad74c-d01b-4e52-9a34-f524bfab6613" name="Changes by Kent Max Chandra" comment="">
-      <change beforePath="$PROJECT_DIR$/tests/test_GameLogic.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_GameLogic.py" afterDir="false" />
-    </list>
+    <list id="b53ad74c-d01b-4e52-9a34-f524bfab6613" name="Changes by Kent Max Chandra" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -64,7 +61,7 @@
     "TODO_SCOPE": "All Places",
     "WebServerToolWindowFactoryState": "false",
     "git-widget-placeholder": "main",
-    "last_opened_file_path": "D:/PolyU/PolyU Year 3/COMP3211 Software Engineering/Project Github",
+    "last_opened_file_path": "/Users/chloeyamtai/Library/Mobile Documents/com~apple~CloudDocs/GitHub Project/The-Monopoly-Game-Project",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -79,7 +76,7 @@
       <recent name="D:\PolyU\PolyU Year 3\COMP3211 Software Engineering\Project Github\src\Model" />
     </key>
   </component>
-  <component name="RunManager" selected="Python tests.Python tests for test_GameLogic.TestGameLogic">
+  <component name="RunManager">
     <configuration name="Python tests for test_GameLogic.TestGameLogic" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
       <module name="Source Code" />
       <option name="ENV_FILES" value="" />
@@ -201,6 +198,7 @@
       <workItem from="1730110856482" duration="230000" />
       <workItem from="1730111961934" duration="1279000" />
       <workItem from="1730120246622" duration="12973000" />
+      <workItem from="1730199675463" duration="26000" />
     </task>
     <task id="LOCAL-00001" summary="gameboard functions">
       <created>1729259402457</created>
