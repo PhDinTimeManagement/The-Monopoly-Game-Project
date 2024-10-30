@@ -110,5 +110,5 @@ canvas.tag_bind(back_arrow_canvas_id, "<Button-1>", lambda e: hide_info_frame())
 # Initialize state variable to track visibility of info frame
 info_frame_displayed = False
 
-window.resizable(False, False)
+window.resizable(True, True)
 window.mainloop()
