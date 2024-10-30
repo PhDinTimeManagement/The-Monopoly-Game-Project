@@ -5,6 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e63f52e8-b5e2-4b82-8eb0-ddb8c465611b" name="Changes" comment="Touch Ups on Gameboard.py v5">
+      <change beforePath="$PROJECT_DIR$/.idea/Source Code.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Source Code.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WireframeMonopoly.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/WireframeMonopoly.pdf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/frame0/button_1.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets/game_starter/button_1.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/frame0/button_2.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets/game_starter/button_2.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/frame0/image_1.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets/game_starter/image_1.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/View/gui.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/View/gui.py" afterDir="false" />
     </list>
     <list id="b53ad74c-d01b-4e52-9a34-f524bfab6613" name="Changes by Kent Max Chandra" comment="" />
@@ -29,12 +36,12 @@
     &quot;assignee&quot;: &quot;PhDinTimeManagement&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/PhDinTimeManagement/The-Monopoly-Game-Project.git",
-    "accountId": "7275c221-0702-42d6-abcb-979f6509acc0"
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/PhDinTimeManagement/The-Monopoly-Game-Project.git&quot;,
+    &quot;accountId&quot;: &quot;92e91e34-3118-423c-bd88-520f2a36a0e6&quot;
   }
-}]]></component>
+}</component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
@@ -50,28 +57,28 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Python tests.Python tests for test_GameLogic.TestGameLogic.executor": "Run",
-    "Python tests.Python tests for test_GameLogic.TestGameLogic.test_display_winner.executor": "Run",
-    "Python tests.Python tests for test_GameLogic.TestGameLogic.test_player_out.executor": "Run",
-    "Python tests.Python tests for test_Gameboard.TestProperty.executor": "Run",
-    "Python tests.Python tests in tests.executor": "Run",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "TODO_SCOPE": "All Places",
-    "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "/Users/chloeyamtai/Library/Mobile Documents/com~apple~CloudDocs/GitHub Project/The-Monopoly-Game-Project",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "CodeWithMe",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python tests.Python tests for test_GameLogic.TestGameLogic.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_GameLogic.TestGameLogic.test_display_winner.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_GameLogic.TestGameLogic.test_player_out.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_Gameboard.TestProperty.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in tests.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;TODO_SCOPE&quot;: &quot;All Places&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/chloeyamtai/Library/Mobile Documents/com~apple~CloudDocs/GitHub Project/The-Monopoly-Game-Project&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\PolyU\PolyU Year 3\COMP3211 Software Engineering\Project Github\src\Model" />
@@ -201,6 +208,8 @@
       <workItem from="1730120246622" duration="12973000" />
       <workItem from="1730199675463" duration="26000" />
       <workItem from="1730208733155" duration="322000" />
+      <workItem from="1730278497914" duration="318000" />
+      <workItem from="1730278822997" duration="873000" />
     </task>
     <task id="LOCAL-00001" summary="gameboard functions">
       <created>1729259402457</created>
