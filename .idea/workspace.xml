@@ -6,10 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="e63f52e8-b5e2-4b82-8eb0-ddb8c465611b" name="Changes" comment="Touch Ups on Gameboard.py v5">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/game_starter/button_1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/game_starter/button_2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/game_starter/image_1.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/View/Display.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/View/gui.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/View/gui.py" afterDir="false" />
     </list>
     <list id="b53ad74c-d01b-4e52-9a34-f524bfab6613" name="Changes by Kent Max Chandra" comment="" />
@@ -208,7 +204,7 @@
       <workItem from="1730199675463" duration="26000" />
       <workItem from="1730208733155" duration="322000" />
       <workItem from="1730278497914" duration="318000" />
-      <workItem from="1730278822997" duration="7795000" />
+      <workItem from="1730278822997" duration="8788000" />
     </task>
     <task id="LOCAL-00001" summary="gameboard functions">
       <created>1729259402457</created>
@@ -333,6 +329,6 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Game_py$.coverage" NAME=" Coverage Results" MODIFIED="1730198824506" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
-    <SUITE FILE_PATH="coverage/Game_py$gui.coverage" NAME="gui Coverage Results" MODIFIED="1730293564763" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/View" />
+    <SUITE FILE_PATH="coverage/Game_py$gui.coverage" NAME="gui Coverage Results" MODIFIED="1730294558636" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/View" />
   </component>
 </project>

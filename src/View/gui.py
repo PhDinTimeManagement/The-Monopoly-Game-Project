@@ -22,14 +22,29 @@ def exit_game():
     window.quit()  # Closes the application window
 
 def show_info():
-    # Show or hide the info frame image
+    # Show the info frame and back arrow, hide the startup frame buttons
     global info_frame_displayed
     if not info_frame_displayed:
         canvas.itemconfig(info_frame_canvas_id, state="normal")
+        canvas.itemconfig(back_arrow_canvas_id, state="normal")
+        canvas.itemconfig(new_game, state="hidden")
+        canvas.itemconfig(load_game, state="hidden")
+        canvas.itemconfig(exit_button, state="hidden")
+        canvas.itemconfig(info_button, state="hidden")
         info_frame_displayed = True
     else:
-        canvas.itemconfig(info_frame_canvas_id, state="hidden")
-        info_frame_displayed = False
+        hide_info_frame()
+
+def hide_info_frame():
+    # Hide the info frame and back arrow, show the startup frame buttons
+    global info_frame_displayed
+    canvas.itemconfig(info_frame_canvas_id, state="hidden")
+    canvas.itemconfig(back_arrow_canvas_id, state="hidden")
+    canvas.itemconfig(new_game, state="normal")
+    canvas.itemconfig(load_game, state="normal")
+    canvas.itemconfig(exit_button, state="normal")
+    canvas.itemconfig(info_button, state="normal")
+    info_frame_displayed = False
 
 # Initialize window
 window = Tk()
@@ -81,6 +96,15 @@ info_frame_canvas_id = canvas.create_image(
     image=info_frame_photo,
     state="hidden"  # Hide initially
 )
+
+# Load the back arrow image and place it in the top-left corner (hidden by default)
+back_arrow_photo = PhotoImage(file=relative_to_assets("../../assets/info_frame/back_arrow.png"))
+back_arrow_canvas_id = canvas.create_image(
+    50, 50,  # Top-left corner of the canvas
+    image=back_arrow_photo,
+    state="hidden"  # Hide initially
+)
+canvas.tag_bind(back_arrow_canvas_id, "<Button-1>", lambda e: hide_info_frame())
 
 # Initialize state variable to track visibility of info frame
 info_frame_displayed = False
