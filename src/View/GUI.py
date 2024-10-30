@@ -50,7 +50,7 @@ def hide_info_frame():
 window = Tk()
 window.geometry("1512x982")
 window.configure(bg="#FFFFFF")
-window.title("Monopoly Hong Kong")
+window.title("Monopoly Hong Kong Special Edition")
 
 # Create canvas
 canvas = Canvas(
