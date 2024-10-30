@@ -11,11 +11,11 @@ def relative_to_assets(path: str) -> Path:
 # Define functions for button actions
 def start_new_game():
     print("Starting a new game...")
-    # Add code here to initiate a new game or transition to another screen
+    # Add code here
 
 def load_game():
     print("Loading game...")
-    # Add code here to load game data or transition to a loading screen
+    # Add code here
 
 def exit_game():
     print("Exiting game...")
@@ -50,6 +50,7 @@ def hide_info_frame():
 window = Tk()
 window.geometry("1512x982")
 window.configure(bg="#FFFFFF")
+window.title("Monopoly Hong Kong")
 
 # Create canvas
 canvas = Canvas(
@@ -77,16 +78,16 @@ exit_image = PhotoImage(file=relative_to_assets("exit_button.png"))
 info_image = PhotoImage(file=relative_to_assets("info_button.png"))
 
 # Place button images on canvas and bind them to respective functions
-new_game = canvas.create_image(756, 500, image=new_game_image)
+new_game = canvas.create_image(756, 550, image=new_game_image)
 canvas.tag_bind(new_game, "<Button-1>", lambda e: start_new_game())
 
-load_game = canvas.create_image(756, 600, image=load_game_image)
+load_game = canvas.create_image(756, 690, image=load_game_image)
 canvas.tag_bind(load_game, "<Button-1>", lambda e: load_game())
 
-exit_button = canvas.create_image(756, 700, image=exit_image)
+exit_button = canvas.create_image(756, 830, image=exit_image)
 canvas.tag_bind(exit_button, "<Button-1>", lambda e: exit_game())
 
-info_button = canvas.create_image(1400, 50, image=info_image)
+info_button = canvas.create_image(1410, 50, image=info_image)
 canvas.tag_bind(info_button, "<Button-1>", lambda e: show_info())
 
 # Load the info frame image (hidden by default)
@@ -100,7 +101,7 @@ info_frame_canvas_id = canvas.create_image(
 # Load the back arrow image and place it in the top-left corner (hidden by default)
 back_arrow_photo = PhotoImage(file=relative_to_assets("../../assets/info_frame/back_arrow.png"))
 back_arrow_canvas_id = canvas.create_image(
-    50, 50,  # Top-left corner of the canvas
+    60, 50,  # Top-left corner of the canvas
     image=back_arrow_photo,
     state="hidden"  # Hide initially
 )
