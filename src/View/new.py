@@ -20,7 +20,7 @@ class GUI(tk.Tk):
         self.frames["MainMenu"] = frame
         frame.place(x=0, y=0, width=self.screen_width, height=self.screen_height)
 
-        imgpath = r"assets\startup_frames\startup_frame_background_image.png"
+        imgpath = r"../../assets/startup_frames/startup_frame_background_image.png"
         self.img = tk.PhotoImage(file=imgpath)
         zoom_level = 8
         self.img = self.img.zoom(zoom_level)
@@ -29,10 +29,10 @@ class GUI(tk.Tk):
         canvas = tk.Canvas(frame, bg="#FFFFFF", height=self.screen_height, width=self.screen_width, bd=0, highlightthickness=0, relief="ridge")
         canvas.place(x=0, y=0)
 
-        new_game_image = tk.PhotoImage(file=r"assets\startup_frames\new_game_button.png")
-        load_game_image = tk.PhotoImage(file=r"assets\startup_frames\load_game_button.png")
-        exit_image = tk.PhotoImage(file=r"assets\startup_frames\exit_button.png")
-        info_image = tk.PhotoImage(file=r"assets\startup_frames\info_button.png")
+        new_game_image = tk.PhotoImage(file=r"../../assets/startup_frames/new_game_button.png")
+        load_game_image = tk.PhotoImage(file=r"../../assets/startup_frames/load_game_button.png")
+        exit_image = tk.PhotoImage(file=r"../../assets/startup_frames/exit_button.png")
+        info_image = tk.PhotoImage(file=r"../../assets/startup_frames/info_button.png")
 
         canvas.create_image(self.screen_width // 2, self.screen_height // 2, image=self.img)
         

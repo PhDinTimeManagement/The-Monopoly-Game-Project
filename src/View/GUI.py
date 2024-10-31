@@ -3,26 +3,25 @@ from tkinter import Tk, Canvas, PhotoImage
 
 # Set up paths
 OUTPUT_PATH = Path(__file__).parent
-ASSETS_PATH = OUTPUT_PATH / Path(r"assets/startup_frames")
+ASSETS_PATH = OUTPUT_PATH / Path(r"../../assets")
 
 def relative_to_assets(path: str) -> Path:
-    return ASSETS_PATH / Path(path)
+    abs_path = ASSETS_PATH / Path(path)
+    print(f"Trying to open asset at: {abs_path}")  # Debugging line
+    return abs_path
 
 # Define functions for button actions
 def start_new_game():
     print("Starting a new game...")
-    # Add code here
 
 def load_game():
     print("Loading game...")
-    # Add code here
 
 def exit_game():
     print("Exiting game...")
-    window.quit()  # Closes the application window
+    window.quit()
 
 def show_info():
-    # Show the info frame and back arrow, hide the startup frame buttons
     global info_frame_displayed
     if not info_frame_displayed:
         canvas.itemconfig(info_frame_canvas_id, state="normal")
@@ -36,7 +35,6 @@ def show_info():
         hide_info_frame()
 
 def hide_info_frame():
-    # Hide the info frame and back arrow, show the startup frame buttons
     global info_frame_displayed
     canvas.itemconfig(info_frame_canvas_id, state="hidden")
     canvas.itemconfig(back_arrow_canvas_id, state="hidden")
@@ -49,37 +47,25 @@ def hide_info_frame():
 # Initialize window
 window = Tk()
 
-window.geometry(str(window.winfo_screenwidth())+'x'+str(window.winfo_screenheight()))
-
+window.geometry("1512x982")
+#window.geometry(f"{window.winfo_screenwidth()}x{window.winfo_screenheight()}")
 window.configure(bg="#FFFFFF")
 window.title("Monopoly Hong Kong Special Edition")
 
 # Create canvas
-canvas = Canvas(
-    window,
-    bg="#FFFFFF",
-    height=982,
-    width=1512,
-    bd=0,
-    highlightthickness=0,
-    relief="ridge"
-)
+canvas = Canvas(window, bg="#FFFFFF", height=982, width=1512, bd=0, highlightthickness=0, relief="ridge")
 canvas.place(x=0, y=0)
 
 # Load and place background image
-background_image = PhotoImage(file=r"assets\startup_frames\startup_frame_background_image.png")
-canvas.create_image(
-    756, 491,  # Center the background image in the window
-    image=background_image
-)
+background_image = PhotoImage(file=relative_to_assets("startup_frames/startup_frame_background_image.png"))
+canvas.create_image(756, 491, image=background_image)
 
-# Load images for buttons
-new_game_image = PhotoImage(file=relative_to_assets("new_game_button.png"))
-load_game_image = PhotoImage(file=relative_to_assets("load_game_button.png"))
-exit_image = PhotoImage(file=relative_to_assets("exit_button.png"))
-info_image = PhotoImage(file=relative_to_assets("info_button.png"))
+# Load images for buttons and bind them to respective functions
+new_game_image = PhotoImage(file=relative_to_assets("startup_frames/new_game_button.png"))
+load_game_image = PhotoImage(file=relative_to_assets("startup_frames/load_game_button.png"))
+exit_image = PhotoImage(file=relative_to_assets("startup_frames/exit_button.png"))
+info_image = PhotoImage(file=relative_to_assets("startup_frames/info_button.png"))
 
-# Place button images on canvas and bind them to respective functions
 new_game = canvas.create_image(756, 550, image=new_game_image)
 canvas.tag_bind(new_game, "<Button-1>", lambda e: start_new_game())
 
@@ -93,24 +79,15 @@ info_button = canvas.create_image(1410, 50, image=info_image)
 canvas.tag_bind(info_button, "<Button-1>", lambda e: show_info())
 
 # Load the info frame image (hidden by default)
-info_frame_photo = PhotoImage(file=relative_to_assets("../../assets/info_frame/info_frame.png"))
-info_frame_canvas_id = canvas.create_image(
-    756, 491,  # Center it on the canvas
-    image=info_frame_photo,
-    state="hidden"  # Hide initially
-)
+info_frame_photo = PhotoImage(file=relative_to_assets("info_frame/info_frame.png"))
+info_frame_canvas_id = canvas.create_image(756, 491, image=info_frame_photo, state="hidden")
 
 # Load the back arrow image and place it in the top-left corner (hidden by default)
-back_arrow_photo = PhotoImage(file=relative_to_assets("../../assets/info_frame/back_arrow.png"))
-back_arrow_canvas_id = canvas.create_image(
-    60, 50,  # Top-left corner of the canvas
-    image=back_arrow_photo,
-    state="hidden"  # Hide initially
-)
+back_arrow_photo = PhotoImage(file=relative_to_assets("info_frame/back_arrow.png"))
+back_arrow_canvas_id = canvas.create_image(60, 50, image=back_arrow_photo, state="hidden")
 canvas.tag_bind(back_arrow_canvas_id, "<Button-1>", lambda e: hide_info_frame())
 
-# Initialize state variable to track visibility of info frame
 info_frame_displayed = False
 
-window.resizable(True, True)
+window.resizable(False, False)
 window.mainloop()
