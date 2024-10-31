@@ -1,93 +1,102 @@
-from pathlib import Path
-from tkinter import Tk, Canvas, PhotoImage
+import tkinter as tk
+from PIL import Image, ImageTk
 
-# Set up paths
-OUTPUT_PATH = Path(__file__).parent
-ASSETS_PATH = OUTPUT_PATH / Path(r"../../assets")
 
-def relative_to_assets(path: str) -> Path:
-    abs_path = ASSETS_PATH / Path(path)
-    print(f"Trying to open asset at: {abs_path}")  # Debugging line
-    return abs_path
+class GUI(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        # Set the window size to 3/4 of the screen
+        self.screen_width, self.screen_height = self.winfo_screenwidth(), self.winfo_screenheight()
+        self.window_width, self.window_height = int(self.screen_width * 0.75), int(self.screen_height * 0.75)
 
-# Define functions for button actions
-def start_new_game():
-    print("Starting a new game...")
+        # Position the window to be centered on the screen
+        self.geometry(
+            f"{self.window_width}x{self.window_height}+"
+            f"{int((self.screen_width - self.window_width) / 2)}+"
+            f"{int((self.screen_height - self.window_height) / 2)}")
 
-def load_game():
-    print("Loading game...")
+        # Disable window resizing
+        self.resizable(False, False)
+        self.configure(bg="#FFFFFF")
+        self.title("Monopoly Hong Kong Special Edition")
 
-def exit_game():
-    print("Exiting game...")
-    window.quit()
+        self.frames = {}  # Store different pages (frames)
 
-def show_info():
-    global info_frame_displayed
-    if not info_frame_displayed:
-        canvas.itemconfig(info_frame_canvas_id, state="normal")
-        canvas.itemconfig(back_arrow_canvas_id, state="normal")
-        canvas.itemconfig(new_game, state="hidden")
-        canvas.itemconfig(load_game, state="hidden")
-        canvas.itemconfig(exit_button, state="hidden")
-        canvas.itemconfig(info_button, state="hidden")
-        info_frame_displayed = True
-    else:
-        hide_info_frame()
+        # Load main menu
+        self.main_menu()
 
-def hide_info_frame():
-    global info_frame_displayed
-    canvas.itemconfig(info_frame_canvas_id, state="hidden")
-    canvas.itemconfig(back_arrow_canvas_id, state="hidden")
-    canvas.itemconfig(new_game, state="normal")
-    canvas.itemconfig(load_game, state="normal")
-    canvas.itemconfig(exit_button, state="normal")
-    canvas.itemconfig(info_button, state="normal")
-    info_frame_displayed = False
+    def main_menu(self):
+        frame = tk.Frame(self)
+        self.frames["MainMenu"] = frame
+        frame.place(x=0, y=0, width=self.window_width, height=self.window_height)
 
-# Initialize window
-window = Tk()
+        # Load and resize the background image to fill the window size
+        imgpath = "../../assets/startup_frames/startup_frame_background_image.png"
+        bg_img = Image.open(imgpath)
+        bg_img = bg_img.resize((self.window_width, self.window_height), Image.LANCZOS)
+        self.background_image = ImageTk.PhotoImage(bg_img)
 
-window.geometry("1512x982")
-#window.geometry(f"{window.winfo_screenwidth()}x{window.winfo_screenheight()}")
-window.configure(bg="#FFFFFF")
-window.title("Monopoly Hong Kong Special Edition")
+        canvas = tk.Canvas(frame, bg="#FFFFFF", height=self.window_height, width=self.window_width, bd=0,
+                           highlightthickness=0, relief="ridge")
+        canvas.place(x=0, y=0)
+        canvas.create_image(0, 0, anchor="nw", image=self.background_image)
 
-# Create canvas
-canvas = Canvas(window, bg="#FFFFFF", height=982, width=1512, bd=0, highlightthickness=0, relief="ridge")
-canvas.place(x=0, y=0)
+        # Load button images
+        new_game_image = ImageTk.PhotoImage(Image.open(r"../../assets/startup_frames/new_game_button.png"))
+        load_game_image = ImageTk.PhotoImage(Image.open(r"../../assets/startup_frames/load_game_button.png"))
+        exit_image = ImageTk.PhotoImage(Image.open(r"../../assets/startup_frames/exit_button.png"))
+        info_image = ImageTk.PhotoImage(Image.open(r"../../assets/startup_frames/info_button.png"))
 
-# Load and place background image
-background_image = PhotoImage(file=relative_to_assets("startup_frames/startup_frame_background_image.png"))
-canvas.create_image(756, 491, image=background_image)
+        # Place buttons centered vertically and horizontally
+        button_y_positions = [self.window_height * 0.55, self.window_height * 0.70, self.window_height * 0.85]
 
-# Load images for buttons and bind them to respective functions
-new_game_image = PhotoImage(file=relative_to_assets("startup_frames/new_game_button.png"))
-load_game_image = PhotoImage(file=relative_to_assets("startup_frames/load_game_button.png"))
-exit_image = PhotoImage(file=relative_to_assets("startup_frames/exit_button.png"))
-info_image = PhotoImage(file=relative_to_assets("startup_frames/info_button.png"))
+        new_game = canvas.create_image(self.window_width // 2, button_y_positions[0], image=new_game_image)
+        canvas.tag_bind(new_game, "<Button-1>", lambda e: self.show_frame("GamePage"))
 
-new_game = canvas.create_image(756, 550, image=new_game_image)
-canvas.tag_bind(new_game, "<Button-1>", lambda e: start_new_game())
+        load_game = canvas.create_image(self.window_width // 2, button_y_positions[1], image=load_game_image)
+        canvas.tag_bind(load_game, "<Button-1>", lambda e: self.show_frame("LoadPage"))
 
-load_game = canvas.create_image(756, 690, image=load_game_image)
-canvas.tag_bind(load_game, "<Button-1>", lambda e: load_game())
+        exit_button = canvas.create_image(self.window_width // 2, button_y_positions[2], image=exit_image)
+        canvas.tag_bind(exit_button, "<Button-1>", lambda e: self.quit())
 
-exit_button = canvas.create_image(756, 830, image=exit_image)
-canvas.tag_bind(exit_button, "<Button-1>", lambda e: exit_game())
+        # Place the info button at the top-right corner
+        info_button = canvas.create_image(self.window_width - 85, 75, image=info_image)
+        canvas.tag_bind(info_button, "<Button-1>", lambda e: self.show_frame("InfoPage"))
 
-info_button = canvas.create_image(1410, 50, image=info_image)
-canvas.tag_bind(info_button, "<Button-1>", lambda e: show_info())
+        # Keep references to button images to prevent garbage collection
+        self.new_game_image = new_game_image
+        self.load_game_image = load_game_image
+        self.exit_image = exit_image
+        self.info_image = info_image
 
-# Load the info frame image (hidden by default)
-info_frame_photo = PhotoImage(file=relative_to_assets("info_frame/info_frame.png"))
-info_frame_canvas_id = canvas.create_image(756, 491, image=info_frame_photo, state="hidden")
+        # Load other pages
+        self.load_game_page()
+        self.load_info_page()
 
-# Load the back arrow image and place it in the top-left corner (hidden by default)
-back_arrow_photo = PhotoImage(file=relative_to_assets("info_frame/back_arrow.png"))
-back_arrow_canvas_id = canvas.create_image(60, 50, image=back_arrow_photo, state="hidden")
-canvas.tag_bind(back_arrow_canvas_id, "<Button-1>", lambda e: hide_info_frame())
+    def load_game_page(self):
+        frame = tk.Frame(self)
+        self.frames["GamePage"] = frame
+        label = tk.Label(frame, text="This is the Game Page")
+        label.pack(pady=20)
+        back_button = tk.Button(frame, text="Back to Main Menu", command=lambda: self.show_frame("MainMenu"))
+        back_button.pack(pady=10)
 
-info_frame_displayed = False
+    def load_info_page(self):
+        frame = tk.Frame(self)
+        self.frames["InfoPage"] = frame
+        label = tk.Label(frame, text="This is the Info Page")
+        label.pack(pady=20)
+        back_button = tk.Button(frame, text="Back to Main Menu", command=lambda: self.show_frame("MainMenu"))
+        back_button.pack(pady=10)
 
-window.resizable(False, False)
-window.mainloop()
+    def show_frame(self, frame_name):
+        # Hide all frames
+        for frame in self.frames.values():
+            frame.place_forget()
+        # Show the specified frame
+        self.frames[frame_name].place(x=0, y=0, width=self.window_width, height=self.window_height)
+
+
+# Run the GUI
+gui = GUI()
+gui.mainloop()
