@@ -3,7 +3,7 @@ from tkinter import Tk, Canvas, PhotoImage
 
 # Set up paths
 OUTPUT_PATH = Path(__file__).parent
-ASSETS_PATH = OUTPUT_PATH / Path(r"../../assets/startup_frames")
+ASSETS_PATH = OUTPUT_PATH / Path(r"assets/startup_frames")
 
 def relative_to_assets(path: str) -> Path:
     return ASSETS_PATH / Path(path)
@@ -48,7 +48,9 @@ def hide_info_frame():
 
 # Initialize window
 window = Tk()
-window.geometry("1512x982")
+
+window.geometry(str(window.winfo_screenwidth())+'x'+str(window.winfo_screenheight()))
+
 window.configure(bg="#FFFFFF")
 window.title("Monopoly Hong Kong Special Edition")
 
@@ -65,7 +67,7 @@ canvas = Canvas(
 canvas.place(x=0, y=0)
 
 # Load and place background image
-background_image = PhotoImage(file=relative_to_assets("startup_frame_background_image.png"))
+background_image = PhotoImage(file=r"assets\startup_frames\startup_frame_background_image.png")
 canvas.create_image(
     756, 491,  # Center the background image in the window
     image=background_image
