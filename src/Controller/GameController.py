@@ -7,18 +7,17 @@ from src.Model.Gameboard import *
 from src.Model.Player import Player
 from src.Model.GameLogic import GameLogic
 from src.Controller.InputHandler import InputHandler
-from src.Model.InputHandler import InputHandler
 from datetime import datetime
 
 class GameController:
     def __init__(self):
         self.save_name = None
         self.board = Gameboard()
-        self.players = [Player("Player 1"), Player("Player 2")]
+        self.players = []
         self.broke_players = []
         self.input_handler = InputHandler()
         self.current_turn = 0
-        self.game_round = 10
+        self.game_round = 1
 
     def get_player_list(self):
         return self.players
@@ -28,6 +27,12 @@ class GameController:
 
     def get_game_round(self):
         return self.game_round
+
+    def get_current_turn(self):
+        return self.current_turn
+
+    def set_current_turn(self, turn):
+        self.current_turn = turn
 
     def set_game_round(self, new_round):
         self.game_round = new_round
@@ -74,7 +79,8 @@ class GameController:
             json.dump(game_data, save_file, indent=4)
             print("Game saved successfully.\n")
 
-    def load_game(self):
+    @staticmethod
+    def load_game(new_controller):
         # gets current directory in which the program is running
         save_directory = os.path.dirname(os.path.abspath(__file__))
 
@@ -90,29 +96,42 @@ class GameController:
                 game_data_dict = json.load(game_data)
         except FileNotFoundError:
             print("Game saved does not exist.")
+            return
         except json.JSONDecodeError:
             print("Error in reading save file.")
+            return
 
         # pulls information from the dictionary into respective variables
-        self.set_save_name(game_data_dict["save_name"])
-        controller.set_game_round(game_data_dict["current_round"])
+        new_controller.set_save_name(game_data_dict["save_name"])
+        new_controller.set_game_round(game_data_dict["game_round"])
+        new_controller.set_current_turn(game_data_dict["current_turn"])
 
         # gameboard_setup is a list of dictionaries, will cycle and update appropriately
         gameboard_info = game_data_dict["gameboard_setup"]
-        for tile_info, i in gameboard_info, range(0, 20):
-            self.board.tiles[i].update_name_pos(tile_info["name"], tile_info["board_pos"], tile_info["tile_type"])
-            if tile_info.tile_type == "property":
-                self.board.tiles[i].update_values(tile_info["price"], tile_info["rent"], tile_info["owner"], tile_info["color"])
-            elif tile_info.tile_type == "income_tax":
-                self.board.tiles[i].update_value(tile_info["tax_percentage"])
-            elif tile_info.tile_type == "jail":
-                self.board.tiles[i].update_value(tile_info["jail_players"])
-            elif tile_info.tile_type == "go":
-                self.board.tiles[i].update_value(tile_info["pass_prize"])
+        for tile_info, i in zip(gameboard_info, range(20)):
+            new_controller.board.tiles[i].update_name_pos_type(tile_info["name"], tile_info["board_pos"], tile_info["tile_type"])
+            tile_type = tile_info["tile_type"]
+            if tile_type == "property":
+                new_controller.board.tiles[i].update_values(tile_info["price"], tile_info["rent"], tile_info["owner"], tile_info["color"])
+            elif tile_type == "income_tax":
+                new_controller.board.tiles[i].update_values(tile_info["tax_percentage"])
+            elif tile_type == "jail":
+                new_controller.board.tiles[i].update_values(tile_info["jailed_players"])
+            elif tile_type == "go":
+                new_controller.board.tiles[i].update_values(tile_info["pass_prize"])
 
-        # copies player list from save file as the format is compatible
-        self.players = game_data_dict["players_list"].copy()
-        self.broke_players = game_data_dict["broke_list"].copy()
+        # creates players objects and copies information from the dictionary
+        players = game_data_dict["players_list"]
+        for p_data in players:
+            new_player = Player("")
+            new_player.update_values(p_data["_username"], p_data["_current_money"], p_data["_jail_status"], p_data["_fine_payed"], p_data["_current_square"], p_data["_in_jail_turns"], p_data["_properties"])
+            new_controller.players.append(new_player)
+
+        broke_players = game_data_dict["broke_list"]
+        for p_data in broke_players:
+            new_player = Player("")
+            new_player.update_values(p_data["_username"], p_data["_current_money"], p_data["_jail_status"], p_data["_fine_payed"], p_data["_current_square"], p_data["_in_jail_turns"], p_data["_properties"])
+            new_controller.broke_players.append(new_player)
 
 
 """ INITIALIZING CONTROLLER TO BE USED IN SAVED GAME, contains game information needed"""
@@ -124,7 +143,8 @@ class SavedGame:
         # Gets the name of the save and current round
         self.save_name = save_name
         self.save_time = datetime.now().strftime("%H:%M %d-%m-%Y")
-        self.current_round = controller.get_game_round()
+        self.current_turn = controller.get_current_turn()
+        self.game_round = controller.get_game_round()
 
         # Saves the setup of the gameboard as a list
         self.tiles = gameboard.tiles.copy()
@@ -142,7 +162,8 @@ class SavedGame:
         return {
             "save_name": self.save_name,
             "save_time": self.save_time,
-            "current_round": self.current_round,
+            "current_turn": self.current_turn,
+            "game_round": self.game_round,
             "gameboard_setup": gameboard_data,
             "players_list": player_data,
             "broke_list": broke_player_data

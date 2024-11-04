@@ -10,9 +10,12 @@ class Player:
         self._fine_payed = False
         self._current_square = 1
         self._in_jail_turns = 0
-        self._properties = {}
+        self._properties = []
 
-    def getname(self):
+    def set_name(self, name):
+        self._username = name
+
+    def get_name(self):
         return self._username
 
     def get_current_money(self):
@@ -40,8 +43,10 @@ class Player:
         return self._in_jail_turns
 
     def set_in_jail_turns(self, value):
-        if value >=0 and value <= 3:
+        if 0 < value <= 3:
             self._in_jail_turns = value
+        else:
+            self._in_jail_turns = 0
 
     def add_money(self, money):
         self._current_money += money
@@ -49,20 +54,32 @@ class Player:
     def remove_money(self, money):
         self._current_money -= money
 
+    def set_jail_status(self, status):
+        self._jail_status = status
+
     def is_jailed(self, state):
         self._jail_status = state
-
-    def set_in_jail_turns(self, new_turns):
-        self._in_jail_turns = new_turns
 
     def set_current_square(self, position):
         self._current_square = position
 
-    def add_properties(self, properties):
-        self._properties[properties] = properties.get_rent()
+    def add_properties(self, property_name):
+        self._properties.append(property_name)
+
+    def add_all_properties(self, properties_list):
+        self._properties = properties_list.copy()
 
     def delete_properties(self, new_properties):
         pass
+
+    def update_values(self, name, money, jail_status, fine_payed, current_square, in_jail_turns, properties):
+        self.set_name(name)
+        self.set_current_money(money)
+        self.set_jail_status(jail_status)
+        self.set_fine_payed(fine_payed)
+        self.set_current_square(current_square)
+        self.set_in_jail_turns(in_jail_turns)
+        self.add_all_properties(properties)
 
     """Delete all properties when the player is broke"""
 

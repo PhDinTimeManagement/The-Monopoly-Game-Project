@@ -1,13 +1,14 @@
 {
-    "save_name": "LOAD TEST",
-    "save_time": "20:40 04-11-2024",
-    "current_round": 10,
+    "save_name": "LOAD_TEST",
+    "save_time": "23:15 04-11-2024",
+    "current_turn": 0,
+    "game_round": 50,
     "gameboard_setup": [
         {
-            "name": "Go",
+            "name": "Start",
             "board_pos": 0,
             "tile_type": "go",
-            "pass_prize": 1500
+            "pass_prize": 3000
         },
         {
             "name": "Central",
@@ -175,5 +176,15 @@
             "_properties": {}
         }
     ],
-    "broke_list": []
+    "broke_list": [
+        {
+            "_username": "Player 3",
+            "_current_money": 15000,
+            "_jail_status": true,
+            "_fine_payed": false,
+            "_current_square": 6,
+            "_in_jail_turns": 2,
+            "_properties": {}
+        }
+    ]
 }
