@@ -23,8 +23,8 @@ class GameLogic:
         return GameLogic._current_round
 
     @staticmethod
-    def set_current_round(round):
-        GameLogic._current_round = round
+    def set_current_round(new_round):
+        GameLogic._current_round = new_round
 
     """Get the number rolled from the two dices by a player"""
     @staticmethod
