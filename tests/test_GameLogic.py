@@ -72,10 +72,9 @@ class TestGameLogic(TestCase):
 
     def test_game_ends(self):
         Player.players_list.append(player1)
-        self.assertTrue(GameLogic.game_ends(Player.players_list))
+        self.assertTrue(GameLogic.game_ends(Player.players_list,1))
         Player.players_list.remove(player1)
-        GameLogic.set_current_round(100)
-        self.assertTrue(GameLogic.game_ends(Player.players_list))
+        self.assertTrue(GameLogic.game_ends(Player.players_list,100))
 
     def test_get_fine(self):
         GameLogic.set_fine(100)

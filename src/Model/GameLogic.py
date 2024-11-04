@@ -110,8 +110,8 @@ class GameLogic:
     """Check if the game is finished"""
 
     @staticmethod
-    def game_ends(player_list):
-        return GameLogic.get_current_round() == 100 or len(player_list)== 1
+    def game_ends(player_list,game_round):
+        return game_round == 100 or len(player_list)== 1
 
     @staticmethod
     def display_winner(player_list):

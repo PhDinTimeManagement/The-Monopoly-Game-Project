@@ -93,15 +93,18 @@ class GameController:
             GameLogic.player_out(player_this_turn,self.players,self.broke_players)
         
         GameLogic.set_current_round(self.game_round + 1)
-        if GameLogic.game_ends(self.players):  #This is the base case for this recursive call, i.e. when the game ends
+        if GameLogic.game_ends(self.players,self.game_round):  #This is the base case for this recursive call, i.e. when the game ends
             GameLogic.display_winner(self.players)
         else:
             player_next_turn = self.players[self.current_turn]
             if player_next_turn.get_jail_status():
                 # <Display all the buttons for in-jail-roll>
-                self.in_jail_roll()
+                #waiting the click event
+                pass
             else:
-                self.roll_dice() #Recursive call. My bad, actually we need loop or recursion for this
+                #<The button no need to change, display just Roll_dice>
+                #waiting the click event
+                pass
             
         
             
