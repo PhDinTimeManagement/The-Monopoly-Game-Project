@@ -6,8 +6,8 @@ import os.path
 from src.Model.Gameboard import *
 from src.Model.Player import Player
 from src.Model.GameLogic import GameLogic
+from src.Controller.InputHandler import InputHandler
 from src.Model.InputHandler import InputHandler
-from tests.test_Gameboard import gameboard
 from datetime import datetime
 
 class GameController:

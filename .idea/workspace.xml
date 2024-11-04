@@ -6,7 +6,33 @@
   <component name="ChangeListManager">
     <list default="true" id="e63f52e8-b5e2-4b82-8eb0-ddb8c465611b" name="Changes" comment="Touch Ups on Gameboard.py v5">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/newgame_frame/back_arrow.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets/new_game_frame/back_arrow.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/newgame_frame/editboard_button.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets/new_game_frame/edit_board_button.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/newgame_frame/newgame_frame_background.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets/new_game_frame/new_game_frame_background.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/newgame_frame/playboard_button.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets/new_game_frame/play_button.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/newgame_frame/player1_box.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets/new_game_frame/player1_box.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/newgame_frame/player2_box.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets/new_game_frame/player2_box.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/newgame_frame/player3_box.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets/new_game_frame/player3_box.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/newgame_frame/player4_box.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets/new_game_frame/player4_box.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/newgame_frame/player5_box.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets/new_game_frame/player5_box.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/newgame_frame/player6_box.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets/new_game_frame/player6_box.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/newgame_frame/player_insert_demo.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets/new_game_frame/player_insert_demo.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Controller/GameController.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Controller/GameController.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Model/InputHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Controller/InputHandler.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/View/DisplayManager.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/View/DisplayManager.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/View/GUI.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/View/GUI.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/dice_1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/dice_2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/dice_3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/dice_4.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/info_frame/back_arrow.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/info_frame/info_frame.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/startup_frames/exit_button.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/startup_frames/info_button.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/startup_frames/load_game_button.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/startup_frames/new_game_button.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/startup_frames/startup_frame_background_image.png" beforeDir="false" />
     </list>
     <list id="b53ad74c-d01b-4e52-9a34-f524bfab6613" name="Changes by Kent Max Chandra" comment="" />
     <option name="SHOW_DIALOG" value="false" />
@@ -81,6 +107,7 @@
       <recent name="C:\Users\Hp\Desktop\The-Monopoly-Game-Project\src" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/Controller" />
       <recent name="$PROJECT_DIR$/assets/dice" />
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/src/View" />
@@ -228,7 +255,7 @@
       <workItem from="1730278497914" duration="318000" />
       <workItem from="1730278822997" duration="15714000" />
       <workItem from="1730367503069" duration="612000" />
-      <workItem from="1730377042614" duration="1385000" />
+      <workItem from="1730377042614" duration="7325000" />
     </task>
     <task id="LOCAL-00001" summary="gameboard functions">
       <created>1729259402457</created>
@@ -354,6 +381,8 @@
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Game_py$.coverage" NAME=" Coverage Results" MODIFIED="1730198824506" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/Game_py$GUI.coverage" NAME="GUI Coverage Results" MODIFIED="1730378327995" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/View" />
+    <SUITE FILE_PATH="coverage/Game_py$GUI.coverage" NAME="GUI Coverage Results" MODIFIED="1730734897235" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/View" />
+    <SUITE FILE_PATH="coverage/Game_py$Test.coverage" NAME="Test Coverage Results" MODIFIED="1730432574768" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Game_py$gui.coverage" NAME="gui Coverage Results" MODIFIED="1730294710638" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/View" />
     <SUITE FILE_PATH="coverage/Game_py$new.coverage" NAME="new Coverage Results" MODIFIED="1730338734766" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/View" />
   </component>
