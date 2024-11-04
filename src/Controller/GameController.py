@@ -3,7 +3,7 @@
 from src.Model.Gameboard import *
 from src.Model.Player import Player
 from src.Model.GameLogic import GameLogic
-from src.Model.InputHandler import InputHandler
+from src.Controller.InputHandler import InputHandler
 
 class GameController:
     def __init__(self):

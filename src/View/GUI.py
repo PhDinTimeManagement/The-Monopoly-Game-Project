@@ -1,6 +1,7 @@
 # main.py
 import tkinter as tk
-from DisplayManager import DisplayManager
+from src.View.DisplayManager import DisplayManager
+from src.Controller.InputHandler import InputHandler
 
 class GUI(tk.Tk):
     def __init__(self):
@@ -23,34 +24,49 @@ class GUI(tk.Tk):
 
         self.frames = {}  # Store different pages (frames)
 
+        # Initialize InputHandler
+        self.display_manager = DisplayManager(self)
+        self.input_handler = InputHandler()
+
         # Initialize DisplayManager
         self.display_manager = DisplayManager(self)
 
         # Set up frames
         self.main_menu()
+        self.new_game_page()
         self.load_game_page()
         self.load_info_page()
 
         # Initially show the main menu
         self.show_frame("MainMenu")
 
+    # Show the main menu
     def main_menu(self):
         frame = tk.Frame(self)
         self.frames["MainMenu"] = frame
         self.canvas = self.display_manager.setup_main_menu(frame)
 
+    # Load the previous game record
     def load_game_page(self):
         frame = tk.Frame(self)
-        self.frames["GamePage"] = frame
-        label = tk.Label(frame, text="This is the Game Page")
+        self.frames["LoadPage"] = frame
+        label = tk.Label(frame, text="This is the Load Game Page")
         label.pack(pady=20)
         back_button = tk.Button(frame, text="Back to Main Menu", command=lambda: self.show_frame("MainMenu"))
         back_button.pack(pady=10)
 
+    # Start a new game
+    def new_game_page(self):
+        frame = tk.Frame(self)
+        self.frames["NewGamePage"] = frame
+        self.new_game_canvas = self.display_manager.setup_new_game_page(frame, self.input_handler)
+
+    # Show the game information
     def load_info_page(self):
         frame = tk.Frame(self)
         self.frames["InfoPage"] = frame
         self.info_canvas = self.display_manager.setup_info_page(frame)
+
 
     def show_frame(self, frame_name):
         for frame in self.frames.values():
