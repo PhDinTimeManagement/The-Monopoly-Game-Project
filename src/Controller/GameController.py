@@ -41,16 +41,87 @@ class GameController:
         self.save_name = save_name
 
 
-    """By Kent: we don't need a loop here. We need to program to detect the click events from the users. The click will call the functions for us. 
-       The loop should be in the tk.mainloop() function only."""
+    """By Kent: We need to program to detect the click events from the users. The click will call the functions for us. """
     def start_game(self):
         self.initialize_players()
         while not GameLogic.game_ends(self.players):
             self.play_round()
             GameLogic.set_current_round(self.game_round + 1)
 
+    """ This function is called after the 'Play' button is clicked in the game """
+    def button_play(self):
+        player_this_turn = self.players[self.current_turn]
+       #<show the roll dice button and display player_this_turn ONLY>
+        pass
 
-    """By Kent: we don't need loop here, either. Instead we get a list from the view after the player clicks 'play'"""
+    """This function is called after pressing the 'Roll' button in the game window."""
+    def roll_dice(self):
+        player_this_turn = self.players[self.current_turn]   
+        dice_roll1, dice_roll2 = GameLogic.roll_dice()
+        information = GameLogic.player_move(dice_roll1+dice_roll2,player_this_turn,self.board)
+        #Call function to display the animation in the view
+        if self.board.tiles[player_this_turn.get_square()-1].tile_type == "property":
+            if information: #This is when the property has no owner information is True this case
+                if self.board.tiles[player_this_turn.get_square()-1].buy(): #When the player have enough money
+                    #<show the buy button> or show the not buy button
+                    pass
+                else:
+                    #<Tell the player you cannot buy the property>
+                    pass
+                pass
+            #This case deals with the case where there is property owner
+            else:
+                #<show the money is deducted>
+                pass
+        elif self.board.tiles[player_this_turn.get_square()-1].tile_type == "jail":
+            #<show message 'JUST VISITING'>
+            pass
+        elif self.board.tiles[player_this_turn.get_square()-1].tile_type == "go":
+            #<show message 'GO + money'>
+            pass
+        elif self.board.tiles[player_this_turn.get_square()-1].tile_type == "go_to_jail":
+            #<show message "Go to Jail" animation, transport player to jail>
+            pass
+        elif self.board.tiles[player_this_turn.get_square()-1].tile_type == "income_tax":
+            #<show message "Income tax", update the player money amount>
+            pass
+        elif self.board.tiles[player_this_turn.get_square()-1].tile_type == "free_parking":
+            #<show message "You are free-parking">
+            pass
+        
+        if GameLogic.player_broke(player_this_turn):
+            GameLogic.player_out(player_this_turn,self.players,self.broke_players)
+        
+        GameLogic.set_current_round(self.game_round + 1)
+        if GameLogic.game_ends(self.players):  #This is the base case for this recursive call, i.e. when the game ends
+            GameLogic.display_winner(self.players)
+        else:
+            player_next_turn = self.players[self.current_turn]
+            if player_next_turn.get_jail_status():
+                # <Display all the buttons for in-jail-roll>
+                self.in_jail_roll()
+            else:
+                self.roll_dice() #Recursive call. My bad, actually we need loop or recursion for this
+            
+        
+            
+    #Roll function for player in jail
+    def in_jail_roll(self):
+        pass
+
+    def pay_fine(self):
+        #pay_fine_logic
+        pass
+
+    def buy_button(self):
+        #function for buy
+        pass
+    
+    def no_buy_button(self):
+        #function to not_buy
+        pass
+        
+    """By Kent: we don't need loop here. Instead we get a list from the view after the player clicks 'play'"""
     def initialize_players(self):
         num_players = self.input_handler.get_name_or_players("Enter the number of players (2-6): ")
         for i in range(num_players):

@@ -51,7 +51,8 @@ class GameLogic:
             if gameboard.tiles[player.get_square() - 1].name == "Go" and i != dice_number - 1:
                 gameboard.tiles[player.get_square() - 1].player_landed(player)  # Import Logic for 'Go'
 
-        gameboard.tiles[player.get_square() - 1].player_landed(player)  # Run other logic when the player lands
+        information = gameboard.tiles[player.get_square() - 1].player_landed(player)  # Run other logic when the player lands
+        return information
 
     """Three functions are for in jail"""
 

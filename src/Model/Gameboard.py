@@ -32,7 +32,7 @@ class Tile:
         """
     @classmethod
     def player_landed(cls, player):
-        pass
+        return None
 
     def update_name_pos_type(self, tile_name: str, board_pos: int, type: str) -> None:
         self.set_tile_name(tile_name)
@@ -111,12 +111,14 @@ class Property(Tile):
     def player_landed(self, player):
         """provides option to the player"""
         if self.owner is None:
-            message = f"{self.name} is available for purchase. Listed at {self.get_price()} HKD"
+            return True
+            #message = f"{self.name} is available for purchase. Listed at {self.get_price()} HKD"
             """TODO GET INPUT FROM PLAYER if INPUT == BUY TILE: self.buy(player)"""
         else:
-            message = f"{self.name} is owned by {self.get_owner()}. {player.get_name()} owes {self.get_price()} HKD"
+            #message = f"{self.name} is owned by {self.get_owner()}. {player.get_name()} owes {self.get_price()} HKD"
             self.pay_rent(player)
-        return message
+            return False
+        #return message
 
 
 class Jail(Tile):
@@ -141,7 +143,7 @@ class Jail(Tile):
 
 
     def player_landed(self, player):
-        pass
+        return None
 
 
 # initialized here in order to be hardcoded into go to jail tile
@@ -167,7 +169,7 @@ class Go(Tile):
     """When called adds pass_prize to the player balance"""
     def player_landed(self, player):
         player.add_money(self.get_pass_prize())
-
+        return None
 
 class GoToJail(Tile):
     def __init__(self, board_pos):
@@ -199,6 +201,7 @@ class Chance(Tile):
         else:
             amount = int(random.random() * 31) * 10
             player.remove_money(amount)
+        return None
 
 
 class IncomeTax(Tile):
@@ -219,6 +222,7 @@ class IncomeTax(Tile):
     def player_landed(self, player):
         tax_amount = self.calculate_tax(player)
         player.remove_money(tax_amount)
+        return None
 
 
 class FreeParking(Tile):
@@ -227,7 +231,7 @@ class FreeParking(Tile):
         self.tile_type = "free_parking"
 
     def player_landed(self, player):
-        pass
+        return None
 
 
 class Gameboard:
