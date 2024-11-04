@@ -5,8 +5,8 @@ class GUI(tk.Tk):
         super().__init__()
 
         # Load background image and set the window size based on it
-        img_path = "../../assets/startup_frames/startup_frame_background_image.png"
-        self.background_image = tk.PhotoImage(file=img_path)
+        imgpath = "../../assets/startup_frames/startup_frame_background_image.png"
+        self.background_image = tk.PhotoImage(file=imgpath)
         self.image_width = self.background_image.width()
         self.image_height = self.background_image.height()
 
