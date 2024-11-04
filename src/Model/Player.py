@@ -1,6 +1,3 @@
-
-
-
 class Player:
     """Lists that store the existing players and the player who is broke"""
     players_list = []
