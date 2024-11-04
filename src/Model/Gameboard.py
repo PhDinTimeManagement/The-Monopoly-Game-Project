@@ -93,10 +93,10 @@ class Property(Tile):
             player.remove_money(self.price)
             player.add_properties(self)
             self.set_owner(player)
-            print(f"{player.getname()} bought {self.name} for {self.get_price()} HKD")
+            print(f"{player.get_name()} bought {self.name} for {self.get_price()} HKD")
             return True
         else:
-            print(f"{player.getname()}'s balance is not enough to buy {self.name}")
+            print(f"{player.get_name()}'s balance is not enough to buy {self.name}")
             return False
 
     def pay_rent(self, player):
@@ -105,7 +105,7 @@ class Property(Tile):
             rent_amount = player.get_current_money()  # if not gets all the player can give
         player.remove_money(self.get_rent())    # removes from the player total what is owed
         self.owner.add_money(rent_amount)  # all money available is added to the owner
-        print(f"{player.getname()} payed {rent_amount} HKD to {self.owner.getname()}")
+        print(f"{player.get_name()} payed {rent_amount} HKD to {self.owner.get_name()}")
         return player.get_current_money()   # current player amount is returned (only for testing)
 
     def player_landed(self, player):
@@ -114,7 +114,7 @@ class Property(Tile):
             message = f"{self.name} is available for purchase. Listed at {self.get_price()} HKD"
             """TODO GET INPUT FROM PLAYER if INPUT == BUY TILE: self.buy(player)"""
         else:
-            message = f"{self.name} is owned by {self.get_owner()}. {player.getname()} owes {self.get_price()} HKD"
+            message = f"{self.name} is owned by {self.get_owner()}. {player.get_name()} owes {self.get_price()} HKD"
             self.pay_rent(player)
         return message
 
@@ -137,7 +137,7 @@ class Jail(Tile):
 
     def free_player(self, player):
         self.jailed_players.remove(player)
-        print(f"{player.getname()} is freed from Jail")
+        print(f"{player.get_name()} is freed from Jail")
 
 
     def player_landed(self, player):
@@ -180,7 +180,7 @@ class GoToJail(Tile):
         player.set_in_jail_turns(3)     # sets max turns to spend in jail
         player.set_current_square(JailTile.get_tile_position())    # the player position is updated to the jail position
         JailTile.jailed_players.append(player)      # puts the player name in the jail list of detainees
-        print(f"{player.getname()} has been locked up")
+        print(f"{player.get_name()} has been locked up")
 
     def player_landed(self, player):
         return self.arrest_player(player)

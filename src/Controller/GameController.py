@@ -13,11 +13,11 @@ class GameController:
     def __init__(self):
         self.save_name = None
         self.board = Gameboard()
-        self.players = []
-        self.broke_players = []
+        self.players = Player.players_list
+        self.broke_players = Player.broke_list
         self.input_handler = InputHandler()
-        self.current_turn = 0
-        self.game_round = 1
+        self.current_turn = GameLogic.get_player_turn()
+        self.game_round = GameLogic.get_current_round()
 
     def get_player_list(self):
         return self.players
@@ -40,12 +40,17 @@ class GameController:
     def set_save_name(self, save_name):
         self.save_name = save_name
 
+
+    """By Kent: we don't need a loop here. We need to program to detect the click events from the users. The click will call the functions for us. 
+       The loop should be in the tk.mainloop() function only."""
     def start_game(self):
         self.initialize_players()
         while not GameLogic.game_ends(self.players):
             self.play_round()
             GameLogic.set_current_round(self.game_round + 1)
 
+
+    """By Kent: we don't need loop here, either. Instead we get a list from the view after the player clicks 'play'"""
     def initialize_players(self):
         num_players = self.input_handler.get_name_or_players("Enter the number of players (2-6): ")
         for i in range(num_players):

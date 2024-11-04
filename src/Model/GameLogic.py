@@ -17,6 +17,15 @@ class GameLogic:
 
 
     _current_round = 1
+    _player_turn = 0
+
+    @staticmethod
+    def get_player_turn():
+        return GameLogic._player_turn
+
+    @staticmethod
+    def set_player_turn():
+        GameLogic._player_turn = (GameLogic.get_current_round()-1) % len(Player.players_list)
 
     @staticmethod
     def get_current_round():
@@ -37,8 +46,8 @@ class GameLogic:
     def player_move(dice_number, player, gameboard):
         for i in range(0, dice_number):
             player.update_square(1)
-            if player.get_square() > 19:
-                player.current_square = 0
+            if player.get_square() > 20:
+                player.set_square(1)
             if gameboard.tiles[player.get_square() - 1].name == "Go" and i != dice_number - 1:
                 gameboard.tiles[player.get_square() - 1].player_landed(player)  # Import Logic for 'Go'
 
@@ -112,12 +121,12 @@ class GameLogic:
             for player in player_list:
                 if player.get_current_money() >= value:
                     winner_list.append(player)
-                    message += f"{player.getname()}, "
+                    message += f"{player.get_name()}, "
                     value = player.get_current_money()
             message = f"{message}with {winner_list[0].get_current_money()} money."
             return message
         elif len(Player.players_list) == 1:
-            message = f"The winner is: {Player.players_list[0].getname()}, with {Player.players_list[0].get_current_money()} money."
+            message = f"The winner is: {Player.players_list[0].get_name()}, with {Player.players_list[0].get_current_money()} money."
             return message
 
 

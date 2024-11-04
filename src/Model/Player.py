@@ -24,6 +24,9 @@ class Player:
     def set_current_money(self, new_balance):
         self._current_money = new_balance
 
+    def add_current_money(self, amount):
+        self._current_money += amount
+
     def get_jail_status(self):
         return self._jail_status
 
@@ -38,6 +41,9 @@ class Player:
 
     def update_square(self,value):
         self._current_square += value
+
+    def set_square(self,value):
+        self._current_square = value
 
     def get_in_jail_turns(self):
         return self._in_jail_turns
