@@ -96,8 +96,8 @@ class GameLogic:
     """Pay the fine of 150 in jail"""
 
     @staticmethod
-    def pay_fine(player):
-        player.remove_money(GameLogic.get_fine())
+    def pay_fine(game_logic,player):
+        player.remove_money(game_logic.get_fine())
         player.set_fine_payed(True)
 
     """Check if player is broke, negative money"""
@@ -106,12 +106,12 @@ class GameLogic:
     def player_broke(player):
         return player.get_current_money() < 0
 
-
-    def player_out(self,player, player_list, broke_list):
+    @staticmethod
+    def player_out(game_logic,player, player_list, broke_list):
         player_list.remove(player)
         broke_list.append(player)
         player.delete_all_properties()
-        self.set_removed_last_round(True)
+        game_logic.set_removed_last_round(True)
 
     """Check if the game is finished"""
 
@@ -120,8 +120,8 @@ class GameLogic:
         return game_round == 100 or len(player_list)== 1
 
     @staticmethod
-    def display_winner(player_list):
-        if GameLogic.get_current_round() == 100:
+    def display_winner(game_logic,player_list):
+        if game_logic.get_current_round() == 100:
             winner_list = []
             message = "The winner is: "
             value = -1

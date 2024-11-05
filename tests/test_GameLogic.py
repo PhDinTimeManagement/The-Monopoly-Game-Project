@@ -9,6 +9,10 @@ player2 = Player("Ben")
 player3 = Player("Ken")
 player4 = Player("Wen")
 player5 = Player("Ren")
+player6 = Player("Jen")
+player7 = Player("Sam")
+player8 = Player("Yam")
+
 gameboard = Gameboard()
 gameboard.tiles[4] = Jail(4, [player1])
 game_logic =GameLogic()
@@ -55,7 +59,7 @@ class TestGameLogic(TestCase):
 
     def test_pay_fine(self):
         original = player1.get_current_money()
-        GameLogic.pay_fine(player1)
+        GameLogic.pay_fine(game_logic,player1)
         self.assertTrue(player1.get_fine_payed())
         self.assertEqual(player1.get_current_money(), original -game_logic.get_fine())
 
@@ -65,12 +69,14 @@ class TestGameLogic(TestCase):
         self.assertTrue(GameLogic.player_broke(player1))
 
     def test_player_out(self):
+        Player.players_list.clear()
         Player.players_list.append(player1)
-        game_logic.player_out(player1, Player.players_list, Player.broke_list)
-        self.assertTrue(player1 in Player.players_list)
+        GameLogic.player_out(game_logic,player1, Player.players_list, Player.broke_list)
+        self.assertFalse(player1 in Player.players_list)
         self.assertTrue(player1 in Player.broke_list)
 
     def test_game_ends(self):
+        Player.players_list.clear()
         Player.players_list.append(player1)
         self.assertTrue(GameLogic.game_ends(Player.players_list, 1))
         Player.players_list.remove(player1)
@@ -96,21 +102,22 @@ class TestGameLogic(TestCase):
         Player.players_list.clear()
         Player.players_list.append(player1)
         player1.set_current_money(1000)
-        self.assertEqual(GameLogic.display_winner(Player.players_list),
+        self.assertEqual(GameLogic.display_winner(game_logic,Player.players_list),
                          f"The winner is: Den, with {Player.players_list[0].get_current_money()} money.")
         Player.players_list.append(player2)
         player2.set_current_money(1000)
-        GameLogic.set_current_round(100)
-        self.assertEqual(GameLogic.display_winner(Player.players_list),
+        game_logic.set_current_round(100)
+        self.assertEqual(GameLogic.display_winner(game_logic,Player.players_list),
                          f"The winner is: Den, Ben, with {Player.players_list[0].get_current_money()} money.")
 
     def test_get_player_turn(self):
-        Player.players_list.append(player1)
-        Player.players_list.append(player2)
-        Player.players_list.append(player3)
+        Player.players_list.clear()
+        Player.players_list.append(player6)
+        Player.players_list.append(player7)
+        Player.players_list.append(player8)
         for i in range(2):
             game_logic.set_player_turn(Player.players_list)
-        game_logic.player_out(player2, Player.players_list, Player.broke_list)
+        game_logic.player_out(game_logic,player7, Player.players_list, Player.broke_list)
         game_logic.set_player_turn(Player.players_list)
         self.assertEqual(game_logic.get_player_turn(), 1)
         for i in range(2):

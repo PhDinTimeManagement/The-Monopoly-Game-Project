@@ -9,6 +9,9 @@ from src.Model.GameLogic import GameLogic
 from src.Controller.InputHandler import InputHandler
 from datetime import datetime
 
+from tests.test_GameLogic import game_logic
+
+
 class GameController:
     def __init__(self):
         self.save_name = None
@@ -50,9 +53,9 @@ class GameController:
     """By Kent: We need to program to detect the click events from the users. The click will call the functions for us. """
     def start_game(self):
         self.initialize_players()
-        while not GameLogic.game_ends(self.players):
+        while not GameLogic.game_ends(self.game_logic,self.players):
             self.play_round()
-            GameLogic.set_current_round(self.game_round + 1)
+            self.game_logic.set_current_round(self.game_round + 1)
 
     """ This function is called after the 'Play' button is clicked in the game """
     def button_play(self):
@@ -97,11 +100,11 @@ class GameController:
             pass
         
         if GameLogic.player_broke(player_this_turn):
-            GameLogic.player_out(player_this_turn,self.players,self.broke_players)
+            GameLogic.player_out(self.game_logic,player_this_turn,self.players,self.broke_players)
         
-        self.game_logic.set_current_round(self.game_round + 1)
+        self.game_logic.set_current_round(self.game_round + 1) #Update the current round by +1
         if GameLogic.game_ends(self.players,self.game_round):  #This is the base case for this recursive call, i.e. when the game ends
-            GameLogic.display_winner(self.players)
+            GameLogic.display_winner(self.game_logic,self.players)
         else:
             player_next_turn = self.players[self.current_turn]
             if player_next_turn.get_jail_status():
