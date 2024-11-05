@@ -61,7 +61,7 @@ class GameController:
     def button_play(self):
         self.game_logic.set_player_turn(self.players)
         player_this_turn = self.players[self.game_logic.get_player_turn()]
-       #<show the roll dice button and display player_this_turn ONLY>
+       #TODO <show the roll dice button and display player_this_turn ONLY>
         pass
 
     """This function is called after pressing the 'Roll' button in the game window."""
@@ -72,7 +72,7 @@ class GameController:
         #Call function to display the animation in the view
         if self.board.tiles[player_this_turn.get_square()-1].tile_type == "property":
             if information: #This is when the property has no owner information is True this case
-                if self.board.tiles[player_this_turn.get_square()-1].buy(): #When the player have enough money
+                if self.board.tiles[player_this_turn.get_square()-1].buy(): #TODO When the player have enough money
                     #<show the buy button> or show the not buy button
                     pass
                 else:
@@ -102,12 +102,13 @@ class GameController:
         if GameLogic.player_broke(player_this_turn):
             GameLogic.player_out(self.game_logic,player_this_turn,self.players,self.broke_players)
         
-        self.game_logic.set_current_round(self.game_round + 1) #Update the current round by +1
-        if GameLogic.game_ends(self.players,self.game_round):  #This is the base case for this recursive call, i.e. when the game ends
+        self.game_logic.set_current_round(self.game_logic.get_current_round() + 1) #Update the current round by +1
+        if GameLogic.game_ends(self.players,self.game_logic.get_current_round()):  #This is the base case for this recursive call, i.e. when the game ends
             GameLogic.display_winner(self.game_logic,self.players)
         else:
-            player_next_turn = self.players[self.current_turn]
+            player_next_turn = self.players[self.game_logic.get_player_turn()]
             if player_next_turn.get_jail_status():
+                if player_next_turn.
                 # <Display all the buttons for in-jail-roll>
                 #waiting the click event
                 pass
@@ -119,11 +120,14 @@ class GameController:
         
             
     #Roll function for player in jail
-    def in_jail_roll(self):
-        pass
+    def in_jail_roll(self)
+        player_this_turn = self.players[self.game_logic.get_player_turn()]
+
+
 
     def pay_fine(self):
         #pay_fine_logic
+        #<Show the money is deduced>
         pass
 
     def buy_button(self):
