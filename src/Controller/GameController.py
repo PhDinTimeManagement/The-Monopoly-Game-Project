@@ -49,11 +49,11 @@ class GameController:
     def set_remove_last_round(self, remove_last_round):
         self.game_logic.set_removed_last_round(remove_last_round)
 
-    """By Kent: We need to program to detect the click events from the users. The click will call the functions for us. """
+    # TODO By Kent: We need to program to detect the click events from the users. The click will call the functions for us. """
     def start_game(self):
         self.initialize_players()
         while not GameLogic.game_ends(self.game_logic,self.get_player_list()):
-            self.play_round()
+            #TODO self.play_round()
             self.game_logic.set_current_round(self.game_logic.get_current_round() + 1)
 
     """ This function is called after the 'Play' button is clicked in the game """
@@ -114,6 +114,7 @@ class GameController:
             pass
         elif self.board.tiles[player_this_turn.get_square() - 1].tile_type == "go_to_jail":
             # TODO <show message "Go to Jail" animation, transport player to jail>
+            # go_to_jail.player_landed(player, JAIL TILE OBJECT) !!!
             pass
         elif self.board.tiles[player_this_turn.get_square() - 1].tile_type == "income_tax":
             # TODO <show message "Income tax", update the player money amount>
@@ -192,37 +193,36 @@ class GameController:
         # Need to modify the logic in GameLogic endgame
         pass
 
-    def save_game(self):
-        save_name = input("Enter the name of the saved game: ")
-
+    def save_game(self, save_name):
         # gets current directory in which the program is running
         save_directory = os.path.dirname(os.path.abspath(__file__))
 
         # moves up and into the saves directory and normalizes the path
         save_directory = os.path.normpath(os.path.join(save_directory, "..", "..", "saves"))
+        message1 = ""
 
         # ensures directory existence or creates
         if not os.path.exists(save_directory):
             os.makedirs(save_directory)
-            print("Save directory deleted or non existent --> Creating")
+            message1 = "Save directory deleted or non existent --> Creating"
 
         save_instance = SavedGame(save_name, self)
         game_data = save_instance.to_dictionary()
         file_path = os.path.join(save_directory, f'{save_name}.json')
         with open(file_path, 'w') as save_file:
             json.dump(game_data, save_file, indent=4)
-            print("Game saved successfully.\n")
+            message = "Game saved successfully.\n"
+        return f"{message1}\n{message}"
 
-    @staticmethod
-    def load_game(new_controller):
+
+    def load_game(self, load_name):
         # gets current directory in which the program is running
         save_directory = os.path.dirname(os.path.abspath(__file__))
 
         # moves up and into the saves directory and normalizes the path
         save_directory = os.path.normpath(os.path.join(save_directory, "..", "..", "saves"))
 
-        save_name = input("Enter the name of the save you want to load: ")
-        file_path = os.path.join(save_directory, f'{save_name}.json')
+        file_path = os.path.join(save_directory, f'{load_name}.json')
 
         # parse save file into a dictionary and handles exceptions
         try:
@@ -236,37 +236,37 @@ class GameController:
             return
 
         # pulls information from the dictionary into respective variables
-        new_controller.set_save_name(game_data_dict["save_name"])
-        new_controller.set_current_round(game_data_dict["current_round"])
-        new_controller.set__turn(game_data_dict["_turn"])
-        new_controller.set_remove_last_round(game_data_dict["remove_last_round"])
+        self.set_save_name(game_data_dict["save_name"])
+        self.set_current_round(game_data_dict["current_round"])
+        self.set__turn(game_data_dict["_turn"])
+        self.set_remove_last_round(game_data_dict["remove_last_round"])
 
         # gameboard_setup is a list of dictionaries, will cycle and update appropriately
         gameboard_info = game_data_dict["gameboard_setup"]
         for tile_info, i in zip(gameboard_info, range(20)):
-            new_controller.board.tiles[i].update_name_pos_type(tile_info["name"], tile_info["board_pos"], tile_info["tile_type"])
+            self.board.tiles[i].update_name_pos_type(tile_info["name"], tile_info["board_pos"], tile_info["tile_type"])
             tile_type = tile_info["tile_type"]
             if tile_type == "property":
-                new_controller.board.tiles[i].update_values(tile_info["price"], tile_info["rent"], tile_info["owner"], tile_info["color"])
+                self.board.tiles[i].update_values(tile_info["price"], tile_info["rent"], tile_info["owner"], tile_info["color"])
             elif tile_type == "income_tax":
-                new_controller.board.tiles[i].update_values(tile_info["tax_percentage"])
+                self.board.tiles[i].update_values(tile_info["tax_percentage"])
             elif tile_type == "jail":
-                new_controller.board.tiles[i].update_values(tile_info["jailed_players"])
+                self.board.tiles[i].update_values(tile_info["jailed_players"])
             elif tile_type == "go":
-                new_controller.board.tiles[i].update_values(tile_info["pass_prize"])
+                self.board.tiles[i].update_values(tile_info["pass_prize"])
 
         # creates players objects and copies information from the dictionary
         players = game_data_dict["players_list"]
         for p_data in players:
             new_player = Player("")
             new_player.update_values(p_data["_username"], p_data["_current_money"], p_data["_jail_status"], p_data["_fine_payed"], p_data["_current_square"], p_data["_in_jail_turns"], p_data["_properties"])
-            new_controller.players.append(new_player)
+            self.player_list.append(new_player)
 
         broke_players = game_data_dict["broke_list"]
         for p_data in broke_players:
             new_player = Player("")
             new_player.update_values(p_data["_username"], p_data["_current_money"], p_data["_jail_status"], p_data["_fine_payed"], p_data["_current_square"], p_data["_in_jail_turns"], p_data["_properties"])
-            new_controller.broke_players.append(new_player)
+            self.broke_list.append(new_player)
 
 # this class will copy the current game instance
 class SavedGame:

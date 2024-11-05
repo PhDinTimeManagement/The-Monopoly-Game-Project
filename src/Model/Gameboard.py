@@ -136,26 +136,22 @@ class Jail(Tile):
         self.tile_type = "jail"
 
     def set_jailed_players(self, jailed_players):
-        self.jailed_players = jailed_players.copy()
+        self.jailed_players = [player.get_name() for player in jailed_players]
 
     def get_jailed_players(self):
         return self.jailed_players
 
     def update_values(self, jailed_players):
-        self.set_jailed_players(jailed_players)
+        self.jailed_players = jailed_players.copy()
 
     def free_player(self, player):
-        self.jailed_players.remove(player)
-        #print(f"{player.get_name()} is freed from Jail")
+        self.jailed_players.remove(player.get_name())
+        message = f"{player.get_name()} is freed from Jail"
+        return message
 
 
     def player_landed(self, player):
         return None
-
-
-# initialized here in order to be hardcoded into go to jail tile
-JailTile = Jail(5, [])
-
 
 class Go(Tile):
     """Initialize the prize for passing amount"""
@@ -178,21 +174,24 @@ class Go(Tile):
         player.add_money(self.get_pass_prize())
         return None
 
+
+# noinspection PyMethodOverriding
 class GoToJail(Tile):
     def __init__(self, board_pos):
         super().__init__("Go To Jail", board_pos)
         self.tile_type = "go_to_jail"
 
     @staticmethod
-    def arrest_player(player):
+    def arrest_player(player, jail):
         player.set_jail_status(True)
         player.set_in_jail_turns(3)     # sets max turns to spend in jail
-        player.set_current_square(JailTile.get_tile_position())    # the player position is updated to the jail position
-        JailTile.jailed_players.append(player)      # puts the player name in the jail list of detainees
-        print(f"{player.get_name()} has been locked up")
+        player.set_current_square(jail.get_tile_position())    # the player position is updated to the jail position
+        jail.jailed_players.append(player.get_name())      # puts the player name in the jail list of detainees
+        message = "{player.get_name()} has been locked up"
+        return message
 
-    def player_landed(self, player):
-        return self.arrest_player(player)
+    def player_landed(self, player, jailTile):
+        return self.arrest_player(player, jailTile)
 
 
 class Chance(Tile):
@@ -248,7 +247,7 @@ class Gameboard:
                       Property("Wan Chai", 2, 700, 65, None, "Blue"),
                       IncomeTax(3, 10),
                       Property("Stanley", 4, 600, 60, None, "Blue"),
-                      JailTile,     # initialized globally after Jail to be used in goToJail
+                      Jail(5, []),
                       Property("Shek-O", 6, 400, 10, None, "Red"),
                       Property("Mong Kok", 7, 500, 40, None, "Red"),
                       Chance(8),
@@ -265,7 +264,7 @@ class Gameboard:
                       Property("Tai O", 19, 600, 25, None, "Yellow")
                       ]     # Stores different Tile Objects. Can be customized by the user
 
-    def get_jail_tile(self):
+    def get_jail_tile(self) -> Jail:
         for i in range (0,len(self.tiles)):
             if self.tiles[i].name == "Jail":
                 return self.tiles[i]

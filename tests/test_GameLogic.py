@@ -54,9 +54,11 @@ class TestGameLogic(TestCase):
         self.assertFalse(GameLogic.same_double(number1, number2))
 
     def test_out_jail_on_double(self):
+        gameboard.get_jail_tile().set_jailed_players([player1, player2])
         GameLogic.out_jail_on_double(player1, 4, 4, gameboard)
         self.assertFalse(player1.get_jail_status())
         self.assertFalse(player1.get_fine_payed())
+        self.assertListEqual(gameboard.get_jail_tile().get_jailed_players(), ["Ben"])
 
     def test_pay_fine(self):
         original = player1.get_current_money()

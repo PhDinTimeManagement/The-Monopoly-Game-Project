@@ -89,7 +89,7 @@ class GameLogic:
     def out_jail_on_double(player, dice_number1, dice_number2, gameboard):
         GameLogic.player_move(dice_number1 + dice_number2, player, gameboard)
         player.set_in_jail_turns(0)
-        player.is_jailed(False)
+        player.set_jail_status(False)
         player.set_fine_payed(False)
         gameboard.get_jail_tile().free_player(player)
 
