@@ -63,36 +63,7 @@ class GameController:
        #TODO <show the roll dice button and display player_this_turn ONLY>
         pass
 
-    def land_and_det_next_round(self,information,player_this_turn):
-        if self.board.tiles[player_this_turn.get_square() - 1].tile_type == "property":
-            if information:  # This is when the property has no owner information is True this case
-                if self.board.tiles[player_this_turn.get_square() - 1].buy():  # TODO When the player have enough money
-                    # TODO <show the buy button> or show the not buy button
-                    pass
-                else:
-                    # TODO <Tell the player you cannot buy the property>
-                    pass
-                pass
-            # This case deals with the case where there is property owner
-            else:
-                # TODO <show the money is deducted>
-                pass
-        elif self.board.tiles[player_this_turn.get_square() - 1].tile_type == "jail":
-            # TODO <show message 'JUST VISITING'>
-            pass
-        elif self.board.tiles[player_this_turn.get_square() - 1].tile_type == "go":
-            # TODO <show message 'GO + money'>
-            pass
-        elif self.board.tiles[player_this_turn.get_square() - 1].tile_type == "go_to_jail":
-            # TODO <show message "Go to Jail" animation, transport player to jail>
-            pass
-        elif self.board.tiles[player_this_turn.get_square() - 1].tile_type == "income_tax":
-            # TODO <show message "Income tax", update the player money amount>
-            pass
-        elif self.board.tiles[player_this_turn.get_square() - 1].tile_type == "free_parking":
-            # TODO <show message "You are free-parking">
-            pass
-
+    def determine_next_round(self,player_this_turn):
         if GameLogic.player_broke(player_this_turn):
             GameLogic.player_out(self.game_logic, player_this_turn, self.get_player_list(), self.get_broke_player_list())
 
@@ -121,6 +92,37 @@ class GameController:
                 # waiting the click event
                 pass
 
+    def land_and_det_next_round(self,information,player_this_turn):
+        if self.board.tiles[player_this_turn.get_square() - 1].tile_type == "property":
+            if information:  # This is when the property has no owner information is True this case
+                if self.board.tiles[player_this_turn.get_square() - 1].can_buy():
+                    # TODO <show the buy button> or show the not buy button
+                    pass
+                else:
+                    # TODO <Tell the player you cannot buy the property>
+                    pass
+                pass
+            # This case deals with the case where there is property owner
+            else:
+                # TODO <show the money is deducted>
+                pass
+        elif self.board.tiles[player_this_turn.get_square() - 1].tile_type == "jail":
+            # TODO <show message 'JUST VISITING'>
+            pass
+        elif self.board.tiles[player_this_turn.get_square() - 1].tile_type == "go":
+            # TODO <show message 'GO + money'>
+            pass
+        elif self.board.tiles[player_this_turn.get_square() - 1].tile_type == "go_to_jail":
+            # TODO <show message "Go to Jail" animation, transport player to jail>
+            pass
+        elif self.board.tiles[player_this_turn.get_square() - 1].tile_type == "income_tax":
+            # TODO <show message "Income tax", update the player money amount>
+            pass
+        elif self.board.tiles[player_this_turn.get_square() - 1].tile_type == "free_parking":
+            # TODO <show message "You are free-parking">
+            pass
+
+
     """This function is called after pressing the 'Roll' button in the game window."""
     def roll_dice(self):
         player_this_turn = self.get_player_list()[self.game_logic.get_player_turn()]
@@ -128,41 +130,54 @@ class GameController:
         information = GameLogic.player_move(dice_roll1+dice_roll2,player_this_turn,self.board)
         #TODO<Call function to display the animation in the view>
         self.land_and_det_next_round(information,player_this_turn)
+        self.determine_next_round(player_this_turn)
 
     #Roll function for player in jail
     def in_jail(self):
         player_this_turn = self.get_player_list()[self.game_logic.get_player_turn()]
         dice_roll1, dice_roll2 = GameLogic.roll_dice()
-        if GameLogic.same_double(dice_roll1,dice_roll2):
-            #TODO <on double, going out od jail>
-            information = GameLogic.player_move(dice_roll1 + dice_roll2, player_this_turn, self.board)
-            # TODO<Call function to display the animation in the view>
-            self.land_and_det_next_round(information,player_this_turn)
-        elif GameLogic.player_third_round(player_this_turn):
-            #TODO<show the pay fine button only
-            #move
+        if (not GameLogic.same_double(dice_roll1,dice_roll2)) and GameLogic.player_third_round(player_this_turn):
+            # TODO<show the pay fine button only, after paying fine, the player is moved (Got to pay_fine function)
             pass
-        elif GameLogic.player_second_round(player_this_turn) and player_this_turn.get_fine_payed():
-            #move
+        else:
+            flag = False
+            if GameLogic.same_double(dice_roll1,dice_roll2):
+                #TODO <on double, going out of jail>
+                flag = True
+            elif GameLogic.player_second_round(player_this_turn) and player_this_turn.get_fine_payed():
+                #TODO <Out of jail>
+                flag = True
+            if flag:
+                self.board.tiles[player_this_turn.get_current_square() - 1].freeplayer(player_this_turn)
+                information = GameLogic.player_move(dice_roll1 + dice_roll2, player_this_turn, self.board)
+                # TODO<Call function to display the animation in the view>
+                self.land_and_det_next_round(information, player_this_turn)
+            else:
+                #TODO <Player is not moved>
+                pass
+            self.determine_next_round(player_this_turn)
 
-            pass
 
-    def pay_fine(self):
+    def pay_fine(self,dice_roll1,dice_roll2):
         #pay_fine_logic
         player_this_turn = self.get_player_list()[self.game_logic.get_player_turn()]
         GameLogic.pay_fine(self.game_logic,player_this_turn)
+        if player_this_turn.player_third_round(player_this_turn):
+            self.board.tiles[player_this_turn.get_current_square() - 1].freeplayer(player_this_turn)
+            information = GameLogic.player_move(dice_roll1 + dice_roll2, player_this_turn, self.board)
+            # TODO<Call function to display the animation in the view>
+            self.land_and_det_next_round(information, player_this_turn)
+            self.determine_next_round(player_this_turn)
         #TODO <Show the money is deduced>
-        pass
 
     def buy_button(self):
-        #function for buy
+        player_this_turn = self.get_player_list()[self.game_logic.get_player_turn()]
+        self.board.tiles[player_this_turn.get_current_square() - 1].buy(player_this_turn)
         #TODO <show the property bought>
-        pass
     
     def no_buy_button(self):
-        #function to not_buy
         #TODO <Show did not buy property>
-        pass
+        return
         
     """By Kent: we don't need loop here. Instead we get a list from the view after the player clicks 'play'"""
     def initialize_players(self):

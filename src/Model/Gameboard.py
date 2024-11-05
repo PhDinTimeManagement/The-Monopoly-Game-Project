@@ -86,6 +86,12 @@ class Property(Tile):
         self.set_owner(owner)
         self.set_color(color)
 
+    def can_buy(self,player):
+        if player.get_current_money() >= self.price:
+            return True
+        else:
+            return False
+
     def buy(self, player):
         """ if property has no owner can be bought, then checks player balance
             if enough: removes money, adds property to player, sets property new owner
@@ -140,7 +146,7 @@ class Jail(Tile):
 
     def free_player(self, player):
         self.jailed_players.remove(player)
-        print(f"{player.get_name()} is freed from Jail")
+        #print(f"{player.get_name()} is freed from Jail")
 
 
     def player_landed(self, player):

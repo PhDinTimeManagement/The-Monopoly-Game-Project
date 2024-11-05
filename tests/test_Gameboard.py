@@ -22,6 +22,10 @@ class TestProperty(TestCase):
         assert IncomeTax(3, 10)
         assert FreeParking(14)
 
+    def test_can_buy(self):
+        self.assertEqual(wan_chai.can_buy(player1), True)
+        self.assertEqual(wan_chai.can_buy(player1), False)
+
     def test_buy(self):
         self.assertEqual(wan_chai.buy(player1), True)
         self.assertEqual(wan_chai.buy(player1), False)
@@ -86,7 +90,6 @@ class TestGoToJail(TestCase):
         assert testUpdate.get_tile_name() == "NEW"
 
 
-
 taxTile = IncomeTax(3, 10)
 
 
@@ -108,4 +111,7 @@ class TestIncomeTax(TestCase):
         self.assertEqual(starting_balance - player1.get_current_money(), tax_calculated)
 
     def test_get_jail_tile(self):
-        self.assertTrue(gameboard.get_jail_tile().name,"Jail")
+        self.assertTrue(gameboard.get_jail_tile().name, "Jail")
+
+
+
