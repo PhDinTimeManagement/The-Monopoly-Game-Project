@@ -120,18 +120,18 @@ class GameLogic:
         return game_round == 100 or len(player_list)== 1
 
     @staticmethod
-    def display_winner(game_logic,player_list):
+    def display_winner(game_logic,players_list):
         if game_logic.get_current_round() == 100:
             winner_list = []
             message = "The winner is: "
             value = -1
-            for player in player_list:
+            for player in players_list:
                 if player.get_current_money() >= value:
                     winner_list.append(player)
                     message += f"{player.get_name()}, "
                     value = player.get_current_money()
             message = f"{message}with {winner_list[0].get_current_money()} money."
             return message
-        elif len(Player.players_list) == 1:
-            message = f"The winner is: {Player.players_list[0].get_name()}, with {Player.players_list[0].get_current_money()} money."
+        elif len(players_list) == 1:
+            message = f"The winner is: {players_list[0].get_name()}, with {players_list[0].get_current_money()} money."
             return message

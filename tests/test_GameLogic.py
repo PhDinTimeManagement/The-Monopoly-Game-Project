@@ -16,7 +16,8 @@ player8 = Player("Yam")
 gameboard = Gameboard()
 gameboard.tiles[4] = Jail(4, [player1])
 game_logic =GameLogic()
-
+players_list = []
+broke_list = []
 
 class TestGameLogic(TestCase):
     def test_roll_dice(self):
@@ -69,18 +70,18 @@ class TestGameLogic(TestCase):
         self.assertTrue(GameLogic.player_broke(player1))
 
     def test_player_out(self):
-        Player.players_list.clear()
-        Player.players_list.append(player1)
-        GameLogic.player_out(game_logic,player1, Player.players_list, Player.broke_list)
-        self.assertFalse(player1 in Player.players_list)
-        self.assertTrue(player1 in Player.broke_list)
+        players_list.clear()
+        players_list.append(player1)
+        GameLogic.player_out(game_logic,player1, players_list, broke_list)
+        self.assertFalse(player1 in players_list)
+        self.assertTrue(player1 in broke_list)
 
     def test_game_ends(self):
-        Player.players_list.clear()
-        Player.players_list.append(player1)
-        self.assertTrue(GameLogic.game_ends(Player.players_list, 1))
-        Player.players_list.remove(player1)
-        self.assertTrue(GameLogic.game_ends(Player.players_list, 100))
+        players_list.clear()
+        players_list.append(player1)
+        self.assertTrue(GameLogic.game_ends(players_list, 1))
+        players_list.remove(player1)
+        self.assertTrue(GameLogic.game_ends(players_list, 100))
 
     def test_get_fine(self):
         game_logic.set_fine(100)
@@ -99,35 +100,35 @@ class TestGameLogic(TestCase):
         self.assertEqual(game_logic.get_current_round(), 200)
 
     def test_display_winner(self):
-        Player.players_list.clear()
-        Player.players_list.append(player1)
+        players_list.clear()
+        players_list.append(player1)
         player1.set_current_money(1000)
-        self.assertEqual(GameLogic.display_winner(game_logic,Player.players_list),
-                         f"The winner is: Den, with {Player.players_list[0].get_current_money()} money.")
-        Player.players_list.append(player2)
+        self.assertEqual(GameLogic.display_winner(game_logic,players_list),
+                         f"The winner is: Den, with {players_list[0].get_current_money()} money.")
+        players_list.append(player2)
         player2.set_current_money(1000)
         game_logic.set_current_round(100)
-        self.assertEqual(GameLogic.display_winner(game_logic,Player.players_list),
-                         f"The winner is: Den, Ben, with {Player.players_list[0].get_current_money()} money.")
+        self.assertEqual(GameLogic.display_winner(game_logic,players_list),
+                         f"The winner is: Den, Ben, with {players_list[0].get_current_money()} money.")
 
     def test_get_player_turn(self):
-        Player.players_list.clear()
-        Player.players_list.append(player6)
-        Player.players_list.append(player7)
-        Player.players_list.append(player8)
+        players_list.clear()
+        players_list.append(player6)
+        players_list.append(player7)
+        players_list.append(player8)
         for i in range(2):
-            game_logic.set_player_turn(Player.players_list)
-        game_logic.player_out(game_logic,player7, Player.players_list, Player.broke_list)
-        game_logic.set_player_turn(Player.players_list)
+            game_logic.set_player_turn(players_list)
+        game_logic.player_out(game_logic,player7, players_list, broke_list)
+        game_logic.set_player_turn(players_list)
         self.assertEqual(game_logic.get_player_turn(), 1)
         for i in range(2):
-            game_logic.set_player_turn(Player.players_list)
+            game_logic.set_player_turn(players_list)
         self.assertEqual(game_logic.get_player_turn(), 1)
 
     def test_set_player_turn(self):
-        Player.players_list.append(player1)
-        Player.players_list.append(player2)
-        game_logic.set_player_turn(Player.players_list)
+        players_list.append(player1)
+        players_list.append(player2)
+        game_logic.set_player_turn(players_list)
         self.assertEqual(game_logic.get_player_turn(), 1)
 
     def test_get_remove_last_round(self):

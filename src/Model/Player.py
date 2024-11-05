@@ -1,8 +1,4 @@
 class Player:
-    """Lists that store the existing players and the player who is broke"""
-    players_list = []
-    broke_list = []
-
     def __init__(self, username):
         self._username = username
         self._current_money = 1500
@@ -62,9 +58,6 @@ class Player:
 
     def set_jail_status(self, status):
         self._jail_status = status
-
-    def is_jailed(self, state):
-        self._jail_status = state
 
     def set_current_square(self, position):
         self._current_square = position

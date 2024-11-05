@@ -179,7 +179,7 @@ class GoToJail(Tile):
 
     @staticmethod
     def arrest_player(player):
-        player.is_jailed(True)
+        player.set_jail_status(True)
         player.set_in_jail_turns(3)     # sets max turns to spend in jail
         player.set_current_square(JailTile.get_tile_position())    # the player position is updated to the jail position
         JailTile.jailed_players.append(player)      # puts the player name in the jail list of detainees
