@@ -193,6 +193,7 @@ class GameController:
         # Need to modify the logic in GameLogic endgame
         pass
 
+    # noinspection PyTypeChecker
     def save_game(self, save_name):
         # gets current directory in which the program is running
         save_directory = os.path.dirname(os.path.abspath(__file__))

@@ -120,13 +120,12 @@ class Property(Tile):
         """provides option to the player"""
         if self.owner is None:
             return True
-            #message = f"{self.name} is available for purchase. Listed at {self.get_price()} HKD"
-            """TODO GET INPUT FROM PLAYER if INPUT == BUY TILE: self.buy(player)"""
+            # message = f"{self.name} is available for purchase. Listed at {self.get_price()} HKD"
         else:
-            #message = f"{self.name} is owned by {self.get_owner()}. {player.get_name()} owes {self.get_price()} HKD"
+            # message = f"{self.name} is owned by {self.get_owner()}. {player.get_name()} owes {self.get_price()} HKD"
             self.pay_rent(player)
             return False
-        #return message
+        # return message
 
 
 class Jail(Tile):
