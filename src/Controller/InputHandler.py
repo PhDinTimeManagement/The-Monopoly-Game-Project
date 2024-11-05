@@ -1,38 +1,21 @@
-# Responsible for capturing and processing user input
-# Converting it into actions that the GameController can use to update the game state.
-
+# InputHandler.py
 class InputHandler:
     def __init__(self):
-        self.players_names = []
+        self.players_names = [None] * 6  # Support up to 6 players
 
     def set_num_players(self, num_players):
         self.players_names = [None] * num_players
 
-    def process_player_names(self, idx, player_name):
-        if 0 <= idx < len(self.players_names) and player_name and len(player_name) < 20:
-            self.players_names[idx] = player_name
-
-    @staticmethod
-    # Used for the start of the game, get user settings for this game
-    def get_name_or_players(prompt):
-        while True:
-            user_input = input(prompt).strip()
-
-            # Handle the number input
-            if user_input.isdigit():
-                user_input = int(user_input)
-                if 2 <= user_input <= 6:
-                    return user_input
-                else:
-                    message = "The number of players must be between 1 and 6."
-                    return message
-            # Handle as a string input
+    def validate_and_store_name(self, idx, player_name):
+        if 0 <= idx < len(self.players_names):
+            if player_name and len(player_name) < 20:
+                self.players_names[idx] = player_name
+                return True  # Name is valid
             else:
-                if len(user_input) < 20:
-                    return user_input
-                else:
-                    message = "The name should be less than 20 characters."
-                    return message
+                return False  # Name is invalid
+
+    def get_all_player_names(self):
+        return [name for name in self.players_names if name]
 
 
     @staticmethod
