@@ -67,7 +67,6 @@ class GUI(tk.Tk):
         self.frames["InfoPage"] = frame
         self.info_canvas = self.display_manager.setup_info_page(frame)
 
-
     def show_frame(self, frame_name):
         for frame in self.frames.values():
             frame.place_forget()

@@ -133,11 +133,12 @@ class DisplayManager:
             self.player_entries[idx].destroy()
 
         # Create a transparent entry field
-        entry = tk.Entry(canvas, font=("Arial", 12), width=20, bd=0, bg="#FFFFFF", fg="#000000", highlightthickness=0,
-                         justify="center")
+        # Set the bg to E5E8E8 for "transparent" entry box
+        entry = tk.Entry(canvas, font=("Arial", 20), width=20, bd=0, bg="#FFFFFF", fg="#000000", highlightthickness=0,
+                         justify="left")
 
         # Position entry based on the specific x_position and y_position passed
-        entry.place(x=x_position + 20, y=y_position + 22)  # Adjust as needed within the image
+        entry.place(x=x_position + 22, y=y_position + 18)  # Adjust as needed within the image
 
         entry.focus_set()  # Focus the entry field for immediate typing
 
