@@ -92,9 +92,6 @@ class TestGameLogic(TestCase):
         GameLogic.set_current_round(200)
         self.assertEqual(GameLogic.get_current_round(), 200)
 
-    def test_store_current_game(self):
-        self.fail()
-
     def test_display_winner(self):
         Player.players_list.clear()
         Player.players_list.append(player1)

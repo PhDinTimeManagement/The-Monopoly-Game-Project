@@ -1,7 +1,8 @@
 {
     "save_name": "save 1",
-    "save_time": "20:33 04-11-2024",
-    "current_round": 10,
+    "save_time": "12:12 05-11-2024",
+    "current_turn": 0,
+    "game_round": 1,
     "gameboard_setup": [
         {
             "name": "Go",
@@ -175,5 +176,15 @@
             "_properties": {}
         }
     ],
-    "broke_list": []
+    "broke_list": [
+        {
+            "_username": "Player 3",
+            "_current_money": 15000,
+            "_jail_status": true,
+            "_fine_payed": false,
+            "_current_square": 6,
+            "_in_jail_turns": 2,
+            "_properties": {}
+        }
+    ]
 }

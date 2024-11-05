@@ -39,11 +39,12 @@ class TestProperty(TestCase):
         self.assertGreaterEqual(wan_chai.pay_rent(player2), 0)
         self.assertLess(wan_chai.pay_rent(player2), 0)
         self.assertEqual(player1.get_current_money(), wan_chai.get_rent() * 5 + starting_balance)
-        print(f"{player1.getname()} current balance is: {player1.get_current_money()} HKD")
+        print(f"{player1.get_name()} current balance is: {player1.get_current_money()} HKD")
 
     def test_update_values(self):
         testUpdate = Property("Wan Chai", 3, 1000, 100, None, "Red")
-        testUpdate.update_values("NEW", 0, 0, 0, player1, "Pink")
+        testUpdate.update_name_pos_type("NEW", 0)
+        testUpdate.update_values(0, 0, player1, "Pink")
         assert testUpdate.get_property_name() == "NEW"
         assert testUpdate.get_tile_position() == 0
         assert testUpdate.get_price() == 0
@@ -80,7 +81,7 @@ class TestGoToJail(TestCase):
 
     def test_update_values(self):
         testUpdate = GoToJail(10)
-        testUpdate.update_values("NEW", 13)
+        testUpdate.update_name_pos_type("NEW", 13)
         assert testUpdate.get_tile_position() == 13
         assert testUpdate.get_tile_name() == "NEW"
 

@@ -34,10 +34,11 @@ class Tile:
     def player_landed(cls, player):
         return None
 
-    def update_name_pos_type(self, tile_name: str, board_pos: int, type: str) -> None:
+    def update_name_pos_type(self, tile_name: str, board_pos: int, tile_type: str = "") -> None:
         self.set_tile_name(tile_name)
         self.set_tile_pos(board_pos)
-        self.set_tile_type(type)
+        if not tile_type == "":
+            self.set_tile_type(tile_type)
 
 
 class Property(Tile):

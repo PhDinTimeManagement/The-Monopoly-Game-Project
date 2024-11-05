@@ -1,0 +1,520 @@
+Index: src/Controller/GameController.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+># GameController.py\r\n\r\nimport json\r\nimport os.path\r\n\r\nfrom src.Model.Gameboard import *\r\nfrom src.Model.Player import Player\r\nfrom src.Model.GameLogic import GameLogic\r\nfrom src.Model.InputHandler import InputHandler\r\nfrom tests.test_Gameboard import gameboard\r\nfrom datetime import datetime\r\n\r\nclass GameController:\r\n    def __init__(self):\r\n        self.save_name = None\r\n        self.board = Gameboard()\r\n        self.players = [Player(\"Player 1\"), Player(\"Player 2\")]\r\n        self.broke_players = []\r\n        self.input_handler = InputHandler()\r\n        self.current_turn = 0\r\n        self.game_round = 10\r\n\r\n    def get_player_list(self):\r\n        return self.players\r\n\r\n    def get_broke_player_list(self):\r\n        return self.broke_players\r\n\r\n    def get_game_round(self):\r\n        return self.game_round\r\n\r\n    def set_game_round(self, new_round):\r\n        self.game_round = new_round\r\n\r\n    def set_save_name(self, save_name):\r\n        self.save_name = save_name\r\n\r\n    def start_game(self):\r\n        self.initialize_players()\r\n        while not GameLogic.game_ends(self.players):\r\n            self.play_round()\r\n            GameLogic.set_current_round(self.game_round + 1)\r\n\r\n    def initialize_players(self):\r\n        num_players = self.input_handler.get_name_or_players(\"Enter the number of players (2-6): \")\r\n        for i in range(num_players):\r\n            player_name = self.input_handler.get_name_or_players(f\"Enter name for Player {i + 1}: \")\r\n            new_player = Player(player_name)\r\n            self.players.append(new_player)\r\n        print(\"Players initialized successfully.\\n\")\r\n\r\n    def end_game(self):\r\n        # Need to modify the logic in GameLogic endgame\r\n        pass\r\n\r\n    @staticmethod\r\n    def save_game():\r\n        save_name = input(\"Enter the name of the saved game: \")\r\n\r\n        # gets current directory in which the program is running\r\n        save_directory = os.path.dirname(os.path.abspath(__file__))\r\n\r\n        # moves up and into the saves directory and normalizes the path\r\n        save_directory = os.path.normpath(os.path.join(save_directory, \"..\", \"..\", \"saves\"))\r\n\r\n        # ensures directory existence or creates\r\n        if not os.path.exists(save_directory):\r\n            os.makedirs(save_directory)\r\n            print(\"Save directory deleted or non existent --> Creating\")\r\n\r\n        game_data = SavedGame(save_name).to_dictionary()\r\n        file_path = os.path.join(save_directory, f'{save_name}.json')\r\n        with open(file_path, 'w') as save_file:\r\n            json.dump(game_data, save_file, indent=4)\r\n            print(\"Game saved successfully.\\n\")\r\n\r\n    def load_game(self):\r\n        # gets current directory in which the program is running\r\n        save_directory = os.path.dirname(os.path.abspath(__file__))\r\n\r\n        # moves up and into the saves directory and normalizes the path\r\n        save_directory = os.path.normpath(os.path.join(save_directory, \"..\", \"..\", \"saves\"))\r\n\r\n        save_name = input(\"Enter the name of the save you want to load: \")\r\n        file_path = os.path.join(save_directory, f'{save_name}.json')\r\n\r\n        # parse save file into a dictionary and handles exceptions\r\n        try:\r\n            with open(file_path, 'r') as game_data:\r\n                game_data_dict = json.load(game_data)\r\n        except FileNotFoundError:\r\n            print(\"Game saved does not exist.\")\r\n        except json.JSONDecodeError:\r\n            print(\"Error in reading save file.\")\r\n\r\n        # pulls information from the dictionary into respective variables\r\n        self.set_save_name(game_data_dict[\"save_name\"])\r\n        controller.set_game_round(game_data_dict[\"current_round\"])\r\n\r\n        # gameboard_setup is a list of dictionaries, will cycle and update appropriately\r\n        gameboard_info = game_data_dict[\"gameboard_setup\"]\r\n        for tile_info, i in gameboard_info, range(0, 20):\r\n            self.board.tiles[i].update_name_pos(tile_info[\"name\"], tile_info[\"board_pos\"], tile_info[\"tile_type\"])\r\n            if tile_info.tile_type == \"property\":\r\n                self.board.tiles[i].update_values(tile_info[\"price\"], tile_info[\"rent\"], tile_info[\"owner\"], tile_info[\"color\"])\r\n            elif tile_info.tile_type == \"income_tax\":\r\n                self.board.tiles[i].update_value(tile_info[\"tax_percentage\"])\r\n            elif tile_info.tile_type == \"jail\":\r\n                self.board.tiles[i].update_value(tile_info[\"jail_players\"])\r\n            elif tile_info.tile_type == \"go\":\r\n                self.board.tiles[i].update_value(tile_info[\"pass_prize\"])\r\n\r\n        # copies player list from save file as the format is compatible\r\n        self.players = game_data_dict[\"players_list\"].copy()\r\n        self.broke_players = game_data_dict[\"broke_list\"].copy()\r\n\r\n\r\n\"\"\" INITIALIZING CONTROLLER TO BE USED IN SAVED GAME, contains game information needed\"\"\"\r\ncontroller = GameController()\r\n\r\n# this class will copy the current game instance\r\nclass SavedGame:\r\n    def __init__(self, save_name):\r\n        # Gets the name of the save and current round\r\n        self.save_name = save_name\r\n        self.save_time = datetime.now().strftime(\"%H:%M %d-%m-%Y\")\r\n        self.current_round = controller.get_game_round()\r\n\r\n        # Saves the setup of the gameboard as a list\r\n        self.tiles = gameboard.tiles.copy()\r\n\r\n        # Saves players information\r\n        self.players_list = controller.get_player_list().copy()\r\n        self.broke_list = controller.get_broke_player_list().copy()\r\n\r\n    def to_dictionary(self):\r\n        # unpacks list of objects to a list of dictionary entries\r\n        gameboard_data = [tile.__dict__ for tile in self.tiles]\r\n        player_data = [player.__dict__ for player in self.players_list]\r\n        broke_player_data = [player.__dict__ for player in self.broke_list]\r\n\r\n        return {\r\n            \"save_name\": self.save_name,\r\n            \"save_time\": self.save_time,\r\n            \"current_round\": self.current_round,\r\n            \"gameboard_setup\": gameboard_data,\r\n            \"players_list\": player_data,\r\n            \"broke_list\": broke_player_data\r\n        }\r\n\r\n    def get_save_name(self):\r\n        return self.save_name
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/Controller/GameController.py b/src/Controller/GameController.py
+--- a/src/Controller/GameController.py	(revision cef215b432f165ad6cc21d0e11c6c98e94b85942)
++++ b/src/Controller/GameController.py	(date 1730736425127)
+@@ -14,11 +14,11 @@
+     def __init__(self):
+         self.save_name = None
+         self.board = Gameboard()
+-        self.players = [Player("Player 1"), Player("Player 2")]
++        self.players = []
+         self.broke_players = []
+         self.input_handler = InputHandler()
+         self.current_turn = 0
+-        self.game_round = 10
++        self.game_round = 1
+ 
+     def get_player_list(self):
+         return self.players
+@@ -29,6 +29,12 @@
+     def get_game_round(self):
+         return self.game_round
+ 
++    def get_current_turn(self):
++        return self.current_turn
++
++    def set_current_turn(self, turn):
++        self.current_turn = turn
++
+     def set_game_round(self, new_round):
+         self.game_round = new_round
+ 
+@@ -74,7 +80,8 @@
+             json.dump(game_data, save_file, indent=4)
+             print("Game saved successfully.\n")
+ 
+-    def load_game(self):
++    @staticmethod
++    def load_game(new_controller):
+         # gets current directory in which the program is running
+         save_directory = os.path.dirname(os.path.abspath(__file__))
+ 
+@@ -90,29 +97,42 @@
+                 game_data_dict = json.load(game_data)
+         except FileNotFoundError:
+             print("Game saved does not exist.")
++            return
+         except json.JSONDecodeError:
+             print("Error in reading save file.")
++            return
+ 
+         # pulls information from the dictionary into respective variables
+-        self.set_save_name(game_data_dict["save_name"])
+-        controller.set_game_round(game_data_dict["current_round"])
++        new_controller.set_save_name(game_data_dict["save_name"])
++        new_controller.set_game_round(game_data_dict["game_round"])
++        new_controller.set_current_turn(game_data_dict["current_turn"])
+ 
+         # gameboard_setup is a list of dictionaries, will cycle and update appropriately
+         gameboard_info = game_data_dict["gameboard_setup"]
+-        for tile_info, i in gameboard_info, range(0, 20):
+-            self.board.tiles[i].update_name_pos(tile_info["name"], tile_info["board_pos"], tile_info["tile_type"])
+-            if tile_info.tile_type == "property":
+-                self.board.tiles[i].update_values(tile_info["price"], tile_info["rent"], tile_info["owner"], tile_info["color"])
+-            elif tile_info.tile_type == "income_tax":
+-                self.board.tiles[i].update_value(tile_info["tax_percentage"])
+-            elif tile_info.tile_type == "jail":
+-                self.board.tiles[i].update_value(tile_info["jail_players"])
+-            elif tile_info.tile_type == "go":
+-                self.board.tiles[i].update_value(tile_info["pass_prize"])
++        for tile_info, i in zip(gameboard_info, range(20)):
++            new_controller.board.tiles[i].update_name_pos_type(tile_info["name"], tile_info["board_pos"], tile_info["tile_type"])
++            tile_type = tile_info["tile_type"]
++            if tile_type == "property":
++                new_controller.board.tiles[i].update_values(tile_info["price"], tile_info["rent"], tile_info["owner"], tile_info["color"])
++            elif tile_type == "income_tax":
++                new_controller.board.tiles[i].update_values(tile_info["tax_percentage"])
++            elif tile_type == "jail":
++                new_controller.board.tiles[i].update_values(tile_info["jailed_players"])
++            elif tile_type == "go":
++                new_controller.board.tiles[i].update_values(tile_info["pass_prize"])
+ 
+-        # copies player list from save file as the format is compatible
+-        self.players = game_data_dict["players_list"].copy()
+-        self.broke_players = game_data_dict["broke_list"].copy()
++        # creates players objects and copies information from the dictionary
++        players = game_data_dict["players_list"]
++        for p_data in players:
++            new_player = Player("")
++            new_player.update_values(p_data["_username"], p_data["_current_money"], p_data["_jail_status"], p_data["_fine_payed"], p_data["_current_square"], p_data["_in_jail_turns"], p_data["_properties"])
++            new_controller.players.append(new_player)
++
++        broke_players = game_data_dict["broke_list"]
++        for p_data in broke_players:
++            new_player = Player("")
++            new_player.update_values(p_data["_username"], p_data["_current_money"], p_data["_jail_status"], p_data["_fine_payed"], p_data["_current_square"], p_data["_in_jail_turns"], p_data["_properties"])
++            new_controller.broke_players.append(new_player)
+ 
+ 
+ """ INITIALIZING CONTROLLER TO BE USED IN SAVED GAME, contains game information needed"""
+@@ -124,7 +144,8 @@
+         # Gets the name of the save and current round
+         self.save_name = save_name
+         self.save_time = datetime.now().strftime("%H:%M %d-%m-%Y")
+-        self.current_round = controller.get_game_round()
++        self.current_turn = controller.get_current_turn()
++        self.game_round = controller.get_game_round()
+ 
+         # Saves the setup of the gameboard as a list
+         self.tiles = gameboard.tiles.copy()
+@@ -142,7 +163,8 @@
+         return {
+             "save_name": self.save_name,
+             "save_time": self.save_time,
+-            "current_round": self.current_round,
++            "current_turn": self.current_turn,
++            "game_round": self.game_round,
+             "gameboard_setup": gameboard_data,
+             "players_list": player_data,
+             "broke_list": broke_player_data
+Index: saves/LOAD_TEST.json
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>{\r\n    \"save_name\": \"LOAD TEST\",\r\n    \"save_time\": \"20:40 04-11-2024\",\r\n    \"current_round\": 10,\r\n    \"gameboard_setup\": [\r\n        {\r\n            \"name\": \"Go\",\r\n            \"board_pos\": 0,\r\n            \"tile_type\": \"go\",\r\n            \"pass_prize\": 1500\r\n        },\r\n        {\r\n            \"name\": \"Central\",\r\n            \"board_pos\": 1,\r\n            \"tile_type\": \"property\",\r\n            \"price\": 800,\r\n            \"rent\": 90,\r\n            \"owner\": null,\r\n            \"color\": \"Blue\"\r\n        },\r\n        {\r\n            \"name\": \"Wan Chai\",\r\n            \"board_pos\": 2,\r\n            \"tile_type\": \"property\",\r\n            \"price\": 700,\r\n            \"rent\": 65,\r\n            \"owner\": null,\r\n            \"color\": \"Blue\"\r\n        },\r\n        {\r\n            \"name\": \"IncomeTax\",\r\n            \"board_pos\": 3,\r\n            \"tile_type\": \"income_tax\",\r\n            \"tax_percentage\": 10\r\n        },\r\n        {\r\n            \"name\": \"Stanley\",\r\n            \"board_pos\": 4,\r\n            \"tile_type\": \"property\",\r\n            \"price\": 600,\r\n            \"rent\": 60,\r\n            \"owner\": null,\r\n            \"color\": \"Blue\"\r\n        },\r\n        {\r\n            \"name\": \"Jail\",\r\n            \"board_pos\": 5,\r\n            \"tile_type\": \"jail\",\r\n            \"jailed_players\": []\r\n        },\r\n        {\r\n            \"name\": \"Shek-O\",\r\n            \"board_pos\": 6,\r\n            \"tile_type\": \"property\",\r\n            \"price\": 400,\r\n            \"rent\": 10,\r\n            \"owner\": null,\r\n            \"color\": \"Red\"\r\n        },\r\n        {\r\n            \"name\": \"Mong Kok\",\r\n            \"board_pos\": 7,\r\n            \"tile_type\": \"property\",\r\n            \"price\": 500,\r\n            \"rent\": 40,\r\n            \"owner\": null,\r\n            \"color\": \"Red\"\r\n        },\r\n        {\r\n            \"name\": \"Chance\",\r\n            \"board_pos\": 8,\r\n            \"tile_type\": \"chance\"\r\n        },\r\n        {\r\n            \"name\": \"Tsing Yi\",\r\n            \"board_pos\": 9,\r\n            \"tile_type\": \"property\",\r\n            \"price\": 400,\r\n            \"rent\": 15,\r\n            \"owner\": null,\r\n            \"color\": \"Red\"\r\n        },\r\n        {\r\n            \"name\": \"Free Parking\",\r\n            \"board_pos\": 10,\r\n            \"tile_type\": \"free_parking\"\r\n        },\r\n        {\r\n            \"name\": \"Shatin\",\r\n            \"board_pos\": 11,\r\n            \"tile_type\": \"property\",\r\n            \"price\": 700,\r\n            \"rent\": 75,\r\n            \"owner\": null,\r\n            \"color\": \"Green\"\r\n        },\r\n        {\r\n            \"name\": \"Chance\",\r\n            \"board_pos\": 12,\r\n            \"tile_type\": \"chance\"\r\n        },\r\n        {\r\n            \"name\": \"Tuen Mun\",\r\n            \"board_pos\": 13,\r\n            \"tile_type\": \"property\",\r\n            \"price\": 400,\r\n            \"rent\": 20,\r\n            \"owner\": null,\r\n            \"color\": \"Green\"\r\n        },\r\n        {\r\n            \"name\": \"Tai Po\",\r\n            \"board_pos\": 14,\r\n            \"tile_type\": \"property\",\r\n            \"price\": 500,\r\n            \"rent\": 25,\r\n            \"owner\": null,\r\n            \"color\": \"Green\"\r\n        },\r\n        {\r\n            \"name\": \"Go To Jail\",\r\n            \"board_pos\": 15,\r\n            \"tile_type\": \"go_to_jail\"\r\n        },\r\n        {\r\n            \"name\": \"Sai Kung\",\r\n            \"board_pos\": 16,\r\n            \"tile_type\": \"property\",\r\n            \"price\": 400,\r\n            \"rent\": 10,\r\n            \"owner\": null,\r\n            \"color\": \"Yellow\"\r\n        },\r\n        {\r\n            \"name\": \"Yuen Long\",\r\n            \"board_pos\": 17,\r\n            \"tile_type\": \"property\",\r\n            \"price\": 400,\r\n            \"rent\": 25,\r\n            \"owner\": null,\r\n            \"color\": \"Yellow\"\r\n        },\r\n        {\r\n            \"name\": \"Chance\",\r\n            \"board_pos\": 18,\r\n            \"tile_type\": \"chance\"\r\n        },\r\n        {\r\n            \"name\": \"Tai O\",\r\n            \"board_pos\": 19,\r\n            \"tile_type\": \"property\",\r\n            \"price\": 600,\r\n            \"rent\": 25,\r\n            \"owner\": null,\r\n            \"color\": \"Yellow\"\r\n        }\r\n    ],\r\n    \"players_list\": [\r\n        {\r\n            \"_username\": \"Player 1\",\r\n            \"_current_money\": 1500,\r\n            \"_jail_status\": false,\r\n            \"_fine_payed\": false,\r\n            \"_current_square\": 1,\r\n            \"_in_jail_turns\": 0,\r\n            \"_properties\": {}\r\n        },\r\n        {\r\n            \"_username\": \"Player 2\",\r\n            \"_current_money\": 1500,\r\n            \"_jail_status\": false,\r\n            \"_fine_payed\": false,\r\n            \"_current_square\": 1,\r\n            \"_in_jail_turns\": 0,\r\n            \"_properties\": {}\r\n        }\r\n    ],\r\n    \"broke_list\": []\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/saves/LOAD_TEST.json b/saves/LOAD_TEST.json
+--- a/saves/LOAD_TEST.json	(revision cef215b432f165ad6cc21d0e11c6c98e94b85942)
++++ b/saves/LOAD_TEST.json	(date 1730733878528)
+@@ -1,13 +1,14 @@
+ {
+-    "save_name": "LOAD TEST",
+-    "save_time": "20:40 04-11-2024",
+-    "current_round": 10,
++    "save_name": "LOAD_TEST",
++    "save_time": "23:15 04-11-2024",
++    "current_turn": 0,
++    "game_round": 50,
+     "gameboard_setup": [
+         {
+-            "name": "Go",
++            "name": "Start",
+             "board_pos": 0,
+             "tile_type": "go",
+-            "pass_prize": 1500
++            "pass_prize": 3000
+         },
+         {
+             "name": "Central",
+@@ -175,5 +176,15 @@
+             "_properties": {}
+         }
+     ],
+-    "broke_list": []
++    "broke_list": [
++        {
++            "_username": "Player 3",
++            "_current_money": 15000,
++            "_jail_status": true,
++            "_fine_payed": false,
++            "_current_square": 6,
++            "_in_jail_turns": 2,
++            "_properties": {}
++        }
++    ]
+ }
+\ No newline at end of file
+Index: src/Model/Player.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>class Player:\r\n    \"\"\"Lists that store the existing players and the player who is broke\"\"\"\r\n    players_list = []\r\n    broke_list = []\r\n\r\n    def __init__(self, username):\r\n        self._username = username\r\n        self._current_money = 1500\r\n        self._jail_status = False\r\n        self._fine_payed = False\r\n        self._current_square = 1\r\n        self._in_jail_turns = 0\r\n        self._properties = {}\r\n\r\n    def getname(self):\r\n        return self._username\r\n\r\n    def get_current_money(self):\r\n        return self._current_money\r\n\r\n    def set_current_money(self, new_balance):\r\n        self._current_money = new_balance\r\n\r\n    def get_jail_status(self):\r\n        return self._jail_status\r\n\r\n    def get_fine_payed(self):\r\n        return self._fine_payed\r\n\r\n    def set_fine_payed(self, fine_payed):\r\n        self._fine_payed = fine_payed\r\n\r\n    def get_square(self):\r\n        return self._current_square\r\n\r\n    def update_square(self,value):\r\n        self._current_square += value\r\n\r\n    def get_in_jail_turns(self):\r\n        return self._in_jail_turns\r\n\r\n    def set_in_jail_turns(self, value):\r\n        if value >=0 and value <= 3:\r\n            self._in_jail_turns = value\r\n\r\n    def add_money(self, money):\r\n        self._current_money += money\r\n\r\n    def remove_money(self, money):\r\n        self._current_money -= money\r\n\r\n    def is_jailed(self, state):\r\n        self._jail_status = state\r\n\r\n    def set_in_jail_turns(self, new_turns):\r\n        self._in_jail_turns = new_turns\r\n\r\n    def set_current_square(self, position):\r\n        self._current_square = position\r\n\r\n    def add_properties(self, properties):\r\n        self._properties[properties] = properties.get_rent()\r\n\r\n    def delete_properties(self, new_properties):\r\n        pass\r\n\r\n    \"\"\"Delete all properties when the player is broke\"\"\"\r\n\r\n    def delete_all_properties(self):\r\n        for key in self._properties:\r\n            key.set_owner(None)\r\n        self._properties.clear()\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/Model/Player.py b/src/Model/Player.py
+--- a/src/Model/Player.py	(revision cef215b432f165ad6cc21d0e11c6c98e94b85942)
++++ b/src/Model/Player.py	(date 1730736332325)
+@@ -10,9 +10,12 @@
+         self._fine_payed = False
+         self._current_square = 1
+         self._in_jail_turns = 0
+-        self._properties = {}
++        self._properties = []
+ 
+-    def getname(self):
++    def set_name(self, name):
++        self._username = name
++
++    def get_name(self):
+         return self._username
+ 
+     def get_current_money(self):
+@@ -49,6 +52,9 @@
+     def remove_money(self, money):
+         self._current_money -= money
+ 
++    def set_jail_status(self, status):
++        self._jail_status = status
++
+     def is_jailed(self, state):
+         self._jail_status = state
+ 
+@@ -58,12 +64,24 @@
+     def set_current_square(self, position):
+         self._current_square = position
+ 
+-    def add_properties(self, properties):
+-        self._properties[properties] = properties.get_rent()
++    def add_properties(self, property_name):
++        self._properties.append(property_name)
++
++    def add_all_properties(self, properties_list):
++        self._properties = properties_list.copy()
+ 
+     def delete_properties(self, new_properties):
+         pass
+ 
++    def update_values(self, name, money, jail_status, fine_payed, current_square, in_jail_turns, properties):
++        self.set_name(name)
++        self.set_current_money(money)
++        self.set_jail_status(jail_status)
++        self.set_fine_payed(fine_payed)
++        self.set_current_square(current_square)
++        self.set_in_jail_turns(in_jail_turns)
++        self.add_all_properties(properties)
++
+     """Delete all properties when the player is broke"""
+ 
+     def delete_all_properties(self):
+Index: tests/test_GameController.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>from unittest import TestCase\r\nfrom src.Controller.GameController import *\r\nfrom src.Model.Gameboard import *\r\n\r\nclass TestGameController(TestCase):\r\n    def test_save_game(self):\r\n        GameController.save_game()\r\n\r\n    def test_load_game(self):\r\n        self.fail()\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tests/test_GameController.py b/tests/test_GameController.py
+--- a/tests/test_GameController.py	(revision cef215b432f165ad6cc21d0e11c6c98e94b85942)
++++ b/tests/test_GameController.py	(date 1730734802776)
+@@ -7,4 +7,13 @@
+         GameController.save_game()
+ 
+     def test_load_game(self):
+-        self.fail()
++        localController = GameController()
++        GameController.load_game(localController)
++        assert localController.get_game_round() == 50
++        assert localController.board.tiles[0].get_tile_name() == "Start"
++        assert localController.board.tiles[0].get_pass_prize() == 3000
++        assert localController.broke_players[0].get_name() == "Player 3"
++        assert localController.broke_players[0].get_current_money() == 15000
++        assert localController.broke_players[0].get_jail_status() == True
++        assert localController.broke_players[0].get_square() == 6
++        assert localController.broke_players[0].get_in_jail_turns() == 2
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"AutoImportSettings\">\r\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\r\n  </component>\r\n  <component name=\"ChangeListManager\">\r\n    <list default=\"true\" id=\"e63f52e8-b5e2-4b82-8eb0-ddb8c465611b\" name=\"Changes\" comment=\"Touch Ups on Gameboard.py v5\">\r\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\r\n      <change beforePath=\"$PROJECT_DIR$/src/View/GUI.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/src/View/GUI.py\" afterDir=\"false\" />\r\n    </list>\r\n    <list id=\"b53ad74c-d01b-4e52-9a34-f524bfab6613\" name=\"Changes by Kent Max Chandra\" comment=\"\" />\r\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\r\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\r\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\r\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\r\n  </component>\r\n  <component name=\"FileTemplateManagerImpl\">\r\n    <option name=\"RECENT_TEMPLATES\">\r\n      <list>\r\n        <option value=\"Python Script\" />\r\n      </list>\r\n    </option>\r\n  </component>\r\n  <component name=\"Git.Settings\">\r\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\r\n  </component>\r\n  <component name=\"GitHubPullRequestSearchHistory\">{\r\n  &quot;lastFilter&quot;: {\r\n    &quot;state&quot;: &quot;OPEN&quot;,\r\n    &quot;assignee&quot;: &quot;PhDinTimeManagement&quot;\r\n  }\r\n}</component>\r\n  <component name=\"GithubPullRequestsUISettings\">{\r\n  &quot;selectedUrlAndAccountId&quot;: {\r\n    &quot;url&quot;: &quot;https://github.com/PhDinTimeManagement/The-Monopoly-Game-Project.git&quot;,\r\n    &quot;accountId&quot;: &quot;92e91e34-3118-423c-bd88-520f2a36a0e6&quot;\r\n  }\r\n}</component>\r\n  <component name=\"MarkdownSettingsMigration\">\r\n    <option name=\"stateVersion\" value=\"1\" />\r\n  </component>\r\n  <component name=\"ProblemsViewState\">\r\n    <option name=\"selectedTabId\" value=\"CurrentFile\" />\r\n  </component>\r\n  <component name=\"ProjectColorInfo\">{\r\n  &quot;associatedIndex&quot;: 5\r\n}</component>\r\n  <component name=\"ProjectId\" id=\"2nZNqtspflyRZqXPpP505un74XG\" />\r\n  <component name=\"ProjectLevelVcsManager\" settingsEditedManually=\"true\" />\r\n  <component name=\"ProjectViewState\">\r\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\r\n    <option name=\"showLibraryContents\" value=\"true\" />\r\n  </component>\r\n  <component name=\"PropertiesComponent\">{\r\n  &quot;keyToString&quot;: {\r\n    &quot;Python tests.Python tests for test_GameLogic.TestGameLogic.executor&quot;: &quot;Run&quot;,\r\n    &quot;Python tests.Python tests for test_GameLogic.TestGameLogic.test_display_winner.executor&quot;: &quot;Run&quot;,\r\n    &quot;Python tests.Python tests for test_GameLogic.TestGameLogic.test_player_out.executor&quot;: &quot;Run&quot;,\r\n    &quot;Python tests.Python tests for test_Gameboard.TestProperty.executor&quot;: &quot;Run&quot;,\r\n    &quot;Python tests.Python tests in tests.executor&quot;: &quot;Run&quot;,\r\n    &quot;Python.GUI.executor&quot;: &quot;Run&quot;,\r\n    &quot;Python.gui.executor&quot;: &quot;Run&quot;,\r\n    &quot;Python.new.executor&quot;: &quot;Run&quot;,\r\n    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,\r\n    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,\r\n    &quot;TODO_SCOPE&quot;: &quot;All Places&quot;,\r\n    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,\r\n    &quot;git-widget-placeholder&quot;: &quot;main&quot;,\r\n    &quot;last_opened_file_path&quot;: &quot;C:/Users/Hp/Desktop/The-Monopoly-Game-Project/src&quot;,\r\n    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,\r\n    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,\r\n    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,\r\n    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,\r\n    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,\r\n    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,\r\n    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;\r\n  }\r\n}</component>\r\n  <component name=\"RecentsManager\">\r\n    <key name=\"CopyFile.RECENT_KEYS\">\r\n      <recent name=\"C:\\Users\\Hp\\Desktop\\The-Monopoly-Game-Project\\src\" />\r\n    </key>\r\n    <key name=\"MoveFile.RECENT_KEYS\">\r\n      <recent name=\"$PROJECT_DIR$/assets/dice\" />\r\n      <recent name=\"$PROJECT_DIR$\" />\r\n      <recent name=\"$PROJECT_DIR$/src/View\" />\r\n      <recent name=\"D:\\PolyU\\PolyU Year 3\\COMP3211 Software Engineering\\Project Github\\src\\Model\" />\r\n    </key>\r\n  </component>\r\n  <component name=\"RunManager\" selected=\"Python.GUI\">\r\n    <configuration name=\"GUI\" type=\"PythonConfigurationType\" factoryName=\"Python\" temporary=\"true\" nameIsGenerated=\"true\">\r\n      <module name=\"Source Code\" />\r\n      <option name=\"ENV_FILES\" value=\"\" />\r\n      <option name=\"INTERPRETER_OPTIONS\" value=\"\" />\r\n      <option name=\"PARENT_ENVS\" value=\"true\" />\r\n      <envs>\r\n        <env name=\"PYTHONUNBUFFERED\" value=\"1\" />\r\n      </envs>\r\n      <option name=\"SDK_HOME\" value=\"\" />\r\n      <option name=\"WORKING_DIRECTORY\" value=\"$PROJECT_DIR$/src/View\" />\r\n      <option name=\"IS_MODULE_SDK\" value=\"true\" />\r\n      <option name=\"ADD_CONTENT_ROOTS\" value=\"true\" />\r\n      <option name=\"ADD_SOURCE_ROOTS\" value=\"true\" />\r\n      <EXTENSION ID=\"PythonCoverageRunConfigurationExtension\" runner=\"coverage.py\" />\r\n      <option name=\"SCRIPT_NAME\" value=\"$PROJECT_DIR$/src/View/GUI.py\" />\r\n      <option name=\"PARAMETERS\" value=\"\" />\r\n      <option name=\"SHOW_COMMAND_LINE\" value=\"false\" />\r\n      <option name=\"EMULATE_TERMINAL\" value=\"false\" />\r\n      <option name=\"MODULE_MODE\" value=\"false\" />\r\n      <option name=\"REDIRECT_INPUT\" value=\"false\" />\r\n      <option name=\"INPUT_FILE\" value=\"\" />\r\n      <method v=\"2\" />\r\n    </configuration>\r\n    <configuration name=\"new\" type=\"PythonConfigurationType\" factoryName=\"Python\" temporary=\"true\" nameIsGenerated=\"true\">\r\n      <module name=\"Source Code\" />\r\n      <option name=\"ENV_FILES\" value=\"\" />\r\n      <option name=\"INTERPRETER_OPTIONS\" value=\"\" />\r\n      <option name=\"PARENT_ENVS\" value=\"true\" />\r\n      <envs>\r\n        <env name=\"PYTHONUNBUFFERED\" value=\"1\" />\r\n      </envs>\r\n      <option name=\"SDK_HOME\" value=\"\" />\r\n      <option name=\"WORKING_DIRECTORY\" value=\"$PROJECT_DIR$/src/View\" />\r\n      <option name=\"IS_MODULE_SDK\" value=\"true\" />\r\n      <option name=\"ADD_CONTENT_ROOTS\" value=\"true\" />\r\n      <option name=\"ADD_SOURCE_ROOTS\" value=\"true\" />\r\n      <EXTENSION ID=\"PythonCoverageRunConfigurationExtension\" runner=\"coverage.py\" />\r\n      <option name=\"SCRIPT_NAME\" value=\"$PROJECT_DIR$/src/View/new.py\" />\r\n      <option name=\"PARAMETERS\" value=\"\" />\r\n      <option name=\"SHOW_COMMAND_LINE\" value=\"false\" />\r\n      <option name=\"EMULATE_TERMINAL\" value=\"false\" />\r\n      <option name=\"MODULE_MODE\" value=\"false\" />\r\n      <option name=\"REDIRECT_INPUT\" value=\"false\" />\r\n      <option name=\"INPUT_FILE\" value=\"\" />\r\n      <method v=\"2\" />\r\n    </configuration>\r\n    <configuration name=\"Python tests for test_GameLogic.TestGameLogic\" type=\"tests\" factoryName=\"Autodetect\" temporary=\"true\" nameIsGenerated=\"true\">\r\n      <module name=\"Source Code\" />\r\n      <option name=\"ENV_FILES\" value=\"\" />\r\n      <option name=\"INTERPRETER_OPTIONS\" value=\"\" />\r\n      <option name=\"PARENT_ENVS\" value=\"true\" />\r\n      <option name=\"SDK_HOME\" value=\"\" />\r\n      <option name=\"WORKING_DIRECTORY\" value=\"$PROJECT_DIR$/tests\" />\r\n      <option name=\"IS_MODULE_SDK\" value=\"true\" />\r\n      <option name=\"ADD_CONTENT_ROOTS\" value=\"true\" />\r\n      <option name=\"ADD_SOURCE_ROOTS\" value=\"true\" />\r\n      <EXTENSION ID=\"PythonCoverageRunConfigurationExtension\" runner=\"coverage.py\" />\r\n      <option name=\"_new_additionalArguments\" value=\"&quot;&quot;\" />\r\n      <option name=\"_new_target\" value=\"&quot;test_GameLogic.TestGameLogic&quot;\" />\r\n      <option name=\"_new_targetType\" value=\"&quot;PYTHON&quot;\" />\r\n      <method v=\"2\" />\r\n    </configuration>\r\n    <configuration name=\"Python tests for test_GameLogic.TestGameLogic.test_display_winner\" type=\"tests\" factoryName=\"Autodetect\" temporary=\"true\" nameIsGenerated=\"true\">\r\n      <module name=\"Source Code\" />\r\n      <option name=\"ENV_FILES\" value=\"\" />\r\n      <option name=\"INTERPRETER_OPTIONS\" value=\"\" />\r\n      <option name=\"PARENT_ENVS\" value=\"true\" />\r\n      <option name=\"SDK_HOME\" value=\"\" />\r\n      <option name=\"WORKING_DIRECTORY\" value=\"$PROJECT_DIR$/tests\" />\r\n      <option name=\"IS_MODULE_SDK\" value=\"true\" />\r\n      <option name=\"ADD_CONTENT_ROOTS\" value=\"true\" />\r\n      <option name=\"ADD_SOURCE_ROOTS\" value=\"true\" />\r\n      <EXTENSION ID=\"PythonCoverageRunConfigurationExtension\" runner=\"coverage.py\" />\r\n      <option name=\"_new_additionalArguments\" value=\"&quot;&quot;\" />\r\n      <option name=\"_new_target\" value=\"&quot;test_GameLogic.TestGameLogic.test_display_winner&quot;\" />\r\n      <option name=\"_new_targetType\" value=\"&quot;PYTHON&quot;\" />\r\n      <method v=\"2\" />\r\n    </configuration>\r\n    <configuration name=\"Python tests for test_GameLogic.TestGameLogic.test_player_out\" type=\"tests\" factoryName=\"Autodetect\" temporary=\"true\" nameIsGenerated=\"true\">\r\n      <module name=\"Source Code\" />\r\n      <option name=\"ENV_FILES\" value=\"\" />\r\n      <option name=\"INTERPRETER_OPTIONS\" value=\"\" />\r\n      <option name=\"PARENT_ENVS\" value=\"true\" />\r\n      <option name=\"SDK_HOME\" value=\"\" />\r\n      <option name=\"WORKING_DIRECTORY\" value=\"$PROJECT_DIR$/tests\" />\r\n      <option name=\"IS_MODULE_SDK\" value=\"true\" />\r\n      <option name=\"ADD_CONTENT_ROOTS\" value=\"true\" />\r\n      <option name=\"ADD_SOURCE_ROOTS\" value=\"true\" />\r\n      <EXTENSION ID=\"PythonCoverageRunConfigurationExtension\" runner=\"coverage.py\" />\r\n      <option name=\"_new_additionalArguments\" value=\"&quot;&quot;\" />\r\n      <option name=\"_new_target\" value=\"&quot;test_GameLogic.TestGameLogic.test_player_out&quot;\" />\r\n      <option name=\"_new_targetType\" value=\"&quot;PYTHON&quot;\" />\r\n      <method v=\"2\" />\r\n    </configuration>\r\n    <recent_temporary>\r\n      <list>\r\n        <item itemvalue=\"Python.GUI\" />\r\n        <item itemvalue=\"Python.new\" />\r\n        <item itemvalue=\"Python tests.Python tests for test_GameLogic.TestGameLogic.test_display_winner\" />\r\n        <item itemvalue=\"Python tests.Python tests for test_GameLogic.TestGameLogic\" />\r\n        <item itemvalue=\"Python tests.Python tests for test_GameLogic.TestGameLogic.test_player_out\" />\r\n      </list>\r\n    </recent_temporary>\r\n  </component>\r\n  <component name=\"SharedIndexes\">\r\n    <attachedChunks>\r\n      <set>\r\n        <option value=\"bundled-js-predefined-d6986cc7102b-7c0b70fcd90d-JavaScript-PY-242.21829.153\" />\r\n        <option value=\"bundled-python-sdk-464836ebc622-b74155a9e76b-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-242.21829.153\" />\r\n      </set>\r\n    </attachedChunks>\r\n  </component>\r\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"application-level\" UseSingleDictionary=\"true\" transferred=\"true\" />\r\n  <component name=\"TaskManager\">\r\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\r\n      <changelist id=\"e63f52e8-b5e2-4b82-8eb0-ddb8c465611b\" name=\"Changes\" comment=\"\" />\r\n      <created>1729176831318</created>\r\n      <option name=\"number\" value=\"Default\" />\r\n      <option name=\"presentableId\" value=\"Default\" />\r\n      <updated>1729176831318</updated>\r\n      <workItem from=\"1729176832503\" duration=\"5256000\" />\r\n      <workItem from=\"1729205014409\" duration=\"9100000\" />\r\n      <workItem from=\"1729216750621\" duration=\"322000\" />\r\n      <workItem from=\"1729217094305\" duration=\"939000\" />\r\n      <workItem from=\"1729258610543\" duration=\"706000\" />\r\n      <workItem from=\"1729259351895\" duration=\"10538000\" />\r\n      <workItem from=\"1729515491755\" duration=\"234000\" />\r\n      <workItem from=\"1729661586409\" duration=\"244000\" />\r\n      <workItem from=\"1729934612284\" duration=\"1836000\" />\r\n      <workItem from=\"1730004190962\" duration=\"1095000\" />\r\n      <workItem from=\"1730024143686\" duration=\"7972000\" />\r\n      <workItem from=\"1730109912025\" duration=\"33000\" />\r\n      <workItem from=\"1730110856482\" duration=\"230000\" />\r\n      <workItem from=\"1730111961934\" duration=\"1279000\" />\r\n      <workItem from=\"1730120246622\" duration=\"12973000\" />\r\n      <workItem from=\"1730199675463\" duration=\"26000\" />\r\n      <workItem from=\"1730208733155\" duration=\"322000\" />\r\n      <workItem from=\"1730278497914\" duration=\"318000\" />\r\n      <workItem from=\"1730278822997\" duration=\"15714000\" />\r\n      <workItem from=\"1730367503069\" duration=\"612000\" />\r\n      <workItem from=\"1730377042614\" duration=\"1385000\" />\r\n    </task>\r\n    <task id=\"LOCAL-00001\" summary=\"gameboard functions\">\r\n      <created>1729259402457</created>\r\n      <option name=\"number\" value=\"00001\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1729259402457</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00002\" summary=\"test\">\r\n      <created>1729259636382</created>\r\n      <option name=\"number\" value=\"00002\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00002\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1729259636382</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00003\" summary=\"Classes V1 created&#10;standard Gameboard initialized and objects created\">\r\n      <created>1729273012131</created>\r\n      <option name=\"number\" value=\"00003\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00003\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1729273012131</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00004\" summary=\"Updated gameboard and player functions to NEW US8\">\r\n      <created>1729936455309</created>\r\n      <option name=\"number\" value=\"00004\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00004\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1729936455309</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00005\" summary=\"Updated gameboard and player functions to NEW US8 v2\">\r\n      <created>1730006659690</created>\r\n      <option name=\"number\" value=\"00005\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00005\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1730006659690</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00006\" summary=\"Updated gameboard and player functions to NEW US8 v2\">\r\n      <created>1730006706523</created>\r\n      <option name=\"number\" value=\"00006\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00006\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1730006706523</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00007\" summary=\"Updated gameboard and player functions to NEW US8 v3&#10;&#10;Added Unit tests to Gameboard.py\">\r\n      <created>1730032008562</created>\r\n      <option name=\"number\" value=\"00007\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00007\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1730032008562</updated>\r\n    </task>\r\n    <task id=\"LOCAL-00008\" summary=\"Touch Ups on Gameboard.py v5\">\r\n      <created>1730113203511</created>\r\n      <option name=\"number\" value=\"00008\" />\r\n      <option name=\"presentableId\" value=\"LOCAL-00008\" />\r\n      <option name=\"project\" value=\"LOCAL\" />\r\n      <updated>1730113203511</updated>\r\n    </task>\r\n    <option name=\"localTasksCounter\" value=\"9\" />\r\n    <servers />\r\n  </component>\r\n  <component name=\"TypeScriptGeneratedFilesManager\">\r\n    <option name=\"version\" value=\"3\" />\r\n  </component>\r\n  <component name=\"Vcs.Log.Tabs.Properties\">\r\n    <option name=\"TAB_STATES\">\r\n      <map>\r\n        <entry key=\"MAIN\">\r\n          <value>\r\n            <State>\r\n              <option name=\"FILTERS\">\r\n                <map>\r\n                  <entry key=\"branch\">\r\n                    <value>\r\n                      <list>\r\n                        <option value=\"main\" />\r\n                      </list>\r\n                    </value>\r\n                  </entry>\r\n                </map>\r\n              </option>\r\n            </State>\r\n          </value>\r\n        </entry>\r\n      </map>\r\n    </option>\r\n  </component>\r\n  <component name=\"VcsManagerConfiguration\">\r\n    <ignored-roots>\r\n      <path value=\"$PROJECT_DIR$/..\" />\r\n    </ignored-roots>\r\n    <MESSAGE value=\"gameboard functions\" />\r\n    <MESSAGE value=\"test\" />\r\n    <MESSAGE value=\"Classes V1 created&#10;standard Gameboard initialized and objects created\" />\r\n    <MESSAGE value=\"Updated gameboard and player functions to NEW US8\" />\r\n    <MESSAGE value=\"Updated gameboard and player functions to NEW US8 v2\" />\r\n    <MESSAGE value=\"Updated gameboard and player functions to NEW US8 v3&#10;&#10;Added Unit tests to Gameboard.py\" />\r\n    <MESSAGE value=\"Touch Ups on Gameboard.py v5\" />\r\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"Touch Ups on Gameboard.py v5\" />\r\n  </component>\r\n  <component name=\"XDebuggerManager\">\r\n    <breakpoint-manager>\r\n      <breakpoints>\r\n        <line-breakpoint enabled=\"true\" suspend=\"THREAD\" type=\"python-line\">\r\n          <url>file://$PROJECT_DIR$/Source Code/Source Code/Model/Gameboard.py</url>\r\n          <line>33</line>\r\n          <option name=\"timeStamp\" value=\"1\" />\r\n        </line-breakpoint>\r\n        <line-breakpoint enabled=\"true\" suspend=\"THREAD\" type=\"python-line\">\r\n          <url>file://$PROJECT_DIR$/tests/test_GameLogic.py</url>\r\n          <line>12</line>\r\n          <option name=\"timeStamp\" value=\"3\" />\r\n        </line-breakpoint>\r\n      </breakpoints>\r\n    </breakpoint-manager>\r\n    <watches-manager>\r\n      <configuration name=\"tests\">\r\n        <watch expression=\"player1.get_current_money()\" language=\"Python\" />\r\n        <watch expression=\"wan_chai.get_rent()\" language=\"Python\" />\r\n        <watch expression=\"wan_chai.get_rent()+player1.get_current_money()\" language=\"Python\" />\r\n      </configuration>\r\n    </watches-manager>\r\n  </component>\r\n  <component name=\"com.intellij.coverage.CoverageDataManagerImpl\">\r\n    <SUITE FILE_PATH=\"coverage/Game_py$.coverage\" NAME=\" Coverage Results\" MODIFIED=\"1730198824506\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"coverage.py\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"false\" WORKING_DIRECTORY=\"$PROJECT_DIR$/tests\" />\r\n    <SUITE FILE_PATH=\"coverage/Game_py$GUI.coverage\" NAME=\"GUI Coverage Results\" MODIFIED=\"1730378327995\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"coverage.py\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"false\" WORKING_DIRECTORY=\"$PROJECT_DIR$/src/View\" />\r\n    <SUITE FILE_PATH=\"coverage/Game_py$gui.coverage\" NAME=\"gui Coverage Results\" MODIFIED=\"1730294710638\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"coverage.py\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"false\" WORKING_DIRECTORY=\"$PROJECT_DIR$/src/View\" />\r\n    <SUITE FILE_PATH=\"coverage/Game_py$new.coverage\" NAME=\"new Coverage Results\" MODIFIED=\"1730338734766\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"coverage.py\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"false\" WORKING_DIRECTORY=\"$PROJECT_DIR$/src/View\" />\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision cef215b432f165ad6cc21d0e11c6c98e94b85942)
++++ b/.idea/workspace.xml	(date 1730736479706)
+@@ -4,9 +4,12 @@
+     <option name="autoReloadType" value="SELECTIVE" />
+   </component>
+   <component name="ChangeListManager">
+-    <list default="true" id="e63f52e8-b5e2-4b82-8eb0-ddb8c465611b" name="Changes" comment="Touch Ups on Gameboard.py v5">
++    <list default="true" id="e63f52e8-b5e2-4b82-8eb0-ddb8c465611b" name="Changes" comment="save and load functions">
+       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/src/View/GUI.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/View/GUI.py" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/saves/LOAD_TEST.json" beforeDir="false" afterPath="$PROJECT_DIR$/saves/LOAD_TEST.json" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/Controller/GameController.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Controller/GameController.py" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/Model/Player.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Model/Player.py" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/tests/test_GameController.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_GameController.py" afterDir="false" />
+     </list>
+     <list id="b53ad74c-d01b-4e52-9a34-f524bfab6613" name="Changes by Kent Max Chandra" comment="" />
+     <option name="SHOW_DIALOG" value="false" />
+@@ -33,7 +36,7 @@
+   <component name="GithubPullRequestsUISettings">{
+   &quot;selectedUrlAndAccountId&quot;: {
+     &quot;url&quot;: &quot;https://github.com/PhDinTimeManagement/The-Monopoly-Game-Project.git&quot;,
+-    &quot;accountId&quot;: &quot;92e91e34-3118-423c-bd88-520f2a36a0e6&quot;
++    &quot;accountId&quot;: &quot;358c0e21-a4ef-4bac-aa60-9c8cdc9c591a&quot;
+   }
+ }</component>
+   <component name="MarkdownSettingsMigration">
+@@ -51,31 +54,36 @@
+     <option name="hideEmptyMiddlePackages" value="true" />
+     <option name="showLibraryContents" value="true" />
+   </component>
+-  <component name="PropertiesComponent">{
+-  &quot;keyToString&quot;: {
+-    &quot;Python tests.Python tests for test_GameLogic.TestGameLogic.executor&quot;: &quot;Run&quot;,
+-    &quot;Python tests.Python tests for test_GameLogic.TestGameLogic.test_display_winner.executor&quot;: &quot;Run&quot;,
+-    &quot;Python tests.Python tests for test_GameLogic.TestGameLogic.test_player_out.executor&quot;: &quot;Run&quot;,
+-    &quot;Python tests.Python tests for test_Gameboard.TestProperty.executor&quot;: &quot;Run&quot;,
+-    &quot;Python tests.Python tests in tests.executor&quot;: &quot;Run&quot;,
+-    &quot;Python.GUI.executor&quot;: &quot;Run&quot;,
+-    &quot;Python.gui.executor&quot;: &quot;Run&quot;,
+-    &quot;Python.new.executor&quot;: &quot;Run&quot;,
+-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+-    &quot;TODO_SCOPE&quot;: &quot;All Places&quot;,
+-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+-    &quot;last_opened_file_path&quot;: &quot;C:/Users/Hp/Desktop/The-Monopoly-Game-Project/src&quot;,
+-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
++  <component name="PropertiesComponent"><![CDATA[{
++  "keyToString": {
++    "Python tests.Python tests for test_GameController.TestGameController.executor": "Run",
++    "Python tests.Python tests for test_GameController.TestGameController.test_load_game.executor": "Run",
++    "Python tests.Python tests for test_GameController.TestGameController.test_save_game.executor": "Run",
++    "Python tests.Python tests for test_GameLogic.TestGameLogic.executor": "Run",
++    "Python tests.Python tests for test_GameLogic.TestGameLogic.test_display_winner.executor": "Run",
++    "Python tests.Python tests for test_GameLogic.TestGameLogic.test_player_out.executor": "Run",
++    "Python tests.Python tests for test_Gameboard.TestProperty.executor": "Run",
++    "Python tests.Python tests for test_Gameboard.TestProperty.test_update_values.executor": "Run",
++    "Python tests.Python tests in test_Gameboard.py.executor": "Run",
++    "Python tests.Python tests in tests.executor": "Run",
++    "Python.GUI.executor": "Run",
++    "Python.gui.executor": "Run",
++    "Python.new.executor": "Run",
++    "RunOnceActivity.OpenProjectViewOnStart": "true",
++    "RunOnceActivity.ShowReadmeOnStart": "true",
++    "TODO_SCOPE": "All Places",
++    "WebServerToolWindowFactoryState": "false",
++    "git-widget-placeholder": "main",
++    "last_opened_file_path": "C:/Users/Hp/Desktop/The-Monopoly-Game-Project/src",
++    "node.js.detected.package.eslint": "true",
++    "node.js.detected.package.tslint": "true",
++    "node.js.selected.package.eslint": "(autodetect)",
++    "node.js.selected.package.tslint": "(autodetect)",
++    "nodejs_package_manager_path": "npm",
++    "settings.editor.selected.configurable": "preferences.pluginManager",
++    "vue.rearranger.settings.migration": "true"
+   }
+-}</component>
++}]]></component>
+   <component name="RecentsManager">
+     <key name="CopyFile.RECENT_KEYS">
+       <recent name="C:\Users\Hp\Desktop\The-Monopoly-Game-Project\src" />
+@@ -87,7 +95,7 @@
+       <recent name="D:\PolyU\PolyU Year 3\COMP3211 Software Engineering\Project Github\src\Model" />
+     </key>
+   </component>
+-  <component name="RunManager" selected="Python.GUI">
++  <component name="RunManager" selected="Python tests.Python tests for test_GameController.TestGameController.test_load_game">
+     <configuration name="GUI" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+       <module name="Source Code" />
+       <option name="ENV_FILES" value="" />
+@@ -111,30 +119,23 @@
+       <option name="INPUT_FILE" value="" />
+       <method v="2" />
+     </configuration>
+-    <configuration name="new" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
++    <configuration name="Python tests for test_GameController.TestGameController" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+       <module name="Source Code" />
+       <option name="ENV_FILES" value="" />
+       <option name="INTERPRETER_OPTIONS" value="" />
+       <option name="PARENT_ENVS" value="true" />
+-      <envs>
+-        <env name="PYTHONUNBUFFERED" value="1" />
+-      </envs>
+       <option name="SDK_HOME" value="" />
+-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/View" />
++      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
+       <option name="IS_MODULE_SDK" value="true" />
+       <option name="ADD_CONTENT_ROOTS" value="true" />
+       <option name="ADD_SOURCE_ROOTS" value="true" />
+       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/View/new.py" />
+-      <option name="PARAMETERS" value="" />
+-      <option name="SHOW_COMMAND_LINE" value="false" />
+-      <option name="EMULATE_TERMINAL" value="false" />
+-      <option name="MODULE_MODE" value="false" />
+-      <option name="REDIRECT_INPUT" value="false" />
+-      <option name="INPUT_FILE" value="" />
++      <option name="_new_additionalArguments" value="&quot;&quot;" />
++      <option name="_new_target" value="&quot;test_GameController.TestGameController&quot;" />
++      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+       <method v="2" />
+     </configuration>
+-    <configuration name="Python tests for test_GameLogic.TestGameLogic" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
++    <configuration name="Python tests for test_GameController.TestGameController.test_load_game" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+       <module name="Source Code" />
+       <option name="ENV_FILES" value="" />
+       <option name="INTERPRETER_OPTIONS" value="" />
+@@ -146,11 +147,11 @@
+       <option name="ADD_SOURCE_ROOTS" value="true" />
+       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+       <option name="_new_additionalArguments" value="&quot;&quot;" />
+-      <option name="_new_target" value="&quot;test_GameLogic.TestGameLogic&quot;" />
++      <option name="_new_target" value="&quot;test_GameController.TestGameController.test_load_game&quot;" />
+       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+       <method v="2" />
+     </configuration>
+-    <configuration name="Python tests for test_GameLogic.TestGameLogic.test_display_winner" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
++    <configuration name="Python tests for test_GameController.TestGameController.test_save_game" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+       <module name="Source Code" />
+       <option name="ENV_FILES" value="" />
+       <option name="INTERPRETER_OPTIONS" value="" />
+@@ -162,11 +163,11 @@
+       <option name="ADD_SOURCE_ROOTS" value="true" />
+       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+       <option name="_new_additionalArguments" value="&quot;&quot;" />
+-      <option name="_new_target" value="&quot;test_GameLogic.TestGameLogic.test_display_winner&quot;" />
++      <option name="_new_target" value="&quot;test_GameController.TestGameController.test_save_game&quot;" />
+       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+       <method v="2" />
+     </configuration>
+-    <configuration name="Python tests for test_GameLogic.TestGameLogic.test_player_out" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
++    <configuration name="Python tests in test_Gameboard.py" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+       <module name="Source Code" />
+       <option name="ENV_FILES" value="" />
+       <option name="INTERPRETER_OPTIONS" value="" />
+@@ -178,25 +179,25 @@
+       <option name="ADD_SOURCE_ROOTS" value="true" />
+       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+       <option name="_new_additionalArguments" value="&quot;&quot;" />
+-      <option name="_new_target" value="&quot;test_GameLogic.TestGameLogic.test_player_out&quot;" />
+-      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
++      <option name="_new_target" value="&quot;$PROJECT_DIR$/tests/test_Gameboard.py&quot;" />
++      <option name="_new_targetType" value="&quot;PATH&quot;" />
+       <method v="2" />
+     </configuration>
+     <recent_temporary>
+       <list>
++        <item itemvalue="Python tests.Python tests for test_GameController.TestGameController.test_load_game" />
++        <item itemvalue="Python tests.Python tests for test_GameController.TestGameController.test_save_game" />
+         <item itemvalue="Python.GUI" />
+-        <item itemvalue="Python.new" />
+-        <item itemvalue="Python tests.Python tests for test_GameLogic.TestGameLogic.test_display_winner" />
+-        <item itemvalue="Python tests.Python tests for test_GameLogic.TestGameLogic" />
+-        <item itemvalue="Python tests.Python tests for test_GameLogic.TestGameLogic.test_player_out" />
++        <item itemvalue="Python tests.Python tests for test_GameController.TestGameController" />
++        <item itemvalue="Python tests.Python tests in test_Gameboard.py" />
+       </list>
+     </recent_temporary>
+   </component>
+   <component name="SharedIndexes">
+     <attachedChunks>
+       <set>
+-        <option value="bundled-js-predefined-d6986cc7102b-7c0b70fcd90d-JavaScript-PY-242.21829.153" />
+-        <option value="bundled-python-sdk-464836ebc622-b74155a9e76b-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-242.21829.153" />
++        <option value="bundled-js-predefined-d6986cc7102b-5c90d61e3bab-JavaScript-PY-242.23726.102" />
++        <option value="bundled-python-sdk-5e1850174b45-399fe30bd8c1-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-242.23726.102" />
+       </set>
+     </attachedChunks>
+   </component>
+@@ -229,6 +230,7 @@
+       <workItem from="1730278822997" duration="15714000" />
+       <workItem from="1730367503069" duration="612000" />
+       <workItem from="1730377042614" duration="1385000" />
++      <workItem from="1730705547329" duration="16923000" />
+     </task>
+     <task id="LOCAL-00001" summary="gameboard functions">
+       <created>1729259402457</created>
+@@ -286,7 +288,23 @@
+       <option name="project" value="LOCAL" />
+       <updated>1730113203511</updated>
+     </task>
+-    <option name="localTasksCounter" value="9" />
++    <task id="LOCAL-00009" summary="save and load functions">
++      <option name="closed" value="true" />
++      <created>1730724087420</created>
++      <option name="number" value="00009" />
++      <option name="presentableId" value="LOCAL-00009" />
++      <option name="project" value="LOCAL" />
++      <updated>1730724087420</updated>
++    </task>
++    <task id="LOCAL-00010" summary="save and load functions">
++      <option name="closed" value="true" />
++      <created>1730724180973</created>
++      <option name="number" value="00010" />
++      <option name="presentableId" value="LOCAL-00010" />
++      <option name="project" value="LOCAL" />
++      <updated>1730724180973</updated>
++    </task>
++    <option name="localTasksCounter" value="11" />
+     <servers />
+   </component>
+   <component name="TypeScriptGeneratedFilesManager">
+@@ -326,7 +344,8 @@
+     <MESSAGE value="Updated gameboard and player functions to NEW US8 v2" />
+     <MESSAGE value="Updated gameboard and player functions to NEW US8 v3&#10;&#10;Added Unit tests to Gameboard.py" />
+     <MESSAGE value="Touch Ups on Gameboard.py v5" />
+-    <option name="LAST_COMMIT_MESSAGE" value="Touch Ups on Gameboard.py v5" />
++    <MESSAGE value="save and load functions" />
++    <option name="LAST_COMMIT_MESSAGE" value="save and load functions" />
+   </component>
+   <component name="XDebuggerManager">
+     <breakpoint-manager>
+@@ -352,9 +371,9 @@
+     </watches-manager>
+   </component>
+   <component name="com.intellij.coverage.CoverageDataManagerImpl">
+-    <SUITE FILE_PATH="coverage/Game_py$.coverage" NAME=" Coverage Results" MODIFIED="1730198824506" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+-    <SUITE FILE_PATH="coverage/Game_py$GUI.coverage" NAME="GUI Coverage Results" MODIFIED="1730378327995" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/View" />
+-    <SUITE FILE_PATH="coverage/Game_py$gui.coverage" NAME="gui Coverage Results" MODIFIED="1730294710638" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/View" />
+     <SUITE FILE_PATH="coverage/Game_py$new.coverage" NAME="new Coverage Results" MODIFIED="1730338734766" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/View" />
++    <SUITE FILE_PATH="coverage/Game_py$GUI.coverage" NAME="GUI Coverage Results" MODIFIED="1730732677248" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/View" />
++    <SUITE FILE_PATH="coverage/Game_py$gui.coverage" NAME="gui Coverage Results" MODIFIED="1730294710638" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/View" />
++    <SUITE FILE_PATH="coverage/Game_py$.coverage" NAME=" Coverage Results" MODIFIED="1730736427024" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+   </component>
+ </project>
+\ No newline at end of file

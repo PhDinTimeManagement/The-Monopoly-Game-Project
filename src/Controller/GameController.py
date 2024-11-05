@@ -226,7 +226,7 @@ class SavedGame:
         self.game_round = controller.get_game_round()
 
         # Saves the setup of the gameboard as a list
-        self.tiles = gameboard.tiles.copy()
+        self.tiles = controller.board.tiles.copy()
 
         # Saves players information
         self.players_list = controller.get_player_list().copy()

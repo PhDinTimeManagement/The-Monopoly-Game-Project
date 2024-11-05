@@ -129,8 +129,3 @@ class GameLogic:
         elif len(Player.players_list) == 1:
             message = f"The winner is: {Player.players_list[0].get_name()}, with {Player.players_list[0].get_current_money()} money."
             return message
-
-
-    @staticmethod
-    def store_current_game(self):
-        pass
