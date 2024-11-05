@@ -148,6 +148,9 @@ class Jail(Tile):
 
     def free_player(self, player):
         self.jailed_players.remove(player.get_name())
+        player.set_in_jail_turns(0)
+        player.set_jail_status(False)
+        player.set_fine_payed(False)
         message = f"{player.get_name()} is freed from Jail"
         return message
 

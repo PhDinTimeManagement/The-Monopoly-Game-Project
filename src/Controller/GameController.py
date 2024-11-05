@@ -7,7 +7,6 @@ from src.Model.Gameboard import *
 from src.Model.Player import *
 from src.Model.GameLogic import GameLogic
 from src.Controller.InputHandler import InputHandler
-from src.View.GUI import *
 from datetime import datetime
 
 class GameController:
@@ -45,7 +44,6 @@ class GameController:
 
     def set_save_name(self, save_name):
         self.save_name = save_name
-
 
     def set_remove_last_round(self, remove_last_round):
         self.game_logic.set_removed_last_round(remove_last_round)
@@ -123,8 +121,7 @@ class GameController:
         elif tile_type == "free_parking":
             # TODO parking animation
             pass
-        tile.player_landed(player_this_turn, action)
-
+        tile.player_landed(player_this_turn)
 
     """This function is called after pressing the 'Roll' button in the game window."""
     def roll_dice(self):
@@ -135,7 +132,7 @@ class GameController:
         self.land_and_complete_round(tile, player_this_turn)
         self.determine_next_round(player_this_turn)
 
-    #Roll function for player in jail
+    # Roll function for player in jail
     def in_jail(self):
         player_this_turn = self.get_player_list()[self.game_logic.get_player_turn()]
         dice_roll1, dice_roll2 = GameLogic.roll_dice()

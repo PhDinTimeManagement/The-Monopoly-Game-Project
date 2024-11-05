@@ -5,15 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e63f52e8-b5e2-4b82-8eb0-ddb8c465611b" name="Changes" comment="updated version of SAVE and LOAD + Unittest fixing and rewriting">
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_29_10_2024_17_47_[Changes]/shelved.patch" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_29_10_2024_17_47__Changes_.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Controller/GameController.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Controller/GameController.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Model/GameLogic.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Model/GameLogic.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Model/Gameboard.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Model/Gameboard.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Model/Player.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Model/Player.py" afterDir="false" />
     </list>
-    <list id="458f1a49-ddb6-468c-8c88-acfc5d7d71f6" name="Changes by cheny" comment="" />
     <list id="b53ad74c-d01b-4e52-9a34-f524bfab6613" name="Changes by Kent Max Chandra" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,12 +32,12 @@
     &quot;assignee&quot;: &quot;PhDinTimeManagement&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/PhDinTimeManagement/The-Monopoly-Game-Project.git",
-    "accountId": "358c0e21-a4ef-4bac-aa60-9c8cdc9c591a"
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/PhDinTimeManagement/The-Monopoly-Game-Project.git&quot;,
+    &quot;accountId&quot;: &quot;358c0e21-a4ef-4bac-aa60-9c8cdc9c591a&quot;
   }
-}]]></component>
+}</component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
@@ -57,51 +53,52 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python tests.Python tests for test_GameController.TestGameController.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_GameController.TestGameController.test_load_game.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_GameController.TestGameController.test_save_game.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_GameLogic.TestGameLogic.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_GameLogic.TestGameLogic.test_display_winner.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_GameLogic.TestGameLogic.test_game_ends.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_GameLogic.TestGameLogic.test_get_player_turn.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_GameLogic.TestGameLogic.test_out_jail_on_double.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_GameLogic.TestGameLogic.test_player_out.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_Gameboard.TestGo.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_Gameboard.TestGo.test_player_landed.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_Gameboard.TestGoToJail.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_Gameboard.TestGoToJail.test_update_values.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_Gameboard.TestJail.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_Gameboard.TestJail.test_set_jailed_players.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_Gameboard.TestProperty.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_Gameboard.TestProperty.test_buy.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_Gameboard.TestProperty.test_can_buy.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_Gameboard.TestProperty.test_pay_rent.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_Gameboard.TestProperty.test_set_owner.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests for test_Gameboard.TestProperty.test_update_values.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests in test_GameController.py.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests in test_GameLogic.py.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests in test_Gameboard.py.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Python tests in tests.executor&quot;: &quot;Run&quot;,
-    &quot;Python.GUI.executor&quot;: &quot;Run&quot;,
-    &quot;Python.gui.executor&quot;: &quot;Run&quot;,
-    &quot;Python.new.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;TODO_SCOPE&quot;: &quot;All Places&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/Hp/Desktop/The-Monopoly-Game-Project/src&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python tests.Python tests for test_GameController.TestGameController.executor": "Run",
+    "Python tests.Python tests for test_GameController.TestGameController.test_load_game.executor": "Run",
+    "Python tests.Python tests for test_GameController.TestGameController.test_save_game.executor": "Run",
+    "Python tests.Python tests for test_GameController.TestGameController.test_set_player_list.executor": "Run",
+    "Python tests.Python tests for test_GameLogic.TestGameLogic.executor": "Run",
+    "Python tests.Python tests for test_GameLogic.TestGameLogic.test_display_winner.executor": "Run",
+    "Python tests.Python tests for test_GameLogic.TestGameLogic.test_game_ends.executor": "Run",
+    "Python tests.Python tests for test_GameLogic.TestGameLogic.test_get_player_turn.executor": "Run",
+    "Python tests.Python tests for test_GameLogic.TestGameLogic.test_out_jail_on_double.executor": "Run",
+    "Python tests.Python tests for test_GameLogic.TestGameLogic.test_player_out.executor": "Run",
+    "Python tests.Python tests for test_Gameboard.TestGo.executor": "Run",
+    "Python tests.Python tests for test_Gameboard.TestGo.test_player_landed.executor": "Run",
+    "Python tests.Python tests for test_Gameboard.TestGoToJail.executor": "Run",
+    "Python tests.Python tests for test_Gameboard.TestGoToJail.test_update_values.executor": "Run",
+    "Python tests.Python tests for test_Gameboard.TestJail.executor": "Run",
+    "Python tests.Python tests for test_Gameboard.TestJail.test_set_jailed_players.executor": "Run",
+    "Python tests.Python tests for test_Gameboard.TestProperty.executor": "Run",
+    "Python tests.Python tests for test_Gameboard.TestProperty.test_buy.executor": "Run",
+    "Python tests.Python tests for test_Gameboard.TestProperty.test_can_buy.executor": "Run",
+    "Python tests.Python tests for test_Gameboard.TestProperty.test_pay_rent.executor": "Run",
+    "Python tests.Python tests for test_Gameboard.TestProperty.test_set_owner.executor": "Run",
+    "Python tests.Python tests for test_Gameboard.TestProperty.test_update_values.executor": "Run",
+    "Python tests.Python tests in test_GameController.py.executor": "Run",
+    "Python tests.Python tests in test_GameLogic.py.executor": "Run",
+    "Python tests.Python tests in test_Gameboard.py.executor": "Run",
+    "Python tests.Python tests in tests.executor": "Run",
+    "Python.GUI.executor": "Run",
+    "Python.gui.executor": "Run",
+    "Python.new.executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "TODO_SCOPE": "All Places",
+    "WebServerToolWindowFactoryState": "false",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "C:/Users/Hp/Desktop/The-Monopoly-Game-Project/src",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="PyCoverageOptionsProvider">
     <option name="myUseBundledCoveragePy" value="true" />
   </component>
@@ -116,31 +113,8 @@
       <recent name="D:\PolyU\PolyU Year 3\COMP3211 Software Engineering\Project Github\src\Model" />
     </key>
   </component>
-  <component name="RunManager" selected="Python tests.Python tests in test_GameController.py">
-    <configuration name="GUI" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="Source Code" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src/View" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/View/GUI.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="Python tests for test_GameLogic.TestGameLogic" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="Python tests.Python tests in tests">
+    <configuration name="Python tests for test_GameController.TestGameController.test_save_game" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
       <module name="Source Code" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -152,7 +126,23 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;test_GameLogic.TestGameLogic&quot;" />
+      <option name="_new_target" value="&quot;test_GameController.TestGameController.test_save_game&quot;" />
+      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Python tests for test_GameController.TestGameController.test_set_player_list" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="Source Code" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;test_GameController.TestGameController.test_set_player_list&quot;" />
       <option name="_new_targetType" value="&quot;PYTHON&quot;" />
       <method v="2" />
     </configuration>
@@ -224,11 +214,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python tests.Python tests in tests" />
+        <item itemvalue="Python tests.Python tests for test_GameController.TestGameController.test_save_game" />
+        <item itemvalue="Python tests.Python tests for test_GameController.TestGameController.test_set_player_list" />
         <item itemvalue="Python tests.Python tests in test_GameController.py" />
         <item itemvalue="Python tests.Python tests in test_Gameboard.py" />
-        <item itemvalue="Python tests.Python tests in tests" />
-        <item itemvalue="Python.GUI" />
-        <item itemvalue="Python tests.Python tests for test_GameLogic.TestGameLogic" />
       </list>
     </recent_temporary>
   </component>
@@ -272,7 +262,8 @@
       <workItem from="1730743920545" duration="780000" />
       <workItem from="1730767053814" duration="1079000" />
       <workItem from="1730770731790" duration="4357000" />
-      <workItem from="1730819915889" duration="4769000" />
+      <workItem from="1730819915889" duration="4991000" />
+      <workItem from="1730825301387" duration="3238000" />
     </task>
     <task id="LOCAL-00001" summary="gameboard functions">
       <created>1729259402457</created>
@@ -354,7 +345,23 @@
       <option name="project" value="LOCAL" />
       <updated>1730818683979</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="updated version of SAVE and LOAD + Unittest fixing and rewriting">
+      <option name="closed" value="true" />
+      <created>1730824801010</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1730824801010</updated>
+    </task>
+    <task id="LOCAL-00013" summary="updated version of SAVE and LOAD + Unittest fixing and rewriting">
+      <option name="closed" value="true" />
+      <created>1730824946342</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1730824946342</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -417,7 +424,7 @@
     <SUITE FILE_PATH="coverage/Game_py$new.coverage" NAME="new Coverage Results" MODIFIED="1730338734766" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/View" />
     <SUITE FILE_PATH="coverage/Game_py$GUI.coverage" NAME="GUI Coverage Results" MODIFIED="1730793276607" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/View" />
     <SUITE FILE_PATH="coverage/The_Monopoly_Game_py$GUI.coverage" NAME="GUI Coverage Results" MODIFIED="1730823389578" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/View" />
-    <SUITE FILE_PATH="coverage/The_Monopoly_Game_py$.coverage" NAME=" Coverage Results" MODIFIED="1730824684640" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/The_Monopoly_Game_py$.coverage" NAME=" Coverage Results" MODIFIED="1730826711058" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/Game_py$.coverage" NAME=" Coverage Results" MODIFIED="1730793809543" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/Game_py$Test.coverage" NAME="Test Coverage Results" MODIFIED="1730432574768" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Game_py$gui.coverage" NAME="gui Coverage Results" MODIFIED="1730294710638" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/View" />
