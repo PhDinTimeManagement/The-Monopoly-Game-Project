@@ -119,6 +119,7 @@ class Property(Tile):
         message = f"{player.get_name()} payed {rent_amount} HKD to {self.owner.get_name()}"
         return player.get_current_money(), message   # current player amount is returned (only for testing)
 
+    # noinspection PyMethodOverriding
     def player_landed(self, player, action):
         if action == "buy":
             self.buy(player)
