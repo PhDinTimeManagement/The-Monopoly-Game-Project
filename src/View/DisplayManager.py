@@ -1,5 +1,5 @@
-# display.py
 import tkinter as tk
+from src.Controller.InputHandler import InputHandler
 
 class DisplayManager:
     def __init__(self, gui):
@@ -35,6 +35,10 @@ class DisplayManager:
         self.player_insert_demo_image = tk.PhotoImage(file="../../assets/new_game_frame/player_insert_demo.png")
         self.edit_board_button_image = tk.PhotoImage(file="../../assets/new_game_frame/edit_board_button.png")
         self.start_game_image = tk.PhotoImage(file="../../assets/new_game_frame/play_button.png")
+        self.random_name_button_image = tk.PhotoImage(file="../../assets/new_game_frame/random_name_dice_button.png")
+        self.exit_new_game_hint_image = tk.PhotoImage(file="../../assets/new_game_frame/exit_new_game_hint.png")
+        self.yes_button_image = tk.PhotoImage(file="../../assets/new_game_frame/yes_button.png")
+        self.no_button_image = tk.PhotoImage(file="../../assets/new_game_frame/no_button.png")
 
     def setup_main_menu(self, frame):
         # Clear any existing widgets in the frame
@@ -156,13 +160,27 @@ class DisplayManager:
             player_box = canvas.create_image(x_position, y_position, anchor="nw", image=player_box_image)
             self.player_box_images_refs.append(player_box)  # Store the image reference
 
-            # Create a clickable rectangle that matches the image dimensions
+            # Add a dice image next to each player box for random name generation
+            dice_x_position = x_position - 55  # Adjust position to the left of the player box
+            dice_y_position = y_position + 10  # Slightly aligned with the player box
+            dice_button = canvas.create_image(dice_x_position, dice_y_position, anchor="nw",
+                                              image=self.random_name_button_image)
+
+            # Creating the dice button
+            dice_button = tk.Button(canvas, image=self.random_name_button_image, bd=0,  # No border
+                highlightthickness=0, highlightbackground="#FBF8F5", bg="#FBF8F5", activebackground="#FBF8F5",
+                command=lambda idx=i: self.generate_random_name(canvas, idx))
+
+            # Place the button
+            dice_button.place(x=x_position - 55, y=y_position + 9)
+
+            # Create a clickable rectangle that matches the player box image dimensions
             clickable_area = canvas.create_rectangle(
                 x_position, y_position, x_position + 1.2 * image_width, y_position + 1.2 * image_height,
                 outline="", fill=""
             )
 
-            # Bind click event to the clickable area instead of just the image
+            # Bind click event to the player box area to open an entry for manual name input
             canvas.tag_bind(clickable_area, "<Button-1>",
                             lambda e, idx=i, x=x_position, y=y_position: self.show_insert_entry(canvas, idx, x, y))
 
@@ -172,32 +190,19 @@ class DisplayManager:
         edit_board_button = canvas.create_image(self.gui.image_width - 450, 430, image=self.edit_board_button_image)
         play_button = canvas.create_image(self.gui.image_width - 450, 650, image=self.start_game_image)
 
-        # Calculate the centered position of Edit Board button and Play button
-        edit_board_x = self.gui.image_width - 450
-        edit_board_y = 430
-        play_button_x = self.gui.image_width - 450
-        play_button_y = 650
-
-        # Get image dimensions
-        edit_board_width = self.edit_board_button_image.width()
-        edit_board_height = self.edit_board_button_image.height()
-        play_button_width = self.start_game_image.width()
-        play_button_height = self.start_game_image.height()
-
-        # Create clickable rectangles slightly larger than the images, centered on the image position
+        # Create clickable rectangles for Edit Board and Play buttons
         edit_board_clickable_area = canvas.create_rectangle(
-            edit_board_x - (edit_board_width * 0.6),  # Left edge
-            edit_board_y - (edit_board_height * 0.6),  # Top edge
-            edit_board_x + (edit_board_width * 0.6),  # Right edge
-            edit_board_y + (edit_board_height * 0.6),  # Bottom edge
+            self.gui.image_width - 450 - (self.edit_board_button_image.width() * 0.6),
+            430 - (self.edit_board_button_image.height() * 0.6),
+            self.gui.image_width - 450 + (self.edit_board_button_image.width() * 0.6),
+            430 + (self.edit_board_button_image.height() * 0.6),
             outline="", fill=""
         )
-
         play_button_clickable_area = canvas.create_rectangle(
-            play_button_x - (play_button_width * 0.6),  # Left edge
-            play_button_y - (play_button_height * 0.6),  # Top edge
-            play_button_x + (play_button_width * 0.6),  # Right edge
-            play_button_y + (play_button_height * 0.6),  # Bottom edge
+            self.gui.image_width - 450 - (self.start_game_image.width() * 0.6),
+            650 - (self.start_game_image.height() * 0.6),
+            self.gui.image_width - 450 + (self.start_game_image.width() * 0.6),
+            650 + (self.start_game_image.height() * 0.6),
             outline="", fill=""
         )
 
@@ -208,46 +213,73 @@ class DisplayManager:
 
         return canvas
 
-    def show_insert_entry(self, canvas, idx, x_position, y_position):
-        # Always show player_insert_demo_image when a box is clicked
-        if not self.clicked_boxes[idx]:
-            canvas.itemconfig(self.player_box_images_refs[idx], image=self.player_insert_demo_image)
-            self.clicked_boxes[idx] = True  # Mark this box as clicked
+    def generate_random_name(self, canvas, idx):
+        # Generate a random name
+        player_name = self.gui.input_handler.generate_name()
 
-        # Retrieve the current name to display in the entry box if it exists
-        previous_name = str(
-            self.gui.input_handler.players_names[idx] if idx < len(self.gui.input_handler.players_names) else "")
+        # Check if the name can be stored according to validation rules
+        if self.gui.input_handler.validate_and_store_name(idx, player_name):
+            # Pass the valid name to show_insert_entry for display
+            self.show_insert_entry(canvas, idx, name=player_name)
+        else:
+            # Show error if the name is invalid
+            self.show_error(canvas, idx, "* Generated name is invalid or duplicate.")
 
-        # If an entry already exists, remove it
-        if self.player_entries[idx]:
-            self.player_entries[idx].destroy()
-
-        # Create an entry field for input with the existing name (if any)
-        entry = tk.Entry(canvas, font=("Comic Sans MS", 20), width=20, bd=0, bg="#E5E8E8", fg="#000000",
-                         highlightthickness=0, justify="left")
-        if previous_name:  # Only insert if there's an existing name
-            entry.insert(0, previous_name)  # Populate entry with existing name
-        entry.place(x=x_position + 22, y=y_position + 16)
-        entry.focus_set()
-
-        # Define actions for Enter key and focus out
-        def on_submit(event):
-            new_name = entry.get().strip()
-            if new_name != previous_name:
-                self.save_player_name(entry, idx, canvas)  # Save only if the name changed
+    def show_insert_entry(self, canvas, idx, x_position=None, y_position=None, name=None):
+        # If a random name is provided, validate and show it
+        if name:
+            # Display the generated name
+            player_name = name
+            # Validate and store the generated name
+            if self.gui.input_handler.validate_and_store_name(idx, player_name):
+                if self.player_text_refs[idx]:
+                    canvas.delete(self.player_text_refs[idx])
+                self.player_text_refs[idx] = canvas.create_text(
+                    400, 290 + idx * 100, text=player_name, font=("Comic Sans MS", 20), fill="#000000"
+                )
             else:
-                self.clear_entry(entry, idx, canvas, revert_name=True)  # Keep the original name if unchanged
+                self.show_error(canvas, idx, "* Generated name is invalid or duplicate.")
+        else:
+            # If no random name, allow user to input manually
+            # Always show player_insert_demo_image when a box is clicked
+            if not self.clicked_boxes[idx]:
+                canvas.itemconfig(self.player_box_images_refs[idx], image=self.player_insert_demo_image)
+                self.clicked_boxes[idx] = True  # Mark this box as clicked
 
-        entry.bind("<Return>", on_submit)
-        entry.bind("<FocusOut>",
-                   lambda e: on_submit(e) if entry.get().strip() != previous_name else self.clear_entry(entry, idx,
-                                                                                                        canvas,
-                                                                                                        revert_name=True))
-        self.player_entries[idx] = entry
+            # Retrieve the current name to display in the entry box if it exists
+            previous_name = str(
+                self.gui.input_handler.players_names[idx] if idx < len(self.gui.input_handler.players_names) else "")
 
-        # Clear any previous error message
-        if self.error_labels[idx]:
-            self.error_labels[idx].destroy()
+            # If an entry already exists, remove it
+            if self.player_entries[idx]:
+                self.player_entries[idx].destroy()
+
+            # Create an entry field for input with the existing name (if any)
+            entry = tk.Entry(canvas, font=("Comic Sans MS", 20), width=20, bd=0, bg="#E5E8E8", fg="#000000",
+                             highlightthickness=0, justify="left")
+            if previous_name:  # Only insert if there's an existing name
+                entry.insert(0, previous_name)  # Populate entry with existing name
+            entry.place(x=x_position + 22, y=y_position + 16)
+            entry.focus_set()
+
+            # Define actions for Enter key and focus out
+            def on_submit(event):
+                new_name = entry.get().strip()
+                if new_name != previous_name:
+                    self.save_player_name(entry, idx, canvas)  # Save only if the name changed
+                else:
+                    self.clear_entry(entry, idx, canvas, revert_name=True)  # Keep the original name if unchanged
+
+            entry.bind("<Return>", on_submit)
+            entry.bind("<FocusOut>",
+                       lambda e: on_submit(e) if entry.get().strip() != previous_name else self.clear_entry(entry, idx,
+                                                                                                            canvas,
+                                                                                                            revert_name=True))
+            self.player_entries[idx] = entry
+
+            # Clear any previous error message
+            if self.error_labels[idx]:
+                self.error_labels[idx].destroy()
 
     def clear_entry(self, entry, idx, canvas, revert_name=False):
         """Clear the entry field and revert to the previous name if `revert_name` is True."""
