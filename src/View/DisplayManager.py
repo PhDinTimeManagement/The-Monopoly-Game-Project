@@ -275,28 +275,33 @@ class DisplayManager:
             self.show_error(canvas, idx, "* Previous player name must be entered first.")
             return
 
-        # Validate and store the name if it's not empty and under the character limit
+        # Validate and store the name if it's under the character limit
         if len(player_name) <= 20 and self.gui.input_handler.validate_and_store_name(idx, player_name):
-            # Clear any previous error message
+            # Clear any previous error message and reset the entry box if it had an error
             if self.error_labels[idx]:
                 self.error_labels[idx].destroy()
                 self.error_labels[idx] = None  # Reset the error label
 
-            print(f"Player {idx + 1} name saved: {player_name}")  # Debug info
-            entry.destroy()
-            self.player_entries[idx] = None  # Clear reference
-
-            # Clear previous text if it exists
+            # Remove any existing text reference for the current player
             if self.player_text_refs[idx]:
-                canvas.delete(self.player_text_refs[idx])  # Remove previous text
+                canvas.delete(self.player_text_refs[idx])
+                self.player_text_refs[idx] = None
 
-            # Display the new name within the text box
+            # Store and display the valid player name
+            print(f"Player {idx + 1} name saved: {player_name}")  # Debug info
+            entry.delete(0, tk.END)  # Clear the entry to remove any leftover invalid text
+            entry.insert(0, player_name)  # Ensure the valid name is displayed
+            entry.destroy()  # Close the entry widget once saved
+
+            # Display the name as static text on the canvas
             self.player_text_refs[idx] = canvas.create_text(
                 348, 290 + idx * 100, text=player_name, font=("Comic Sans MS", 20), fill="#000000"
             )
+
         else:
-            # Show error if name is invalid (too short or too long)
+            # Show error if name is invalid (too short or too long) and clear the entry
             self.show_error(canvas, idx, "* Name must be 1-20 characters.")
+            entry.delete(0, tk.END)  # Clear the input to prompt re-entry
 
     def show_error(self, canvas, idx, message):
         """Display an error message below the entry box."""
