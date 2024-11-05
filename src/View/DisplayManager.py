@@ -257,6 +257,12 @@ class DisplayManager:
             self.player_text_refs[idx] = canvas.create_text(
                 348, 290 + idx * 100, text=player_name, font=("Comic Sans MS", 20), fill="#000000"
             )
+
+            # Clear any error message for this player
+            if self.error_labels[idx]:
+                self.error_labels[idx].destroy()
+                self.error_labels[idx] = None
+
         else:
             # Show error if name is invalid (too short or too long)
             self.show_error(canvas, idx, "* Name must be 1-20 characters.")
