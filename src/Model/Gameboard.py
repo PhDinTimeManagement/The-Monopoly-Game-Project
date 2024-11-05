@@ -15,6 +15,9 @@ class Tile:
     def get_tile_name(self):
         return self.name
 
+    def get_tile_type(self):
+        return self.tile_type
+
     def set_tile_name(self, new_name):
         self.name = new_name
 
@@ -116,16 +119,14 @@ class Property(Tile):
         message = f"{player.get_name()} payed {rent_amount} HKD to {self.owner.get_name()}"
         return player.get_current_money(), message   # current player amount is returned (only for testing)
 
-    def player_landed(self, player):
-        """provides option to the player"""
-        if self.owner is None:
-            return True
-            # message = f"{self.name} is available for purchase. Listed at {self.get_price()} HKD"
+    def player_landed(self, player, action):
+        if action == "buy":
+            self.buy(player)
+        elif action == "rent":
+            self.rent(player)
         else:
-            # message = f"{self.name} is owned by {self.get_owner()}. {player.get_name()} owes {self.get_price()} HKD"
-            self.pay_rent(player)
-            return False
-        # return message
+            return None
+
 
 
 class Jail(Tile):

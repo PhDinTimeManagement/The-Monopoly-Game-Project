@@ -51,13 +51,13 @@ class GameLogic:
     def player_move(dice_number, player, gameboard):
         for i in range(0, dice_number):
             player.update_square(1)
-            if player.get_square() > 20:
-                player.set_square(1)
-            if gameboard.tiles[player.get_square() - 1].name == "Go" and i != dice_number - 1:
-                gameboard.tiles[player.get_square() - 1].player_landed(player)  # Import Logic for 'Go'
+            if player.get_square() > 19:
+                player.set_square(0)
+            if gameboard.tiles[player.get_square()].name == "Go" and i != dice_number:
+                gameboard.tiles[player.get_square()].player_landed(player, )  # Import Logic for 'Go'
 
-        information = gameboard.tiles[player.get_square() - 1].player_landed(player)  # Run other logic when the player lands
-        return information
+        # returns the tile
+        return gameboard.tiles[player.get_square()]
 
     """Three functions are for in jail"""
 

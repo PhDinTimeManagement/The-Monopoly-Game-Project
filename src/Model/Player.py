@@ -4,7 +4,7 @@ class Player:
         self._current_money = 1500
         self._jail_status = False
         self._fine_payed = False
-        self._current_square = 1
+        self._current_square = 0
         self._in_jail_turns = 0
         self._properties = []
 
