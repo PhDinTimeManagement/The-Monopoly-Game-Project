@@ -8,7 +8,7 @@ class InputHandler:
 
     def validate_and_store_name(self, idx, player_name):
         if 0 <= idx < len(self.players_names):
-            if player_name and len(player_name) < 20:
+            if player_name and len(player_name) <= 20:
                 self.players_names[idx] = player_name
                 return True  # Name is valid
             else:
