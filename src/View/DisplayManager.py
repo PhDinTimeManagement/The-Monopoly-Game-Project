@@ -48,21 +48,49 @@ class DisplayManager:
         # Button positions
         button_y_positions = [self.gui.image_height * 0.55, self.gui.image_height * 0.70, self.gui.image_height * 0.85]
 
-        # "New Game" button
-        new_game_button = canvas.create_image(self.gui.image_width // 2, button_y_positions[0], image=self.new_game_image)
-        canvas.tag_bind(new_game_button, "<Button-1>", lambda e: self.gui.show_frame("NewGamePage"))
+        # Calculate dimensions for each button to set clickable areas
+        new_game_width, new_game_height = self.new_game_image.width(), self.new_game_image.height()
+        load_game_width, load_game_height = self.load_game_image.width(), self.load_game_image.height()
+        exit_width, exit_height = self.exit_image.width(), self.exit_image.height()
+        info_width, info_height = self.info_image.width(), self.info_image.height()
 
-        # "Load Game" button
-        load_game_button = canvas.create_image(self.gui.image_width // 2, button_y_positions[1], image=self.load_game_image)
-        canvas.tag_bind(load_game_button, "<Button-1>", lambda e: self.gui.show_frame("LoadPage"))
+        # "New Game" button and clickable area
+        new_game_button = canvas.create_image(self.gui.image_width // 2, button_y_positions[0],
+                                              image=self.new_game_image)
+        new_game_clickable_area = canvas.create_rectangle(
+            (self.gui.image_width // 2) - (0.6 * new_game_width), button_y_positions[0] - (0.6 * new_game_height),
+            (self.gui.image_width // 2) + (0.6 * new_game_width), button_y_positions[0] + (0.6 * new_game_height),
+            outline="", fill=""
+        )
+        canvas.tag_bind(new_game_clickable_area, "<Button-1>", lambda e: self.gui.show_frame("NewGamePage"))
 
-        # "Exit" button
+        # "Load Game" button and clickable area
+        load_game_button = canvas.create_image(self.gui.image_width // 2, button_y_positions[1],
+                                               image=self.load_game_image)
+        load_game_clickable_area = canvas.create_rectangle(
+            (self.gui.image_width // 2) - (0.6 * load_game_width), button_y_positions[1] - (0.6 * load_game_height),
+            (self.gui.image_width // 2) + (0.6 * load_game_width), button_y_positions[1] + (0.6 * load_game_height),
+            outline="", fill=""
+        )
+        canvas.tag_bind(load_game_clickable_area, "<Button-1>", lambda e: self.gui.show_frame("LoadPage"))
+
+        # "Exit" button and clickable area
         exit_button = canvas.create_image(self.gui.image_width // 2, button_y_positions[2], image=self.exit_image)
-        canvas.tag_bind(exit_button, "<Button-1>", lambda e: self.gui.quit())
+        exit_clickable_area = canvas.create_rectangle(
+            (self.gui.image_width // 2) - (0.6 * exit_width), button_y_positions[2] - (0.6 * exit_height),
+            (self.gui.image_width // 2) + (0.6 * exit_width), button_y_positions[2] + (0.6 * exit_height),
+            outline="", fill=""
+        )
+        canvas.tag_bind(exit_clickable_area, "<Button-1>", lambda e: self.gui.quit())
 
-        # "Info" button in the corner
+        # "Info" button in the corner and clickable area
         info_button = canvas.create_image(self.gui.image_width - 85, 75, image=self.info_image)
-        canvas.tag_bind(info_button, "<Button-1>", lambda e: self.gui.show_frame("InfoPage"))
+        info_clickable_area = canvas.create_rectangle(
+            (self.gui.image_width - 85) - (0.6 * info_width), 75 - (0.6 * info_height),
+            (self.gui.image_width - 85) + (0.6 * info_width), 75 + (0.6 * info_height),
+            outline="", fill=""
+        )
+        canvas.tag_bind(info_clickable_area, "<Button-1>", lambda e: self.gui.show_frame("InfoPage"))
 
         return canvas
 
@@ -77,11 +105,21 @@ class DisplayManager:
         canvas.place(x=0, y=0)
         canvas.create_image(0, 0, anchor="nw", image=self.info_frame_background)
 
+        # Back button dimensions for creating a larger clickable area
+        back_button_width, back_button_height = self.back_arrow_image.width(), self.back_arrow_image.height()
+
         # Display the back button to return to the main menu
         back_button = canvas.create_image(50, 50, image=self.back_arrow_image)
 
-        # Use tag_bind to associate the back button click with show_frame("MainMenu")
-        canvas.tag_bind(back_button, "<Button-1>", lambda e: self.gui.show_frame("MainMenu"))
+        # Create a clickable rectangle slightly larger than the back button image
+        back_button_clickable_area = canvas.create_rectangle(
+            50 - (0.2 * back_button_width), 50 - (0.2 * back_button_height),  # Top-left corner
+            50 + back_button_width * 1.2, 50 + back_button_height * 1.2,  # Bottom-right corner
+            outline="", fill=""
+        )
+
+        # Bind the enlarged clickable area to the "MainMenu" frame switch
+        canvas.tag_bind(back_button_clickable_area, "<Button-1>", lambda e: self.gui.show_frame("MainMenu"))
 
         return canvas
 
@@ -109,12 +147,22 @@ class DisplayManager:
         y_position = 260  # Starting Y position for player boxes
 
         for i, player_box_image in enumerate(self.player_box_images):
+            # Get dimensions of the player box image
+            image_width = player_box_image.width()
+            image_height = player_box_image.height()
+
             # Display each player box image
             player_box = canvas.create_image(x_position, y_position, anchor="nw", image=player_box_image)
             self.player_box_images_refs.append(player_box)  # Store the image reference
 
-            # Bind click event to show insert demo and entry box
-            canvas.tag_bind(player_box, "<Button-1>",
+            # Create a clickable rectangle that matches the image dimensions
+            clickable_area = canvas.create_rectangle(
+                x_position, y_position, x_position + 1.2 * image_width, y_position + 1.2 * image_height,
+                outline="", fill=""
+            )
+
+            # Bind click event to the clickable area instead of just the image
+            canvas.tag_bind(clickable_area, "<Button-1>",
                             lambda e, idx=i, x=x_position, y=y_position: self.show_insert_entry(canvas, idx, x, y))
 
             y_position += 100  # Adjust y-position for the next player box
@@ -123,9 +171,39 @@ class DisplayManager:
         edit_board_button = canvas.create_image(self.gui.image_width - 450, 430, image=self.edit_board_button_image)
         play_button = canvas.create_image(self.gui.image_width - 450, 650, image=self.start_game_image)
 
-        # Bind actions for Edit Board and Play buttons
-        canvas.tag_bind(edit_board_button, "<Button-1>", lambda e: print("Edit board clicked"))  # Placeholder action
-        canvas.tag_bind(play_button, "<Button-1>", lambda e: self.start_game(input_handler))
+        # Calculate the centered position of Edit Board button and Play button
+        edit_board_x = self.gui.image_width - 450
+        edit_board_y = 430
+        play_button_x = self.gui.image_width - 450
+        play_button_y = 650
+
+        # Get image dimensions
+        edit_board_width = self.edit_board_button_image.width()
+        edit_board_height = self.edit_board_button_image.height()
+        play_button_width = self.start_game_image.width()
+        play_button_height = self.start_game_image.height()
+
+        # Create clickable rectangles slightly larger than the images, centered on the image position
+        edit_board_clickable_area = canvas.create_rectangle(
+            edit_board_x - (edit_board_width * 0.6),  # Left edge
+            edit_board_y - (edit_board_height * 0.6),  # Top edge
+            edit_board_x + (edit_board_width * 0.6),  # Right edge
+            edit_board_y + (edit_board_height * 0.6),  # Bottom edge
+            outline="", fill=""
+        )
+
+        play_button_clickable_area = canvas.create_rectangle(
+            play_button_x - (play_button_width * 0.6),  # Left edge
+            play_button_y - (play_button_height * 0.6),  # Top edge
+            play_button_x + (play_button_width * 0.6),  # Right edge
+            play_button_y + (play_button_height * 0.6),  # Bottom edge
+            outline="", fill=""
+        )
+
+        # Bind actions for Edit Board and Play clickable areas
+        canvas.tag_bind(edit_board_clickable_area, "<Button-1>",
+                        lambda e: print("Edit board clicked"))  # Placeholder action
+        canvas.tag_bind(play_button_clickable_area, "<Button-1>", lambda e: self.start_game(input_handler))
 
         return canvas
 
