@@ -8,6 +8,7 @@ class DisplayManager:
         self.player_entries = []  # To hold player name entry widgets
         self.player_box_images_refs = []  # To hold player box image references
         self.player_text_refs = [None] * 6  # To store references to the text displayed in each player box
+        self.clicked_boxes = [False] * 6  # Add a flag list to track clicked boxes
 
 
         # Main Menu images
@@ -208,27 +209,58 @@ class DisplayManager:
         return canvas
 
     def show_insert_entry(self, canvas, idx, x_position, y_position):
-        # Replace player box image with the demo image
-        canvas.itemconfig(self.player_box_images_refs[idx], image=self.player_insert_demo_image)
+        # Always show player_insert_demo_image when a box is clicked
+        if not self.clicked_boxes[idx]:
+            canvas.itemconfig(self.player_box_images_refs[idx], image=self.player_insert_demo_image)
+            self.clicked_boxes[idx] = True  # Mark this box as clicked
+
+        # Retrieve the current name to display in the entry box if it exists
+        previous_name = str(
+            self.gui.input_handler.players_names[idx] if idx < len(self.gui.input_handler.players_names) else "")
 
         # If an entry already exists, remove it
         if self.player_entries[idx]:
             self.player_entries[idx].destroy()
 
-        # Create an entry field for input
+        # Create an entry field for input with the existing name (if any)
         entry = tk.Entry(canvas, font=("Comic Sans MS", 20), width=20, bd=0, bg="#E5E8E8", fg="#000000",
                          highlightthickness=0, justify="left")
+        if previous_name:  # Only insert if there's an existing name
+            entry.insert(0, previous_name)  # Populate entry with existing name
         entry.place(x=x_position + 22, y=y_position + 16)
         entry.focus_set()
 
-        # Bind Enter key to submit input
-        entry.bind("<Return>", lambda e: self.save_player_name(entry, idx, canvas))
-        entry.bind("<FocusOut>", lambda e: self.clear_entry(entry, idx, canvas))
+        # Define actions for Enter key and focus out
+        def on_submit(event):
+            new_name = entry.get().strip()
+            if new_name != previous_name:
+                self.save_player_name(entry, idx, canvas)  # Save only if the name changed
+            else:
+                self.clear_entry(entry, idx, canvas, revert_name=True)  # Keep the original name if unchanged
+
+        entry.bind("<Return>", on_submit)
+        entry.bind("<FocusOut>",
+                   lambda e: on_submit(e) if entry.get().strip() != previous_name else self.clear_entry(entry, idx,
+                                                                                                        canvas,
+                                                                                                        revert_name=True))
         self.player_entries[idx] = entry
 
-        # Clear previous error message if present
+        # Clear any previous error message
         if self.error_labels[idx]:
             self.error_labels[idx].destroy()
+
+    def clear_entry(self, entry, idx, canvas, revert_name=False):
+        """Clear the entry field and revert to the previous name if `revert_name` is True."""
+        entry.destroy()
+        self.player_entries[idx] = None
+
+        # If reverting and there's a previous name, keep it visible
+        if revert_name and self.player_text_refs[idx]:
+            # Do nothing, keep the text as it is
+            pass
+        else:
+            canvas.itemconfig(self.player_box_images_refs[idx],
+                              image=self.player_box_images[idx])  # Reset to original box image
 
     def save_player_name(self, entry, idx, canvas):
         player_name = entry.get().strip()
@@ -239,13 +271,18 @@ class DisplayManager:
             return
 
         # Check if the previous player name has been entered (except for the first player)
-        if idx > 0 and not self.gui.input_handler.players_names[idx - 1]:  # Corrected line
+        if idx > 0 and not self.gui.input_handler.players_names[idx - 1]:
             self.show_error(canvas, idx, "* Previous player name must be entered first.")
             return
 
         # Validate and store the name if it's not empty and under the character limit
-        if self.gui.input_handler.validate_and_store_name(idx, player_name):
-            print(f"Player {idx + 1} name saved: {player_name}")  # Debug info, delete later
+        if len(player_name) <= 20 and self.gui.input_handler.validate_and_store_name(idx, player_name):
+            # Clear any previous error message
+            if self.error_labels[idx]:
+                self.error_labels[idx].destroy()
+                self.error_labels[idx] = None  # Reset the error label
+
+            print(f"Player {idx + 1} name saved: {player_name}")  # Debug info
             entry.destroy()
             self.player_entries[idx] = None  # Clear reference
 
@@ -257,12 +294,6 @@ class DisplayManager:
             self.player_text_refs[idx] = canvas.create_text(
                 348, 290 + idx * 100, text=player_name, font=("Comic Sans MS", 20), fill="#000000"
             )
-
-            # Clear any error message for this player
-            if self.error_labels[idx]:
-                self.error_labels[idx].destroy()
-                self.error_labels[idx] = None
-
         else:
             # Show error if name is invalid (too short or too long)
             self.show_error(canvas, idx, "* Name must be 1-20 characters.")
