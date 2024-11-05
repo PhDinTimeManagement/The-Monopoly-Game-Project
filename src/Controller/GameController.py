@@ -13,11 +13,12 @@ class GameController:
     def __init__(self):
         self.save_name = None
         self.board = Gameboard()
+        self.game_logic = GameLogic()
         self.players = Player.players_list
         self.broke_players = Player.broke_list
         self.input_handler = InputHandler()
-        self.current_turn = GameLogic.get_player_turn()
-        self.game_round = GameLogic.get_current_round()
+        self.current_turn = self.game_logic.get_player_turn()
+        self.game_round = self.game_logic.get_current_round()
 
     def get_player_list(self):
         return self.players
@@ -26,10 +27,10 @@ class GameController:
         return self.broke_players
 
     def get_game_round(self):
-        return self.game_round
+        return self.game_logic.get_current_round()
 
     def get_current_turn(self):
-        return self.current_turn
+        return self.game_logic.get_player_turn()
 
     def set_current_turn(self, turn):
         self.current_turn = turn
@@ -40,6 +41,11 @@ class GameController:
     def set_save_name(self, save_name):
         self.save_name = save_name
 
+    def set_save_player_turn(self, turn):
+        self.current_turn = turn
+
+    def set_remove_last_round(self, remove_last_round):
+        self.game_logic.set_removed_last_round(remove_last_round)
 
     """By Kent: We need to program to detect the click events from the users. The click will call the functions for us. """
     def start_game(self):
@@ -50,13 +56,14 @@ class GameController:
 
     """ This function is called after the 'Play' button is clicked in the game """
     def button_play(self):
-        player_this_turn = self.players[self.current_turn]
+        self.game_logic.set_player_turn(self.players)
+        player_this_turn = self.players[self.game_logic.get_player_turn()]
        #<show the roll dice button and display player_this_turn ONLY>
         pass
 
     """This function is called after pressing the 'Roll' button in the game window."""
     def roll_dice(self):
-        player_this_turn = self.players[self.current_turn]   
+        player_this_turn = self.players[self.game_logic.get_player_turn()]
         dice_roll1, dice_roll2 = GameLogic.roll_dice()
         information = GameLogic.player_move(dice_roll1+dice_roll2,player_this_turn,self.board)
         #Call function to display the animation in the view
@@ -92,7 +99,7 @@ class GameController:
         if GameLogic.player_broke(player_this_turn):
             GameLogic.player_out(player_this_turn,self.players,self.broke_players)
         
-        GameLogic.set_current_round(self.game_round + 1)
+        self.game_logic.set_current_round(self.game_round + 1)
         if GameLogic.game_ends(self.players,self.game_round):  #This is the base case for this recursive call, i.e. when the game ends
             GameLogic.display_winner(self.players)
         else:
@@ -184,6 +191,7 @@ class GameController:
         new_controller.set_save_name(game_data_dict["save_name"])
         new_controller.set_game_round(game_data_dict["game_round"])
         new_controller.set_current_turn(game_data_dict["current_turn"])
+        new_controller.set_remove_last_round(game_data_dict["remove_last_round"])
 
         # gameboard_setup is a list of dictionaries, will cycle and update appropriately
         gameboard_info = game_data_dict["gameboard_setup"]
@@ -212,7 +220,6 @@ class GameController:
             new_player.update_values(p_data["_username"], p_data["_current_money"], p_data["_jail_status"], p_data["_fine_payed"], p_data["_current_square"], p_data["_in_jail_turns"], p_data["_properties"])
             new_controller.broke_players.append(new_player)
 
-
 """ INITIALIZING CONTROLLER TO BE USED IN SAVED GAME, contains game information needed"""
 controller = GameController()
 
@@ -224,6 +231,7 @@ class SavedGame:
         self.save_time = datetime.now().strftime("%H:%M %d-%m-%Y")
         self.current_turn = controller.get_current_turn()
         self.game_round = controller.get_game_round()
+        self.game_logic = controller.game_logic
 
         # Saves the setup of the gameboard as a list
         self.tiles = controller.board.tiles.copy()
@@ -242,6 +250,7 @@ class SavedGame:
             "save_name": self.save_name,
             "save_time": self.save_time,
             "current_turn": self.current_turn,
+            "remove_last_round": self.game_logic.get_remove_last_round(),
             "game_round": self.game_round,
             "gameboard_setup": gameboard_data,
             "players_list": player_data,

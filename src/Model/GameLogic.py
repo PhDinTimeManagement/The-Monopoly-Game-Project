@@ -5,35 +5,40 @@ from src.Model.Player import *
 
 class GameLogic:
     """a private variable stating the amount of fine needed to be paid for getting out of jail"""
-    _fine = 150
-
-    @staticmethod
-    def get_fine():
-        return GameLogic._fine
-
-    @staticmethod
-    def  set_fine(fine):
-        GameLogic._fine = fine
+    def __init__ (self):
+        self._fine = 150
+        self._removed_last_round = False
+        self._current_round = 1
+        self._player_turn = -1
 
 
-    _current_round = 1
-    _player_turn = 0
+    def get_remove_last_round(self):
+        return self._removed_last_round
 
-    @staticmethod
-    def get_player_turn():
-        return GameLogic._player_turn
+    def set_removed_last_round(self,value):
+        self._removed_last_round = value
 
-    @staticmethod
-    def set_player_turn():
-        GameLogic._player_turn = (GameLogic.get_current_round()-1) % len(Player.players_list)
+    def get_fine(self):
+        return self._fine
 
-    @staticmethod
-    def get_current_round():
-        return GameLogic._current_round
+    def set_fine(self,fine):
+        self._fine = fine
 
-    @staticmethod
-    def set_current_round(new_round):
-        GameLogic._current_round = new_round
+    def get_player_turn(self):
+        return self._player_turn
+
+    def set_player_turn(self,players_list):
+        #If there is no player removed during last round
+        if not self._removed_last_round:
+            self._player_turn +=1
+        self._removed_last_round = False
+        self._player_turn = self._player_turn % len(players_list)
+
+    def get_current_round(self):
+        return self._current_round
+
+    def set_current_round(self,new_round):
+        self._current_round = new_round
 
     """Get the number rolled from the two dices by a player"""
     @staticmethod
@@ -101,11 +106,12 @@ class GameLogic:
     def player_broke(player):
         return player.get_current_money() < 0
 
-    @staticmethod
-    def player_out(player, player_list, broke_list):
+
+    def player_out(self,player, player_list, broke_list):
         player_list.remove(player)
         broke_list.append(player)
         player.delete_all_properties()
+        self.set_removed_last_round(True)
 
     """Check if the game is finished"""
 
