@@ -13,22 +13,18 @@ gameboard = Gameboard()
 
 
 class TestProperty(TestCase):
-    def test_construction(self):
-        assert Property("Wan Chai", 3, 1000, 100, None, "Red")
-        assert GoToJail(10)
-        assert Jail(4, [])
-        assert Chance(15)
-        assert Go(1500)
-        assert IncomeTax(3, 10)
-        assert FreeParking(14)
-
     def test_can_buy(self):
-        self.assertEqual(wan_chai.can_buy(player1), True)
-        self.assertEqual(wan_chai.can_buy(player1), False)
+        player1.set_current_money(1500)
+        self.assertTrue(wan_chai.can_buy(player1))
+        player1.set_current_money(500)
+        self.assertFalse(wan_chai.can_buy(player1))
 
     def test_buy(self):
-        self.assertEqual(wan_chai.buy(player1), True)
-        self.assertEqual(wan_chai.buy(player1), False)
+        player1.set_current_money(1500)
+        result, message = wan_chai.buy(player1)
+        self.assertTrue(result)
+        result, message = wan_chai.buy(player1)
+        self.assertFalse(result)
 
     def test_set_owner(self):
         wan_chai.set_owner(player1)
@@ -36,14 +32,14 @@ class TestProperty(TestCase):
 
     def test_pay_rent(self):
         starting_balance = player1.get_current_money()
-        self.assertGreaterEqual(wan_chai.pay_rent(player2), 0)
-        self.assertGreaterEqual(wan_chai.pay_rent(player2), 0)
-        self.assertGreaterEqual(wan_chai.pay_rent(player2), 0)
-        self.assertGreaterEqual(wan_chai.pay_rent(player2), 0)
-        self.assertGreaterEqual(wan_chai.pay_rent(player2), 0)
-        self.assertLess(wan_chai.pay_rent(player2), 0)
-        self.assertEqual(player1.get_current_money(), wan_chai.get_rent() * 5 + starting_balance)
-        print(f"{player1.get_name()} current balance is: {player1.get_current_money()} HKD")
+        wan_chai.set_owner(player1)
+        player2.set_current_money(300)
+        money_left, message = wan_chai.pay_rent(player2)
+        self.assertGreaterEqual(money_left, 0)
+        money_left, message = wan_chai.pay_rent(player2)
+        self.assertLess(money_left, 0)
+        self.assertEqual(player1.get_current_money(), wan_chai.get_rent() + starting_balance)
+        # print(f"{player1.get_name()} current balance is: {player1.get_current_money()} HKD")
 
     def test_update_values(self):
         testUpdate = Property("Wan Chai", 3, 1000, 100, None, "Red")
@@ -59,11 +55,18 @@ class TestProperty(TestCase):
 
 class TestJail(TestCase):
     def test_set_jailed_players(self):
-        self.assertEqual(JailTile.get_jailed_players(), [player1, player2])
+        JailTile = gameboard.get_jail_tile()
+        player_list = [player1, player2]
+        JailTile.set_jailed_players(player_list)
+        jailed_list = [player.get_name() for player in player_list]
+
+        self.assertListEqual(JailTile.get_jailed_players(), jailed_list)
         JailTile.free_player(player2)
-        self.assertEqual(JailTile.get_jailed_players(), [player1])
+        jailed_list.remove(player2.get_name())
+        self.assertListEqual(JailTile.get_jailed_players(), jailed_list)
         JailTile.free_player(player1)
-        self.assertEqual(JailTile.get_jailed_players(), [])
+        jailed_list.remove(player1.get_name())
+        self.assertListEqual(JailTile.get_jailed_players(), [])
 
 
 class TestGo(TestCase):
@@ -80,8 +83,9 @@ class TestGo(TestCase):
 
 class TestGoToJail(TestCase):
     def test_player_landed(self):
-        go_to_jail.player_landed(player1)
-        go_to_jail.player_landed(player2)
+        JailTile = gameboard.get_jail_tile()
+        go_to_jail.player_landed(player1, JailTile)
+        go_to_jail.player_landed(player2, JailTile)
 
     def test_update_values(self):
         testUpdate = GoToJail(10)

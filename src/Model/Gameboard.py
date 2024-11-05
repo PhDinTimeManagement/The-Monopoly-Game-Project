@@ -100,11 +100,12 @@ class Property(Tile):
             player.remove_money(self.price)
             player.add_properties(self)
             self.set_owner(player)
-            print(f"{player.get_name()} bought {self.name} for {self.get_price()} HKD")
-            return True
+            message = f"{player.get_name()} bought {self.name} for {self.get_price()} HKD"
+            result = True
         else:
-            print(f"{player.get_name()}'s balance is not enough to buy {self.name}")
-            return False
+            message = f"{player.get_name()}'s balance is not enough to buy {self.name}"
+            result = False
+        return result, message
 
     def pay_rent(self, player):
         rent_amount = self.get_rent()   # gets rent value
@@ -112,8 +113,8 @@ class Property(Tile):
             rent_amount = player.get_current_money()  # if not gets all the player can give
         player.remove_money(self.get_rent())    # removes from the player total what is owed
         self.owner.add_money(rent_amount)  # all money available is added to the owner
-        print(f"{player.get_name()} payed {rent_amount} HKD to {self.owner.get_name()}")
-        return player.get_current_money()   # current player amount is returned (only for testing)
+        message = f"{player.get_name()} payed {rent_amount} HKD to {self.owner.get_name()}"
+        return player.get_current_money(), message   # current player amount is returned (only for testing)
 
     def player_landed(self, player):
         """provides option to the player"""
