@@ -138,7 +138,7 @@ class DisplayManager:
             self.player_entries[idx].destroy()
 
         # Create an entry field for input
-        entry = tk.Entry(canvas, font=("Comic Sans MS", 20), width=20, bd=0, bg="#E5E5E5", fg="#000000",
+        entry = tk.Entry(canvas, font=("Comic Sans MS", 20), width=20, bd=0, bg="#E5E8E8", fg="#000000",
                          highlightthickness=0, justify="left")
         entry.place(x=x_position + 22, y=y_position + 16)
         entry.focus_set()
@@ -155,9 +155,19 @@ class DisplayManager:
     def save_player_name(self, entry, idx, canvas):
         player_name = entry.get().strip()
 
-        # Validate and store name
+        # Check if the entered name is already in use by another player
+        if player_name in self.gui.input_handler.get_all_player_names():
+            self.show_error(canvas, idx, "* Name cannot be the same as another player.")
+            return
+
+        # Check if the previous player name has been entered (except for the first player)
+        if idx > 0 and not self.gui.input_handler.players_names[idx - 1]:  # Corrected line
+            self.show_error(canvas, idx, "* Previous player name must be entered first.")
+            return
+
+        # Validate and store the name if it's not empty and under the character limit
         if self.gui.input_handler.validate_and_store_name(idx, player_name):
-            print(f"Player {idx + 1} name saved: {player_name}")  # Debug info
+            print(f"Player {idx + 1} name saved: {player_name}")  # Debug info, delete later
             entry.destroy()
             self.player_entries[idx] = None  # Clear reference
 
@@ -165,21 +175,28 @@ class DisplayManager:
             if self.player_text_refs[idx]:
                 canvas.delete(self.player_text_refs[idx])  # Remove previous text
 
-            # Display the new name
+            # Display the new name within the text box
             self.player_text_refs[idx] = canvas.create_text(
-                340, 270 + idx * 100, text=player_name, font=("Comic Sans MS", 16), fill="#000000"
+                348, 290 + idx * 100, text=player_name, font=("Comic Sans MS", 20), fill="#000000"
             )
         else:
-            self.show_error(canvas, idx, "Name must be 1-20 characters.")
+            # Show error if name is invalid (too short or too long)
+            self.show_error(canvas, idx, "* Name must be 1-20 characters.")
 
     def show_error(self, canvas, idx, message):
         """Display an error message below the entry box."""
-        x_position = 300
-        y_position = 330 + idx * 100  # Below each player box
+        x_position = 325
+        y_position = 322 + idx * 100  # Below each player box
         if self.error_labels[idx]:
-            self.error_labels[idx].destroy()  # Remove previous error message
+            self.error_labels[idx].destroy()
 
-        self.error_labels[idx] = tk.Label(canvas, text=message, font=("Comic Sans MS", 10), fg="red", bg="#FFFFFF")
+        self.error_labels[idx] = tk.Label(
+            canvas,
+            text=message,
+            font=("Comic Sans MS", 16),  # Adjust font size here
+            fg="red",
+            bg="#FBF8F5"
+        )
         self.error_labels[idx].place(x=x_position, y=y_position)
 
     def clear_entry(self, entry, idx, canvas):

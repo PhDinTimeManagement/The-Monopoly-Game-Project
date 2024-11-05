@@ -17,7 +17,6 @@ class InputHandler:
     def get_all_player_names(self):
         return [name for name in self.players_names if name]
 
-
     @staticmethod
     # Player can roll the dice to generate a random name
     def generate_name():
