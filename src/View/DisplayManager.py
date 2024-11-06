@@ -306,10 +306,11 @@ class DisplayManager:
 
             def on_submit(event):
                 new_name = entry.get().strip()
+                # If the user press <Return> with nothing, should back to the original state without saving
                 if new_name:
                     self.save_player_name(entry, idx, canvas)
                 else:
-                    self.clear_entry(entry, idx, canvas)  # Revert to original image if no input
+                    self.delete_name(canvas, idx)  # Reset to original image if entry is empty
 
             entry.bind("<Return>", on_submit)
             entry.bind("<FocusOut>",
