@@ -10,6 +10,9 @@ class DisplayManager:
         self.player_text_refs = [None] * 6  # To store references to the text displayed in each player box
         self.clicked_boxes = [False] * 6  # Add a flag list to track clicked boxes
 
+        self.active_widgets = []  # List to store references to active widgets
+        self.hidden_widgets = {}  # Dictionary to store widgets and their positions for hiding/showing
+
         # Base path for assets
         assets_base_path = os.path.join(os.path.dirname(__file__), "../../assets")
 
@@ -52,7 +55,6 @@ class DisplayManager:
 
         # New Gameplay frame images
         self.new_gameplay_frame_background = tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/gameplay_frame_background.png"))
-
 
     def setup_main_menu(self, frame):
         # Clear any existing widgets in the frame
@@ -155,7 +157,7 @@ class DisplayManager:
 
         # Display the back button to return to the main menu
         back_button = canvas.create_image(50, 50, image=self.back_arrow_image)
-        canvas.tag_bind(back_button, "<Button-1>", lambda e: self.gui.show_frame("MainMenu"))
+        canvas.tag_bind(back_button, "<Button-1>", lambda e: self.confirm_exit_new_game(canvas))
 
         # Store references to player input entries and images
         self.player_entries = [None] * 6  # To hold the entry widgets
@@ -174,19 +176,14 @@ class DisplayManager:
             player_box = canvas.create_image(x_position, y_position, anchor="nw", image=player_box_image)
             self.player_box_images_refs.append(player_box)  # Store the image reference
 
-            # Add a dice image next to each player box for random name generation
-            dice_x_position = x_position - 55  # Adjust position to the left of the player box
-            dice_y_position = y_position + 10  # Slightly aligned with the player box
-            dice_button = canvas.create_image(dice_x_position, dice_y_position, anchor="nw",
-                                              image=self.random_name_button_image)
-
             # Creating the dice button
             dice_button = tk.Button(canvas, image=self.random_name_button_image, bd=0,  # No border
                 highlightthickness=0, highlightbackground="#FBF8F5", bg="#FBF8F5", activebackground="#FBF8F5",
                 command=lambda idx=i: self.generate_random_name(canvas, idx))
 
             # Place the button
-            dice_button.place(x=x_position - 55, y=y_position + 9)
+            dice_button.place(x=x_position - 100, y=y_position + 9)
+            self.active_widgets.append(dice_button)  # Track the button for later removal
 
             # Trash button to delete names
             trash_button = tk.Button(canvas, image=self.trash_button_image, bd=0,
@@ -195,7 +192,8 @@ class DisplayManager:
                                      command=lambda idx=i: self.delete_name(canvas, idx))
 
             # Place the trash button
-            trash_button.place(x=x_position + 412, y=y_position + 9)  # Position right of the name box
+            trash_button.place(x=x_position - 55, y=y_position + 9)  # Position right of the name box
+            self.active_widgets.append(trash_button)  # Track the button for later removal
 
             # Create a clickable rectangle that matches the player box image dimensions
             clickable_area = canvas.create_rectangle(
@@ -303,6 +301,7 @@ class DisplayManager:
 
             entry = tk.Entry(canvas, font=("Comic Sans MS", 20), width=20, bd=0, bg="#E5E8E8", fg="#000000",
                              highlightthickness=0, justify="left")
+
             if previous_name:
                 entry.insert(0, previous_name)
             entry.place(x=x_position + 22, y=y_position + 16)
@@ -378,6 +377,7 @@ class DisplayManager:
             x_position = 325
         if y_position is None:
             y_position = 322 + idx * 100
+
         if self.error_labels[idx]:
             self.error_labels[idx].destroy()
 
@@ -390,6 +390,7 @@ class DisplayManager:
             bg="#FBF8F5"
         )
         self.error_labels[idx].place(x=x_position, y=y_position)
+        self.active_widgets.append(self.error_labels[idx])  # Track the label for later removal
 
     def check_and_start_game(self, input_handler):
         # Retrieve all player names
@@ -410,3 +411,51 @@ class DisplayManager:
 
         # Show the GameBoard frame
         self.gui.show_frame("GameBoard")
+
+    def confirm_exit_new_game(self, canvas):
+        # Hide all tracked widgets by storing their positions and calling `place_forget`
+        for widget in self.active_widgets:
+            try:
+                if widget.winfo_ismapped():  # Check if the widget is currently visible
+                    self.hidden_widgets[widget] = widget.place_info()  # Save widget's position info
+                    widget.place_forget()  # Hide the widget
+            except tk.TclError:
+                continue
+
+        # Now display exit confirmation
+        exit_hint = canvas.create_image(self.gui.image_width // 2 + 297, self.gui.image_height // 2 + 50,
+                                        image=self.exit_new_game_hint_image)
+
+        # Create Yes and No buttons in the popup
+        yes_button = canvas.create_image(self.gui.image_width // 2 + 150, self.gui.image_height // 2 + 200,
+                                         image=self.yes_button_image)
+        no_button = canvas.create_image(self.gui.image_width // 2 + 440, self.gui.image_height // 2 + 200,
+                                        image=self.no_button_image)
+
+        # Bind actions for Yes and No buttons
+        canvas.tag_bind(yes_button, "<Button-1>",
+                        lambda e: self.exit_to_main_menu(canvas, exit_hint, yes_button, no_button))
+        canvas.tag_bind(no_button, "<Button-1>",
+                        lambda e: self.cancel_exit_and_restore_widgets(canvas, exit_hint, yes_button, no_button))
+
+    def exit_to_main_menu(self, canvas, exit_hint, yes_button, no_button):
+        # Clear player data, remove the exit hint, and go back to main menu
+        self.clear_all_player_data(canvas)
+        self.cancel_exit_and_restore_widgets(canvas, exit_hint, yes_button, no_button)
+        self.gui.show_frame("MainMenu")
+
+    def cancel_exit_and_restore_widgets(self, canvas, exit_hint, yes_button, no_button):
+        # Clear the exit hint and buttons
+        canvas.delete(exit_hint)
+        canvas.delete(yes_button)
+        canvas.delete(no_button)
+
+        # Restore all widgets to their original positions
+        for widget, position_info in self.hidden_widgets.items():
+            widget.place(**position_info)  # Re-position each widget
+        self.hidden_widgets.clear()  # Clear the dictionary after restoring
+
+    def clear_all_player_data(self, canvas):
+        # Clear all entries for player data
+        for idx in range(6):
+            self.delete_name(canvas, idx)
