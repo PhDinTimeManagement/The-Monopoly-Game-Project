@@ -248,25 +248,25 @@ class FreeParking(Tile):
 class Gameboard:
     def __init__(self):
         self.tiles = [Go(1500),
-                      Property("Central", 1, 800, 90, None, "Blue"),
-                      Property("Wan Chai", 2, 700, 65, None, "Blue"),
+                      Property("Central", 1, 800, 90, None, "blue"),
+                      Property("Wan Chai", 2, 700, 65, None, "blue"),
                       IncomeTax(3, 10),
-                      Property("Stanley", 4, 600, 60, None, "Blue"),
+                      Property("Stanley", 4, 600, 60, None, "blue"),
                       Jail(5, []),
-                      Property("Shek-O", 6, 400, 10, None, "Red"),
-                      Property("Mong Kok", 7, 500, 40, None, "Red"),
+                      Property("Shek-O", 6, 400, 10, None, "red"),
+                      Property("Mong Kok", 7, 500, 40, None, "red"),
                       Chance(8),
-                      Property("Tsing Yi", 9, 400, 15, None, "Red"),
+                      Property("Tsing Yi", 9, 400, 15, None, "red"),
                       FreeParking(10),
-                      Property("Shatin", 11, 700, 75, None, "Green"),
+                      Property("Shatin", 11, 700, 75, None, "green"),
                       Chance(12),
-                      Property("Tuen Mun", 13, 400, 20, None, "Green"),
-                      Property("Tai Po", 14, 500, 25, None, "Green"),
+                      Property("Tuen Mun", 13, 400, 20, None, "green"),
+                      Property("Tai Po", 14, 500, 25, None, "green"),
                       GoToJail(15),
-                      Property("Sai Kung", 16, 400, 10, None, "Yellow"),
-                      Property("Yuen Long", 17, 400, 25, None, "Yellow"),
+                      Property("Sai Kung", 16, 400, 10, None, "yellow"),
+                      Property("Yuen Long", 17, 400, 25, None, "yellow"),
                       Chance(18),
-                      Property("Tai O", 19, 600, 25, None, "Yellow")
+                      Property("Tai O", 19, 600, 25, None, "yellow")
                       ]     # Stores different Tile Objects. Can be customized by the user
 
     def get_jail_tile(self) -> Jail:

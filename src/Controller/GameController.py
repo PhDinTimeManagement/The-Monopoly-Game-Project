@@ -9,6 +9,9 @@ from src.Model.GameLogic import *
 from src.Controller.InputHandler import InputHandler
 from datetime import datetime
 
+from tests.test_GameLogic import gameboard
+
+
 class GameController:
     def __init__(self):
         self.save_name = None
@@ -213,13 +216,34 @@ class GameController:
         # Need to modify the logic in GameLogic endgame
         pass
 
+    def save_gameboard(self, save_name):
+        # gets current directory in which the program is running
+        save_directory = os.path.dirname(os.path.abspath(__file__))
+
+        # moves up and into the saves directory and normalizes the path
+        save_directory = os.path.normpath(os.path.join(save_directory, "..", "..", "saves/gameboard_setups"))
+        message1 = ""
+
+        # ensures directory existence or creates
+        if not os.path.exists(save_directory):
+            os.makedirs(save_directory)
+            message1 = "Save directory deleted or non existent --> Creating"
+
+        gameboard_setup = SavedGameboard(save_name, self)
+        gameboard_data = gameboard_setup.to_dictionary()
+        file_path = os.path.join(save_directory, f'{save_name}.json')
+        with open(file_path, 'w') as save_file:
+            json.dump(gameboard_data, save_file, indent=4)
+            message = "Game saved successfully.\n"
+        return f"{message1}\n{message}"
+
     # noinspection PyTypeChecker
     def save_game(self, save_name):
         # gets current directory in which the program is running
         save_directory = os.path.dirname(os.path.abspath(__file__))
 
         # moves up and into the saves directory and normalizes the path
-        save_directory = os.path.normpath(os.path.join(save_directory, "..", "..", "saves"))
+        save_directory = os.path.normpath(os.path.join(save_directory, "..", "..", "saves/games"))
         message1 = ""
 
         # ensures directory existence or creates
@@ -235,13 +259,45 @@ class GameController:
             message = "Game saved successfully.\n"
         return f"{message1}\n{message}"
 
+    # loads gameboard_data into gameboard object, if data is passed, handles it, otherwise acts on the board_name and looks for it
+    def load_gameboard(self, board_name = "", game_data_dict = None):
+        if game_data_dict is None:
+            # determines the filepath of the saved gameboard
+            save_directory = os.path.dirname(os.path.abspath(__file__))
+            save_directory = os.path.normpath(os.path.join(save_directory, "..", "..", "saves/gameboard_setups"))
+            file_path = os.path.join(save_directory, f'{board_name}.json')
+
+            # parse save file into a dictionary and handles exceptions
+            try:
+                with open(file_path, 'r') as game_data:
+                    game_data_dict = json.load(game_data)
+            except FileNotFoundError:
+                print("Board layout does not exist.")
+                return
+            except json.JSONDecodeError:
+                print("Error in reading save file.")
+                return
+
+        # gameboard_setup is a list of dictionaries, will cycle and update appropriately
+        gameboard_info = game_data_dict["gameboard_data"]["gameboard_setup"]
+        for tile_info, i in zip(gameboard_info, range(20)):
+            self.board.tiles[i].update_name_pos_type(tile_info["name"], tile_info["board_pos"], tile_info["tile_type"])
+            tile_type = tile_info["tile_type"]
+            if tile_type == "property":
+                self.board.tiles[i].update_values(tile_info["price"], tile_info["rent"], tile_info["owner"], tile_info["color"])
+            elif tile_type == "income_tax":
+                self.board.tiles[i].update_values(tile_info["tax_percentage"])
+            elif tile_type == "jail":
+                self.board.tiles[i].update_values(tile_info["jailed_players"])
+            elif tile_type == "go":
+                self.board.tiles[i].update_values(tile_info["pass_prize"])
 
     def load_game(self, load_name):
         # gets current directory in which the program is running
         save_directory = os.path.dirname(os.path.abspath(__file__))
 
         # moves up and into the saves directory and normalizes the path
-        save_directory = os.path.normpath(os.path.join(save_directory, "..", "..", "saves"))
+        save_directory = os.path.normpath(os.path.join(save_directory, "..", "..", "saves/games"))
 
         file_path = os.path.join(save_directory, f'{load_name}.json')
 
@@ -262,19 +318,7 @@ class GameController:
         self.set__turn(game_data_dict["_turn"])
         self.set_remove_last_round(game_data_dict["remove_last_round"])
 
-        # gameboard_setup is a list of dictionaries, will cycle and update appropriately
-        gameboard_info = game_data_dict["gameboard_setup"]
-        for tile_info, i in zip(gameboard_info, range(20)):
-            self.board.tiles[i].update_name_pos_type(tile_info["name"], tile_info["board_pos"], tile_info["tile_type"])
-            tile_type = tile_info["tile_type"]
-            if tile_type == "property":
-                self.board.tiles[i].update_values(tile_info["price"], tile_info["rent"], tile_info["owner"], tile_info["color"])
-            elif tile_type == "income_tax":
-                self.board.tiles[i].update_values(tile_info["tax_percentage"])
-            elif tile_type == "jail":
-                self.board.tiles[i].update_values(tile_info["jailed_players"])
-            elif tile_type == "go":
-                self.board.tiles[i].update_values(tile_info["pass_prize"])
+        self.load_gameboard("", game_data_dict)
 
         # creates players objects and copies information from the dictionary
         players = game_data_dict["players_list"]
@@ -289,6 +333,18 @@ class GameController:
             new_player.update_values(p_data["_username"], p_data["_current_money"], p_data["_jail_status"], p_data["_fine_payed"], p_data["_current_square"], p_data["_in_jail_turns"], p_data["_properties"])
             self.broke_list.append(new_player)
 
+class SavedGameboard:
+    def __init__(self, save_name, game_controller):
+        self.board_name = save_name
+        self.tiles = game_controller.board.tiles.copy()
+
+    def to_dictionary(self):
+        gameboard_data = [tile.__dict__ for tile in self.tiles]
+        return {
+            "board_name": self.board_name,
+            "gameboard_setup": gameboard_data
+        }
+
 # this class will copy the current game instance
 class SavedGame:
     def __init__(self, save_name, game_controller):
@@ -300,7 +356,7 @@ class SavedGame:
         self.current_round = game_controller.get_current_round()
 
         # Saves the setup of the gameboard as a list
-        self.tiles = game_controller.board.tiles.copy()
+        self.gameboard = SavedGameboard("", game_controller)
 
         # Saves players information
         self.player_list = game_controller.get_player_list().copy()
@@ -308,7 +364,7 @@ class SavedGame:
 
     def to_dictionary(self):
         # unpacks list of objects to a list of dictionary entries
-        gameboard_data = [tile.__dict__ for tile in self.tiles]
+        gameboard_data = self.gameboard.to_dictionary()
         player_data = [player.__dict__ for player in self.player_list]
         broke_player_data = [player.__dict__ for player in self.broke_list]
 
@@ -318,7 +374,7 @@ class SavedGame:
             "_turn": self._turn,
             "remove_last_round": self.remove_last_round,
             "current_round": self.current_round,
-            "gameboard_setup": gameboard_data,
+            "gameboard_data": gameboard_data,
             "players_list": player_data,
             "broke_list": broke_player_data
         }

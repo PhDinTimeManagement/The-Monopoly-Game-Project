@@ -50,6 +50,10 @@ class DisplayManager:
         self.no_button_image = tk.PhotoImage(file=os.path.join(assets_base_path, "new_game_frame/no_button.png"))
         self.trash_button_image = tk.PhotoImage(file=os.path.join(assets_base_path, "new_game_frame/trash_button.png"))
 
+        # New Gameplay frame images
+        self.new_gameplay_frame_background = tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/gameplay_frame_background.png"))
+
+
     def setup_main_menu(self, frame):
         # Clear any existing widgets in the frame
         for widget in frame.winfo_children():
