@@ -15,9 +15,10 @@ player8 = Player("Yam")
 
 gameboard = Gameboard()
 gameboard.tiles[4] = Jail(4, [player1])
-game_logic =GameLogic()
+game_logic = GameLogic()
 players_list = []
 broke_list = []
+
 
 class TestGameLogic(TestCase):
     def test_roll_dice(self):
@@ -62,9 +63,9 @@ class TestGameLogic(TestCase):
 
     def test_pay_fine(self):
         original = player1.get_current_money()
-        GameLogic.pay_fine(game_logic,player1)
+        GameLogic.pay_fine(game_logic, player1)
         self.assertTrue(player1.get_fine_payed())
-        self.assertEqual(player1.get_current_money(), original -game_logic.get_fine())
+        self.assertEqual(player1.get_current_money(), original - game_logic.get_fine())
 
     def test_player_broke(self):
         self.assertFalse(GameLogic.player_broke(player1))
@@ -74,7 +75,7 @@ class TestGameLogic(TestCase):
     def test_player_out(self):
         players_list.clear()
         players_list.append(player1)
-        GameLogic.player_out(game_logic,player1, players_list, broke_list)
+        GameLogic.player_out(game_logic, player1, players_list, broke_list)
         self.assertFalse(player1 in players_list)
         self.assertTrue(player1 in broke_list)
 
@@ -105,12 +106,12 @@ class TestGameLogic(TestCase):
         players_list.clear()
         players_list.append(player1)
         player1.set_current_money(1000)
-        self.assertEqual(GameLogic.display_winner(game_logic,players_list),
+        self.assertEqual(GameLogic.display_winner(game_logic, players_list),
                          f"The winner is: Den, with {players_list[0].get_current_money()} money.")
         players_list.append(player2)
         player2.set_current_money(1000)
         game_logic.set_current_round(100)
-        self.assertEqual(GameLogic.display_winner(game_logic,players_list),
+        self.assertEqual(GameLogic.display_winner(game_logic, players_list),
                          f"The winner is: Den, Ben, with {players_list[0].get_current_money()} money.")
 
     def test_get_player_turn(self):
@@ -120,7 +121,7 @@ class TestGameLogic(TestCase):
         players_list.append(player8)
         for i in range(2):
             game_logic.set_player_turn(players_list)
-        game_logic.player_out(game_logic,player7, players_list, broke_list)
+        game_logic.player_out(game_logic, player7, players_list, broke_list)
         game_logic.set_player_turn(players_list)
         self.assertEqual(game_logic.get_player_turn(), 1)
         for i in range(2):
@@ -137,4 +138,7 @@ class TestGameLogic(TestCase):
         self.fail()
 
     def test_set_removed_last_round(self):
+        self.fail()
+
+    def test_determine_next_round(self):
         self.fail()

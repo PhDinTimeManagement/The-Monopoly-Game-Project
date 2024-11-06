@@ -60,36 +60,58 @@ class GameController:
         self.game_logic.set_player_turn(self.get_player_list())
         player_this_turn = self.get_player_list()[self.game_logic.get_player_turn()]
        #TODO <show the roll dice button and display player_this_turn ONLY>
-        pass
 
     def determine_next_round(self,player_this_turn):
-        if GameLogic.player_broke(player_this_turn):
-            GameLogic.player_out(self.game_logic, player_this_turn, self.get_player_list(), self.get_broke_player_list())
+        """Action is an array that stores the state of the Model after calling the 'determine_next_round' function"""
+        action = GameLogic.determine_next_round(self.game_logic,player_this_turn,self.get_player_list(),self.get_broke_player_list())
 
-        self.game_logic.set_current_round(self.game_logic.get_current_round() + 1)  # Update the current round by +1
-        if GameLogic.game_ends(self.get_player_list(), self.game_logic.get_current_round()):  # When the game ends
-            GameLogic.display_winner(self.game_logic, self.get_player_list())
-        else:
-            self.game_logic.set_player_turn(self.get_player_list())
-            player_next_turn = self.get_player_list()[self.game_logic.get_player_turn()]
-            #TODO <Display the player for next round>
-            if player_next_turn.get_jail_status():
-                if player_next_turn.get_fine_payed():
-                    pass
-                    # TODO <Display the roll only, do not display the pay fine button>
-                elif GameLogic.player_third_round(player_next_turn):
-                    #TODO <Display roll dice only>
-                    pass
-                else:
-                    pass
-                    # TODO <Display the pay fine button as well as the roll button>
+        if action[0] == "game_ends":
+            print(action[1])
+            #TODO <display the winner>
+            #wait for click event
+            return
 
-                # waiting the click event
-                pass
-            else:
-                # TODO <The button no need to change, display just Roll_dice>
-                # waiting the click event
-                pass
+        # TODO <Display the player for next round>
+        if action[0] == "jail_roll":
+            #TODO <display jail_roll only>
+            #wait for click event
+            return action
+        elif action[0] == "pay_fine_and_jail_roll":
+            # TODO <display jail_roll and pay fine>
+            #wait for click event
+            return action
+        elif action[0] == "Roll":
+            # TODO <display roll only>
+            #wait for click
+            return action
+
+        # if GameLogic.player_broke(player_this_turn):
+        #     GameLogic.player_out(self.game_logic, player_this_turn, self.get_player_list(), self.get_broke_player_list())
+        #
+        # self.game_logic.set_current_round(self.game_logic.get_current_round() + 1)  # Update the current round by +1
+        # if GameLogic.game_ends(self.get_player_list(), self.game_logic.get_current_round()):  # When the game ends
+        #     GameLogic.display_winner(self.game_logic, self.get_player_list())
+        # else:
+        #     self.game_logic.set_player_turn(self.get_player_list())
+        #     player_next_turn = self.get_player_list()[self.game_logic.get_player_turn()]
+        #     #TODO <Display the player for next round>
+        #     if player_next_turn.get_jail_status():
+        #         if player_next_turn.get_fine_payed():
+        #             pass
+        #             # TODO <Display the roll only, do not display the pay fine button>
+        #         elif GameLogic.player_third_round(player_next_turn):
+        #             #TODO <Display roll dice only>
+        #             pass
+        #         else:
+        #             pass
+        #             # TODO <Display the pay fine button as well as the roll button>
+        #
+        #         # waiting the click event
+        #         pass
+        #     else:
+        #         # TODO <The button no need to change, display just Roll_dice>
+        #         # waiting the click event
+        #         pass
 
     @staticmethod
     def land_and_complete_round(tile, player_this_turn):

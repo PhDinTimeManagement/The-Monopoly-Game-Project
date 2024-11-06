@@ -2,6 +2,7 @@ import random
 
 from src.Controller.GameController import GameController
 from src.Model.Player import *
+#from tests.test_GameLogic import game_logic
 
 
 class GameLogic:
@@ -137,3 +138,43 @@ class GameLogic:
         elif len(players_list) == 1:
             message = f"The winner is: {players_list[0].get_name()}, with {players_list[0].get_current_money()} money."
             return message
+
+    @staticmethod
+    def determine_next_round(game_logic,player_this_turn,player_list,broke_list):
+
+        #After each round check whether if the player_this_turn is broke
+        if GameLogic.player_broke(player_this_turn):
+            #Remove the player is the player is broke from the players_list into the broke list
+            GameLogic.player_out(game_logic, player_this_turn, player_list,broke_list)
+
+        #Increment current round
+        game_logic.set_current_round(game_logic.get_current_round() + 1)
+
+        #After each round check if the round ends
+        if GameLogic.game_ends(game_logic.get_current_round(),player_list):
+            # display the message showing the winner, pass the message as a parameter to display
+            message = GameLogic.display_winner(game_logic,player_list)
+            action = ["game_ends",message]
+            return action
+
+        #Set the player's turn for next around (a variable from 0 to len(player_list) -1
+        game_logic.set_player_turn(player_list)
+
+        #Fetch the player out from the player_list
+        player_next_turn = player_list[game_logic.get_player_turn()]
+
+        #if the player is in jail
+        if player_next_turn.get_jail_status():
+            #the player has paid the fine in jail or is in the third round, only roll button is displayed, therefore return "jail_roll"
+            if player_next_turn.get_fine_payed() or GameLogic.player_third_round(player_next_turn):
+                action = ["jail_roll",player_next_turn]
+            else:
+                #in other cases, the player can either choose to pay fine or to roll the dice, therefore return "pay_fine_and_jail_roll"
+                action = ["pay_fine_and_jail_roll",player_next_turn]
+            return action
+
+        #if the player is not in jail, not shows the roll button
+        else:
+            action = ["Roll",player_next_turn]
+
+            return action
