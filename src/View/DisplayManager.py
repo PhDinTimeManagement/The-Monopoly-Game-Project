@@ -328,23 +328,33 @@ class DisplayManager:
     def save_player_name(self, entry, idx, canvas):
         player_name = entry.get().strip()
 
+        # Check if the name hasn't changed from the current one
+        if self.gui.input_handler.players_names[idx] == player_name:
+            self.show_msg(canvas, idx, "* Name did not change.", is_error=False)
+            return
+
+        # Check if the name is the same as another player
         if player_name in self.gui.input_handler.get_all_player_names():
             self.show_msg(canvas, idx, "* Name cannot be the same as another player.", is_error=True)
             return
 
+        # Check if the previous player name has been entered (except for the first player)
         if idx > 0 and not self.gui.input_handler.players_names[idx - 1]:
             self.show_msg(canvas, idx, "* Previous player name must be entered first.", is_error=True)
             return
 
+        # Check if the name is valid, if so, store it
         if len(player_name) <= 20 and self.gui.input_handler.validate_and_store_name(idx, player_name):
+            # Clear any previous error messages
             if self.error_labels[idx]:
                 self.error_labels[idx].destroy()
                 self.error_labels[idx] = None
 
+            # Remove any displayed name text reference and update with the new name
             if self.player_text_refs[idx]:
                 canvas.delete(self.player_text_refs[idx])
                 self.player_text_refs[idx] = None
-
+            
             entry.delete(0, tk.END)  # Clear the entry to remove any leftover invalid text
             entry.insert(0, player_name)  # Ensure the valid name is displayed
             entry.destroy()
