@@ -358,7 +358,7 @@ class DisplayManager:
             if self.player_text_refs[idx]:
                 canvas.delete(self.player_text_refs[idx])
                 self.player_text_refs[idx] = None
-            
+
             entry.delete(0, tk.END)  # Clear the entry to remove any leftover invalid text
             entry.insert(0, player_name)  # Ensure the valid name is displayed
             entry.destroy()
