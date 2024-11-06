@@ -48,6 +48,7 @@ class DisplayManager:
             file=os.path.join(assets_base_path, "new_game_frame/exit_new_game_hint.png"))
         self.yes_button_image = tk.PhotoImage(file=os.path.join(assets_base_path, "new_game_frame/yes_button.png"))
         self.no_button_image = tk.PhotoImage(file=os.path.join(assets_base_path, "new_game_frame/no_button.png"))
+        self.trash_button_image = tk.PhotoImage(file=os.path.join(assets_base_path, "new_game_frame/trash_button.png"))
 
     def setup_main_menu(self, frame):
         # Clear any existing widgets in the frame
@@ -183,6 +184,15 @@ class DisplayManager:
             # Place the button
             dice_button.place(x=x_position - 55, y=y_position + 9)
 
+            # Trash button to delete names
+            trash_button = tk.Button(canvas, image=self.trash_button_image, bd=0,
+                                     highlightthickness=0, highlightbackground="#FBF8F5", bg="#FBF8F5",
+                                     activebackground="#FBF8F5",
+                                     command=lambda idx=i: self.delete_name(canvas, idx))
+
+            # Place the trash button
+            trash_button.place(x=x_position + 412, y=y_position + 9)  # Position right of the name box
+
             # Create a clickable rectangle that matches the player box image dimensions
             clickable_area = canvas.create_rectangle(
                 x_position, y_position, x_position + 1.2 * image_width, y_position + 1.2 * image_height,
@@ -221,6 +231,20 @@ class DisplayManager:
         canvas.tag_bind(play_button_clickable_area, "<Button-1>", lambda e: self.start_game(input_handler))
 
         return canvas
+
+    def delete_name(self, canvas, idx):
+        # Clear the player's name from the entry
+        self.gui.input_handler.players_names[idx] = None
+
+        # Reset the box appearance to its original state
+        canvas.itemconfig(self.player_box_images_refs[idx], image=self.player_box_images[idx])
+        if self.player_text_refs[idx]:  # If there was a previous name shown, remove it
+            canvas.delete(self.player_text_refs[idx])
+            self.player_text_refs[idx] = None
+        if self.player_entries[idx]:  # If an entry widget is open, destroy it
+            self.player_entries[idx].destroy()
+            self.player_entries[idx] = None
+        self.clicked_boxes[idx] = False  # Reset the clicked state
 
     def generate_random_name(self, canvas, idx):
         # Check if the previous player name has been entered (except for the first player)
@@ -351,19 +375,22 @@ class DisplayManager:
         self.error_labels[idx].place(x=x_position, y=y_position)
 
     def start_game(self, input_handler):
-        # Retrieve all player names
+        # Retrieve all player names and filter out empty ones
         player_names = input_handler.get_all_player_names()
-
-        # Filter out any empty or None entries in the player names list
         valid_player_names = [name for name in player_names if name]
 
-        # Check if there are at least 2 players
+        # Check for gaps in player names
+        for i in range(len(valid_player_names) - 1):
+            if valid_player_names[i] is None:
+                self.show_msg(self.gui.frame(), 0, "* No gaps allowed between players.", is_error=True)
+                return
+
+        # Ensure there are at least 2 players
         if len(valid_player_names) < 2:
-            # Display an error message if less than 2 players
             self.show_msg(self.gui.frame(), 0, "* At least two players are required to start the game.", is_error=True)
             return
 
-        # Print each player name to the console (for debugging)
+        # Start the game
         print("Starting game with players:")
         for idx, name in enumerate(valid_player_names, start=1):
             print(f"Player {idx}: {name}")
