@@ -1,4 +1,5 @@
 import tkinter as tk
+import os
 from src.Controller.InputHandler import InputHandler
 
 class DisplayManager:
@@ -10,35 +11,44 @@ class DisplayManager:
         self.player_text_refs = [None] * 6  # To store references to the text displayed in each player box
         self.clicked_boxes = [False] * 6  # Add a flag list to track clicked boxes
 
+        # Base path for assets
+        assets_base_path = os.path.join(os.path.dirname(__file__), "../../assets")
 
         # Main Menu images
-        self.startup_background = tk.PhotoImage(file="../../assets/startup_frame/startup_frame_background.png")
-        self.new_game_image = tk.PhotoImage(file="../../assets/startup_frame/new_game_button.png")
-        self.load_game_image = tk.PhotoImage(file="../../assets/startup_frame/load_game_button.png")
-        self.exit_image = tk.PhotoImage(file="../../assets/startup_frame/exit_button.png")
-        self.info_image = tk.PhotoImage(file="../../assets/startup_frame/info_button.png")
+        self.startup_background = tk.PhotoImage(
+            file=os.path.join(assets_base_path, "startup_frame/startup_frame_background.png"))
+        self.new_game_image = tk.PhotoImage(file=os.path.join(assets_base_path, "startup_frame/new_game_button.png"))
+        self.load_game_image = tk.PhotoImage(file=os.path.join(assets_base_path, "startup_frame/load_game_button.png"))
+        self.exit_image = tk.PhotoImage(file=os.path.join(assets_base_path, "startup_frame/exit_button.png"))
+        self.info_image = tk.PhotoImage(file=os.path.join(assets_base_path, "startup_frame/info_button.png"))
 
         # Info frame images
-        self.info_frame_background = tk.PhotoImage(file="../../assets/info_frame/info_frame_background.png")
-        self.back_arrow_image = tk.PhotoImage(file="../../assets/info_frame/back_arrow.png")
+        self.info_frame_background = tk.PhotoImage(
+            file=os.path.join(assets_base_path, "info_frame/info_frame_background.png"))
+        self.back_arrow_image = tk.PhotoImage(file=os.path.join(assets_base_path, "info_frame/back_arrow.png"))
 
         # New game frame images
-        self.new_game_frame_background = tk.PhotoImage(file="../../assets/new_game_frame/new_game_frame_background.png")
+        self.new_game_frame_background = tk.PhotoImage(
+            file=os.path.join(assets_base_path, "new_game_frame/new_game_frame_background.png"))
         self.player_box_images = [
-            tk.PhotoImage(file="../../assets/new_game_frame/player1_box.png"),
-            tk.PhotoImage(file="../../assets/new_game_frame/player2_box.png"),
-            tk.PhotoImage(file="../../assets/new_game_frame/player3_box.png"),
-            tk.PhotoImage(file="../../assets/new_game_frame/player4_box.png"),
-            tk.PhotoImage(file="../../assets/new_game_frame/player5_box.png"),
-            tk.PhotoImage(file="../../assets/new_game_frame/player6_box.png")
+            tk.PhotoImage(file=os.path.join(assets_base_path, "new_game_frame/player1_box.png")),
+            tk.PhotoImage(file=os.path.join(assets_base_path, "new_game_frame/player2_box.png")),
+            tk.PhotoImage(file=os.path.join(assets_base_path, "new_game_frame/player3_box.png")),
+            tk.PhotoImage(file=os.path.join(assets_base_path, "new_game_frame/player4_box.png")),
+            tk.PhotoImage(file=os.path.join(assets_base_path, "new_game_frame/player5_box.png")),
+            tk.PhotoImage(file=os.path.join(assets_base_path, "new_game_frame/player6_box.png"))
         ]
-        self.player_insert_demo_image = tk.PhotoImage(file="../../assets/new_game_frame/player_insert_demo.png")
-        self.edit_board_button_image = tk.PhotoImage(file="../../assets/new_game_frame/edit_board_button.png")
-        self.start_game_image = tk.PhotoImage(file="../../assets/new_game_frame/play_button.png")
-        self.random_name_button_image = tk.PhotoImage(file="../../assets/new_game_frame/random_name_dice_button.png")
-        self.exit_new_game_hint_image = tk.PhotoImage(file="../../assets/new_game_frame/exit_new_game_hint.png")
-        self.yes_button_image = tk.PhotoImage(file="../../assets/new_game_frame/yes_button.png")
-        self.no_button_image = tk.PhotoImage(file="../../assets/new_game_frame/no_button.png")
+        self.player_insert_demo_image = tk.PhotoImage(
+            file=os.path.join(assets_base_path, "new_game_frame/player_insert_demo.png"))
+        self.edit_board_button_image = tk.PhotoImage(
+            file=os.path.join(assets_base_path, "new_game_frame/edit_board_button.png"))
+        self.start_game_image = tk.PhotoImage(file=os.path.join(assets_base_path, "new_game_frame/play_button.png"))
+        self.random_name_button_image = tk.PhotoImage(
+            file=os.path.join(assets_base_path, "new_game_frame/random_name_dice_button.png"))
+        self.exit_new_game_hint_image = tk.PhotoImage(
+            file=os.path.join(assets_base_path, "new_game_frame/exit_new_game_hint.png"))
+        self.yes_button_image = tk.PhotoImage(file=os.path.join(assets_base_path, "new_game_frame/yes_button.png"))
+        self.no_button_image = tk.PhotoImage(file=os.path.join(assets_base_path, "new_game_frame/no_button.png"))
 
     def setup_main_menu(self, frame):
         # Clear any existing widgets in the frame

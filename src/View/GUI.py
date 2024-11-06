@@ -1,5 +1,6 @@
 # main.py
 import tkinter as tk
+import os
 from src.View.DisplayManager import DisplayManager
 from src.Controller.InputHandler import InputHandler
 
@@ -7,8 +8,8 @@ class GUI(tk.Tk):
     def __init__(self):
         super().__init__()
 
-        # Load background image and set the window size based on it
-        imgpath = "../../assets/startup_frame/startup_frame_background.png"
+        imgpath = os.path.join(os.path.dirname(__file__), "../../assets/startup_frame/startup_frame_background.png")
+
         self.background_image = tk.PhotoImage(file=imgpath)
         self.image_width = self.background_image.width()
         self.image_height = self.background_image.height()
