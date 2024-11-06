@@ -228,7 +228,7 @@ class DisplayManager:
         # Bind actions for Edit Board and Play clickable areas
         canvas.tag_bind(edit_board_clickable_area, "<Button-1>",
                         lambda e: print("Edit board clicked"))  # Placeholder action
-        canvas.tag_bind(play_button_clickable_area, "<Button-1>", lambda e: self.start_game(input_handler))
+        canvas.tag_bind(play_button_clickable_area, "<Button-1>", lambda e: self.check_and_start_game(input_handler))
 
         return canvas
 
@@ -358,15 +358,17 @@ class DisplayManager:
             self.show_msg(canvas, idx, "* Name must be 1-20 characters.", is_error=True)
             entry.delete(0, tk.END)
 
-    def show_msg(self, canvas, idx, msg, is_error=False):
-        x_position = 325
-        y_position = 322 + idx * 100
+    def show_msg(self, frame, idx, msg, is_error=False, x_position=None, y_position=None):
+        if x_position is None:
+            x_position = 325
+        if y_position is None:
+            y_position = 322 + idx * 100
         if self.error_labels[idx]:
             self.error_labels[idx].destroy()
 
         color = "red" if is_error else "green"
         self.error_labels[idx] = tk.Label(
-            canvas,
+            frame,
             text=msg,
             font=("Comic Sans MS", 16),
             fg=color,
@@ -374,23 +376,22 @@ class DisplayManager:
         )
         self.error_labels[idx].place(x=x_position, y=y_position)
 
-    def start_game(self, input_handler):
-        # Retrieve all player names and filter out empty ones
+    def check_and_start_game(self, input_handler):
+        # Retrieve all player names
         player_names = input_handler.get_all_player_names()
-        valid_player_names = [name for name in player_names if name]
 
-        # Check for gaps in player names
-        for i in range(len(valid_player_names) - 1):
-            if valid_player_names[i] is None:
-                self.show_msg(self.gui.frame(), 0, "* No gaps allowed between players.", is_error=True)
-                return
-
-        # Ensure there are at least 2 players
-        if len(valid_player_names) < 2:
-            self.show_msg(self.gui.frame(), 0, "* At least two players are required to start the game.", is_error=True)
+        # Check for at least two valid player names
+        if len([name for name in player_names if name]) < 2:
+            # Show error message below play button if fewer than 2 players
+            self.show_msg(self.gui.frames["NewGamePage"], 0, "* At least two players are required to start the game.",
+                          is_error=True, x_position=self.gui.image_width - 550, y_position=722)
             return
 
-        # Start the game
+        # If all checks pass, transition to the GameBoard frame
         print("Starting game with players:")
-        for idx, name in enumerate(valid_player_names, start=1):
-            print(f"Player {idx}: {name}")
+        for idx, name in enumerate(player_names, start=1):
+            if name:
+                print(f"Player {idx}: {name}")
+
+        # Show the GameBoard frame
+        self.gui.show_frame("GameBoard")

@@ -68,6 +68,12 @@ class GUI(tk.Tk):
         self.frames["InfoPage"] = frame
         self.info_canvas = self.display_manager.setup_info_page(frame)
 
+    # Enter the main game board
+    def enter_game(self):
+        frame = tk.Frame(self)
+        self.frames["GameBoard"] = frame
+        self.game_canvas = self.display_manager.setup_game_board(frame)
+
     def show_frame(self, frame_name):
         for frame in self.frames.values():
             frame.place_forget()
