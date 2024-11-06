@@ -1,6 +1,6 @@
 import random
 
-from src.Controller.GameController import GameController
+from src.Controller.GameController import *
 from src.Model.Player import *
 #from tests.test_GameLogic import game_logic
 
@@ -63,8 +63,6 @@ class GameLogic:
         return gameboard.tiles[player.get_square()]
 
     """Three functions are for in jail"""
-    # TODO what is this???
-
     @staticmethod
     def player_first_round(player):
         return player.get_in_jail_turns() == 3
@@ -91,7 +89,6 @@ class GameLogic:
 
     @staticmethod
     def out_jail_on_double(player, dice_number1, dice_number2, gameboard):
-        # TODO problem here, wont move properly (NOW FIXED BUT CHECK)
         tile = GameLogic.player_move(dice_number1 + dice_number2, player, gameboard)
         GameController.land_and_complete_round(tile, player)
         gameboard.get_jail_tile().free_player(player)

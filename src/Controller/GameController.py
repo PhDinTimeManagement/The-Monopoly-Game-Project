@@ -5,7 +5,7 @@ import os.path
 
 from src.Model.Gameboard import *
 from src.Model.Player import *
-from src.Model.GameLogic import GameLogic
+from src.Model.GameLogic import *
 from src.Controller.InputHandler import InputHandler
 from datetime import datetime
 
@@ -178,7 +178,6 @@ class GameController:
                 #TODO <Player is not moved>
                 pass
             self.determine_next_round(player_this_turn)
-
 
     def pay_fine(self,dice_roll1,dice_roll2):
         #pay_fine_logic
