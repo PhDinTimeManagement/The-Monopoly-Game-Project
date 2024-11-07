@@ -53,6 +53,8 @@ class DisplayManager:
         self.no_button_image = tk.PhotoImage(file=os.path.join(assets_base_path, "new_game_frame/no_button.png"))
         self.trash_button_image = tk.PhotoImage(file=os.path.join(assets_base_path, "new_game_frame/trash_button.png"))
 
+        # Edit Board frame images
+
         # Load Game frame images
         self.load_game_frame_background = tk.PhotoImage(file=os.path.join(assets_base_path, "load_game_frame/load_game_frame_background.png"))
         self.saved_game_slot1_image = tk.PhotoImage(file=os.path.join(assets_base_path, "load_game_frame/saved_game_slot1.png"))
@@ -66,7 +68,8 @@ class DisplayManager:
         # Game Board frame images
         self.new_gameplay_frame_background = tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/gameplay_frame_background.png"))
 
-    def setup_main_menu(self, frame):
+#------------------------------------# Main Menu Frame #------------------------------------#
+    def setup_main_menu_frame(self, frame):
         # Clear any existing widgets in the frame
         for widget in frame.winfo_children():
             widget.destroy()
@@ -76,7 +79,6 @@ class DisplayManager:
         canvas.place(x=0, y=0)
         canvas.create_image(0, 0, anchor="nw", image=self.startup_background)
 
-        # Button positions
         button_y_positions = [self.gui.image_height * 0.55, self.gui.image_height * 0.70, self.gui.image_height * 0.85]
 
         # Calculate dimensions for each button to set clickable areas
@@ -125,7 +127,8 @@ class DisplayManager:
 
         return canvas
 
-    def setup_info_page(self, frame):
+#------------------------------------# Info Frame #------------------------------------#
+    def setup_info_frame(self, frame):
         # Clear any existing widgets in the frame
         for widget in frame.winfo_children():
             widget.destroy()
@@ -149,12 +152,13 @@ class DisplayManager:
             outline="", fill=""
         )
 
-        # Bind the enlarged clickable area to the "MainMenu" frame switch
+        # Bind the enlarged clickable area to the main menu transition
         canvas.tag_bind(back_button_clickable_area, "<Button-1>", lambda e: self.gui.show_frame("main_menu"))
 
         return canvas
 
-    def setup_new_game_page(self, frame, input_handler):
+#------------------------------------# New Game Frame #------------------------------------#
+    def setup_new_game_frame(self, frame, input_handler):
         # Clear any existing widgets in the frame
         for widget in frame.winfo_children():
             widget.destroy()
@@ -186,7 +190,7 @@ class DisplayManager:
             player_box = canvas.create_image(x_position, y_position, anchor="nw", image=player_box_image)
             self.player_box_images_refs.append(player_box)  # Store the image reference
 
-            # Creating the dice button
+            # Creat the dice button
             dice_button = tk.Button(canvas, image=self.random_name_button_image, bd=0,  # No border
                 highlightthickness=0, highlightbackground="#FBF8F5", bg="#FBF8F5", activebackground="#FBF8F5",
                 command=lambda idx=i: self.generate_random_name(canvas, idx))
@@ -335,6 +339,7 @@ class DisplayManager:
                 self.error_labels[idx].destroy()
 
     def clear_entry(self, entry, idx, canvas):
+        # Reset the player box to its original image without displaying any text
         entry.destroy()
         self.player_entries[idx] = None
         canvas.itemconfig(self.player_box_images_refs[idx], image=self.player_box_images[idx])
@@ -473,8 +478,17 @@ class DisplayManager:
         for idx in range(6):
             self.delete_name(canvas, idx)
 
-    def setup_load_game_page(self, frame):
+#------------------------------------# Edit Board Frame #------------------------------------#
+
+    def setup_edit_board_frame(self, frame):
         pass
 
-    def setup_game_board(self, frame):
+#------------------------------------# Load Game Frame #------------------------------------#
+
+    def setup_load_game_frame(self, frame):
+        pass
+
+#------------------------------------# Game Play Frame #------------------------------------#
+
+    def setup_gameplay_frame(self, frame):
         pass
