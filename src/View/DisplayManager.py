@@ -479,16 +479,13 @@ class DisplayManager:
             self.delete_name(canvas, idx)
 
 #------------------------------------# Edit Board Frame #------------------------------------#
-
     def setup_edit_board_frame(self, frame):
         pass
 
 #------------------------------------# Load Game Frame #------------------------------------#
-
     def setup_load_game_frame(self, frame):
         pass
 
 #------------------------------------# Game Play Frame #------------------------------------#
-
     def setup_gameplay_frame(self, frame):
         pass
