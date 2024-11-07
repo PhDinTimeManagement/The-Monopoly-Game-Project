@@ -45,6 +45,9 @@ class GameplayFrame(DisplayManager):
             file=os.path.join(assets_base_path, "gameplay_frame/gameplay_frame_background.png"))
         self.roll_dice_image = tk.PhotoImage(file = os.path.join(assets_base_path, "gameplay_frame/roll_dice.png"))
         self.save_quit_image = tk.PhotoImage(file = os.path.join(assets_base_path, "gameplay_frame/save_quit.png"))
+        self.pay_fine_image = tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/pay_fine.png"))
+        self.yes_image = tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/yes.png"))
+        self.no_image = tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/no.png"))
 
         # Gameboard tiles colors empty list, will get loaded from the Gameboard model
         self.tile_colors = []
@@ -73,6 +76,21 @@ class GameplayFrame(DisplayManager):
             [700, 683]
         ]
 
+        # Buttons Coordinates
+        self.roll_dice_x_pos = self.gui.image_width * 2 / 7
+        self.roll_dice_y_pos = self.gui.image_height * 2 / 5 - 50
+        self.save_quit_x_pos = self.gui.image_width * 11 / 14
+        self.save_quit_y_pos = self.gui.image_height * 9 / 10
+        self.pay_fine_x_pos = self.gui.image_width * 2 / 7
+        self.pay_fine_y_pos = self.gui.image_height * 5 / 10 - 45
+        self.yes_x_pos = self.gui.image_width * 5 / 14
+        self.yes_y_pos = self.gui.image_height * 4 / 5 - 20
+        self.no_x_pos = self.gui.image_width * 3 / 14
+        self.no_y_pos = self.gui.image_height * 4 / 5 - 20
+
+
+
+
 # ------------------------------------# Game Play Frame #------------------------------------#
 
     def set_color(self, pos, color):
@@ -88,7 +106,6 @@ class GameplayFrame(DisplayManager):
             if color:
                 self.modify_tile_color(color, i)
         self.colors_not_loaded = False
-
 
     # gets the information from the lists above and display all the tiles colors
     def overlay_tile_colors(self, canvas):
@@ -107,6 +124,25 @@ class GameplayFrame(DisplayManager):
     def save_quit(self):
         print("Saving quit...")
 
+    def create_button(self, canvas, x_pos, y_pos, button_image):
+        button_width, button_height = self.calc_button_dim(button_image)
+        canvas.create_image(x_pos, y_pos, anchor="center", image=button_image)
+        button_click_area = canvas.create_rectangle(
+            (x_pos - button_width // 2), (y_pos - button_height // 2),
+            (x_pos + button_width // 2), (y_pos + button_height // 2),
+            outline="", fill=""
+        )
+        return button_click_area, canvas
+
+    def show_pay_fine_button(self, canvas):
+        return self.create_button(canvas, self.pay_fine_x_pos, self.pay_fine_y_pos, self.pay_fine_image)
+
+    def show_yes_button(self, canvas):
+        return self.create_button(canvas, self.yes_x_pos, self.yes_y_pos, self.yes_image)
+
+    def show_no_button(self, canvas):
+        return self.create_button(canvas, self.no_x_pos, self.no_y_pos, self.no_image)
+
     # called to set up the entire gameplay_frame
     def setup_new_gameplay_frame(self, frame):
         canvas = self.clear_widgets_create_canvas_set_background(frame, self.new_gameplay_frame_background)
@@ -116,32 +152,20 @@ class GameplayFrame(DisplayManager):
             self.load_tile_colors()
         self.overlay_tile_colors(canvas)
 
-        # buttons dimensions
-        roll_dice_width, roll_dice_height = self.calc_button_dim(self.roll_dice_image)
-        save_quit_width, save_quit_height = self.calc_button_dim(self.save_quit_image)
+        # ROLL DICE BUTTON
+        roll_dice_click_area, canvas = self.create_button(canvas, self.roll_dice_x_pos, self.roll_dice_y_pos, self.roll_dice_image)
+        canvas.tag_bind(roll_dice_click_area, "<Button-1>", lambda e: self.roll_dice())
 
-        # roll_dice_button & clickable area
-        # position based on center
-        roll_dice_x_pos = self.gui.image_width * 2 / 7
-        roll_dice_y_pos = self.gui.image_height * 2 / 5
-        roll_dice_button = canvas.create_image(roll_dice_x_pos, roll_dice_y_pos, anchor="center", image=self.roll_dice_image)
-        roll_dice_clickable_area = canvas.create_rectangle(
-            (roll_dice_x_pos - roll_dice_width // 2), (roll_dice_y_pos - roll_dice_height // 2),
-            (roll_dice_x_pos + roll_dice_width // 2), (roll_dice_y_pos + roll_dice_height // 2),
-            outline="", fill=""
-        )
-        canvas.tag_bind(roll_dice_clickable_area, "<Button-1>", lambda e:self.roll_dice())
+        # SAVE QUIT BUTTON
+        save_quit_click_area, canvas = self.create_button(canvas, self.save_quit_x_pos, self.save_quit_y_pos, self.save_quit_image)
+        canvas.tag_bind(save_quit_click_area, "<Button-1>", lambda e:self.save_quit())
 
-        # save_quit button & clickable area
-        save_quit_x_pos = self.gui.image_width * 10 / 14
-        save_quit_y_pos = self.gui.image_height * 9 / 10
-        save_quit_button = canvas.create_image(save_quit_x_pos, save_quit_y_pos, anchor="center", image=self.save_quit_image)
-        save_quit_clickable_area = canvas.create_rectangle(
-            (save_quit_x_pos - roll_dice_width // 2), (save_quit_y_pos - roll_dice_height // 2),
-            (save_quit_x_pos + roll_dice_width // 2), (save_quit_y_pos + roll_dice_height // 2),
-            outline="", fill=""
-        )
-        canvas.tag_bind(save_quit_clickable_area, "<Button-1>", lambda e:self.save_quit())
+
+        # OTHER BUTTONS JUST FOR TESTING POS
+        pay_fine_click_area, canvas = self.show_pay_fine_button(canvas)
+        yes_click_area, canvas = self.show_yes_button(canvas)
+        no_click_area, canvas = self.show_no_button(canvas)
+
         return canvas
 
     #------------------------#
