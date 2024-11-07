@@ -4,25 +4,25 @@ import os
 class DisplayManager:
     def __init__(self, gui):
         self.gui = gui  # Reference to the main GUI instance
-        self.error_labels = [None] * 6  # To hold error messages for player names
-        self.player_entries = []  # To hold player name entry widgets
-        self.player_box_images_refs = []  # To hold player box image references
-        self.player_text_refs = [None] * 6  # To store references to the text displayed in each player box
+        self.error_labels = [None] * 6  # Hold error messages for player names
+        self.player_entries = []  # Hold player name entry widgets
+        self.player_box_images_refs = []  # Hold player box image references
+        self.player_text_refs = [None] * 6  # Store references to the text displayed in each player box
         self.clicked_boxes = [False] * 6  # Add a flag list to track clicked boxes
 
-        self.active_widgets = []  # List to store references to active widgets
+        self.active_widgets = []  # Store references to active widgets
         self.hidden_widgets = {}  # Dictionary to store widgets and their positions for hiding/showing
 
         # Base path for assets
         assets_base_path = os.path.join(os.path.dirname(__file__), "../../assets")
 
-        # Main Menu images
+        # Main frame images
         self.startup_background = tk.PhotoImage(
-            file=os.path.join(assets_base_path, "startup_frame/startup_frame_background.png"))
-        self.new_game_image = tk.PhotoImage(file=os.path.join(assets_base_path, "startup_frame/new_game_button.png"))
-        self.load_game_image = tk.PhotoImage(file=os.path.join(assets_base_path, "startup_frame/load_game_button.png"))
-        self.exit_image = tk.PhotoImage(file=os.path.join(assets_base_path, "startup_frame/exit_button.png"))
-        self.info_image = tk.PhotoImage(file=os.path.join(assets_base_path, "startup_frame/info_button.png"))
+            file=os.path.join(assets_base_path, "main_menu_frame/startup_frame_background.png"))
+        self.new_game_image = tk.PhotoImage(file=os.path.join(assets_base_path, "main_menu_frame/new_game_button.png"))
+        self.load_game_image = tk.PhotoImage(file=os.path.join(assets_base_path, "main_menu_frame/load_game_button.png"))
+        self.exit_image = tk.PhotoImage(file=os.path.join(assets_base_path, "main_menu_frame/exit_button.png"))
+        self.info_image = tk.PhotoImage(file=os.path.join(assets_base_path, "main_menu_frame/info_button.png"))
 
         # Info frame images
         self.info_frame_background = tk.PhotoImage(
@@ -53,7 +53,17 @@ class DisplayManager:
         self.no_button_image = tk.PhotoImage(file=os.path.join(assets_base_path, "new_game_frame/no_button.png"))
         self.trash_button_image = tk.PhotoImage(file=os.path.join(assets_base_path, "new_game_frame/trash_button.png"))
 
-        # New Gameplay frame images
+        # Load Game frame images
+        self.load_game_frame_background = tk.PhotoImage(file=os.path.join(assets_base_path, "load_game_frame/load_game_frame_background.png"))
+        self.saved_game_slot1_image = tk.PhotoImage(file=os.path.join(assets_base_path, "load_game_frame/saved_game_slot1.png"))
+        self.saved_game_slot2_image = tk.PhotoImage(file=os.path.join(assets_base_path, "load_game_frame/saved_game_slot2.png"))
+        self.saved_game_slot3_image = tk.PhotoImage(file=os.path.join(assets_base_path, "load_game_frame/saved_game_slot3.png"))
+        self.saved_game_slot4_image = tk.PhotoImage(file=os.path.join(assets_base_path, "load_game_frame/saved_game_slot4.png"))
+        self.saved_game_slot5_image = tk.PhotoImage(file=os.path.join(assets_base_path, "load_game_frame/saved_game_slot5.png"))
+        self.selected_saved_game_slot_image = tk.PhotoImage(file=os.path.join(assets_base_path, "load_game_frame/selected_saved_game_slot.png"))
+        self.laod_and_play_button_image = tk.PhotoImage(file=os.path.join(assets_base_path, "load_game_frame/load_and_play_button.png"))
+
+        # Game Board frame images
         self.new_gameplay_frame_background = tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/gameplay_frame_background.png"))
 
     def setup_main_menu(self, frame):
@@ -83,7 +93,7 @@ class DisplayManager:
             (self.gui.image_width // 2) + (0.6 * new_game_width), button_y_positions[0] + (0.6 * new_game_height),
             outline="", fill=""
         )
-        canvas.tag_bind(new_game_clickable_area, "<Button-1>", lambda e: self.gui.show_frame("NewGamePage"))
+        canvas.tag_bind(new_game_clickable_area, "<Button-1>", lambda e: self.gui.show_frame("new_game"))
 
         # "Load Game" button and clickable area
         load_game_button = canvas.create_image(self.gui.image_width // 2, button_y_positions[1],
@@ -93,7 +103,7 @@ class DisplayManager:
             (self.gui.image_width // 2) + (0.6 * load_game_width), button_y_positions[1] + (0.6 * load_game_height),
             outline="", fill=""
         )
-        canvas.tag_bind(load_game_clickable_area, "<Button-1>", lambda e: self.gui.show_frame("LoadPage"))
+        canvas.tag_bind(load_game_clickable_area, "<Button-1>", lambda e: self.gui.show_frame("load_game"))
 
         # "Exit" button and clickable area
         exit_button = canvas.create_image(self.gui.image_width // 2, button_y_positions[2], image=self.exit_image)
@@ -111,7 +121,7 @@ class DisplayManager:
             (self.gui.image_width - 85) + (0.6 * info_width), 75 + (0.6 * info_height),
             outline="", fill=""
         )
-        canvas.tag_bind(info_clickable_area, "<Button-1>", lambda e: self.gui.show_frame("InfoPage"))
+        canvas.tag_bind(info_clickable_area, "<Button-1>", lambda e: self.gui.show_frame("info"))
 
         return canvas
 
@@ -140,7 +150,7 @@ class DisplayManager:
         )
 
         # Bind the enlarged clickable area to the "MainMenu" frame switch
-        canvas.tag_bind(back_button_clickable_area, "<Button-1>", lambda e: self.gui.show_frame("MainMenu"))
+        canvas.tag_bind(back_button_clickable_area, "<Button-1>", lambda e: self.gui.show_frame("main_menu"))
 
         return canvas
 
@@ -399,7 +409,7 @@ class DisplayManager:
         # Check for at least two valid player names
         if len([name for name in player_names if name]) < 2:
             # Show error message below play button if fewer than 2 players
-            self.show_msg(self.gui.frames["NewGamePage"], 0, "* At least two players are required to start the game.",
+            self.show_msg(self.gui.frames["new_game"], 0, "* At least two players are required to start the game.",
                           is_error=True, x_position=self.gui.image_width - 550, y_position=722)
             return
 
@@ -410,7 +420,7 @@ class DisplayManager:
                 print(f"Player {idx}: {name}")
 
         # Show the GameBoard frame
-        self.gui.show_frame("GameBoard")
+        self.gui.show_frame("gameplay")
 
     def confirm_exit_new_game(self, canvas):
         # Hide all tracked widgets by storing their positions and calling `place_forget`
@@ -442,7 +452,7 @@ class DisplayManager:
         # Clear player data, remove the exit hint, and go back to main menu
         self.clear_all_player_data(canvas)
         self.cancel_exit_and_restore_widgets(canvas, exit_hint, yes_button, no_button)
-        self.gui.show_frame("MainMenu")
+        self.gui.show_frame("main_menu")
 
     def cancel_exit_and_restore_widgets(self, canvas, exit_hint, yes_button, no_button):
         # Clear the exit hint and buttons
@@ -459,3 +469,9 @@ class DisplayManager:
         # Clear all entries for player data
         for idx in range(6):
             self.delete_name(canvas, idx)
+
+    def setup_load_game_page(self, frame):
+        pass
+
+    def setup_game_board(self, frame):
+        pass
