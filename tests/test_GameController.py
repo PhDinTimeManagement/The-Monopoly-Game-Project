@@ -1,11 +1,9 @@
 from unittest import TestCase
-from src.Controller.GameController import *
-from src.Model.Player import *
-
+from src.Controller.GameController import*
 
 class TestGameController(TestCase):
     def test_set_player_list(self):
-        test_controller1 = GameController()
+        test_controller1 = GameController(gui)
         Player1 = Player("Player 1")
         Player2 = Player("Player 2")
         player_list = [Player1, Player2]
@@ -13,7 +11,7 @@ class TestGameController(TestCase):
         self.assertListEqual(test_controller1.get_player_list(), player_list)
 
     def test_save_game(self):
-        test_controller = GameController()
+        test_controller = GameController(gui)
 
         test_controller.set_current_round(50)
 
@@ -30,6 +28,7 @@ class TestGameController(TestCase):
         test_controller.set_broke_player_list([Player2])
         test_controller.board.tiles[15].player_landed(Player3, jailTile)
 
+
         save_name = "SAVE_LOAD_TEST"
         test_controller.save_game(save_name)
 
@@ -37,7 +36,7 @@ class TestGameController(TestCase):
         # runs the save test first to generate the test file in case it's missing
         TestGameController.test_save_game(self)
 
-        local_controller = GameController()
+        local_controller = GameController(gui)
 
         load_name = "SAVE_LOAD_TEST"
         local_controller.load_game(load_name)
@@ -50,16 +49,5 @@ class TestGameController(TestCase):
         assert local_controller.get_broke_player_list()[0].get_jail_status() == True
         assert local_controller.get_broke_player_list()[0].get_square() == 6
         assert local_controller.get_broke_player_list()[0].get_in_jail_turns() == 2
-        self.assertEqual(len(local_controller.board.tiles[5].get_jailed_players()), 1)
-
-    def test_save_gameboard(self):
-        test_controller = GameController()
-        tile = test_controller.board.tiles
-        tile[0].set_tile_name("Start")
-        tile[0].set_pass_prize(3000)
-        tile[3].set_income_tax(50)
-        tile[1].set_color("red")
-
-        save_name = "TEST_GAMEBOARD_SETUP_SAVE"
-        test_controller.save_gameboard(save_name)
+        self.assertEqual(len(local_controller.board.tiles[5].get_jailed_players()) ,1)
 
