@@ -161,7 +161,7 @@ class GameplayFrame(DisplayManager):
         canvas.tag_bind(save_quit_click_area, "<Button-1>", lambda e:self.save_quit())
 
 
-        # OTHER BUTTONS JUST FOR TESTING POS
+        # OTHER BUTTONS JUST FOR TESTING POS WONT BE SHOWN ALL THE TIME
         pay_fine_click_area, canvas = self.show_pay_fine_button(canvas)
         yes_click_area, canvas = self.show_yes_button(canvas)
         no_click_area, canvas = self.show_no_button(canvas)
