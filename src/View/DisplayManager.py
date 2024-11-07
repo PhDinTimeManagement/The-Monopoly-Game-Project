@@ -562,9 +562,9 @@ class GameplayFrame(DisplayManager):
     def modify_tile_color(self, color, tile_position):
         # gets the right color path based on the tile position (vertical or horizontal)
         if 0 < tile_position < 5 or 10 < tile_position < 15: #tile is horizontal
-            color_path = f"/gameplay_frame/{color}_h.png"
+            color_path = f"gameplay_frame/{color}_h.png"
         else:
-            color_path = f"/gameplay_frame/{color}_v.png"
+            color_path = f"gameplay_frame/{color}_v.png"
 
         #gets the appropriate image path
         image_color_path = os.path.join(assets_base_path, color_path)
