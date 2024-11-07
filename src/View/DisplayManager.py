@@ -190,6 +190,10 @@ class NewGameFrame(DisplayManager):
     # ------------------------------------# New Game Frame #------------------------------------#
 
     def setup_new_game_page(self, frame, input_handler):
+        # Clear previously active widgets (including dice buttons)
+        self.clear_active_widgets()
+
+        # Create canvas and set background image
         canvas = self.clear_widgets_create_canvas_set_background(frame, self.new_game_frame_background)
 
         # Display the back button to return to the main menu
@@ -205,48 +209,34 @@ class NewGameFrame(DisplayManager):
         y_position = 260  # Starting Y position for player boxes
 
         for i, player_box_image in enumerate(self.player_box_images):
-            # Get dimensions of the player box image
-            image_width = player_box_image.width()
-            image_height = player_box_image.height()
-
             # Display each player box image
             player_box = canvas.create_image(x_position, y_position, anchor="nw", image=player_box_image)
-            self.player_box_images_refs.append(player_box)  # Store the image reference
+            self.player_box_images_refs.append(player_box)
 
-            # Add a die image next to each player box for random name generation
-            dice_x_position = x_position - 55  # Adjust position to the left of the player box
-            dice_y_position = y_position + 10  # Slightly aligned with the player box
-            dice_button = canvas.create_image(dice_x_position, dice_y_position, anchor="nw",
-                                              image=self.random_name_button_image)
-
-            # Creating the dice button
-            # Creat the dice button
-            dice_button = tk.Button(canvas, image=self.random_name_button_image, bd=0,  # No border
-                                    highlightthickness=0, highlightbackground="#FBF8F5", bg="#FBF8F5",
-                                    activebackground="#FBF8F5",
-                                    command=lambda idx=i: self.generate_random_name(canvas, idx))
-
-            # Place the button
+            # Dice button for random name generation
+            dice_button = tk.Button(
+                canvas, image=self.random_name_button_image, bd=0, highlightthickness=0,
+                highlightbackground="#FBF8F5", bg="#FBF8F5", activebackground="#FBF8F5",
+                command=lambda idx=i: self.generate_random_name(canvas, idx)
+            )
             dice_button.place(x=x_position - 100, y=y_position + 9)
-            self.active_widgets.append(dice_button)  # Track the button for later removal
+            self.active_widgets.append(dice_button)  # Track dice button for removal
 
-            # Trash button to delete names
-            trash_button = tk.Button(canvas, image=self.trash_button_image, bd=0,
-                                     highlightthickness=0, highlightbackground="#FBF8F5", bg="#FBF8F5",
-                                     activebackground="#FBF8F5",
-                                     command=lambda idx=i: self.delete_name(canvas, idx))
+            # Trash button for clearing names
+            trash_button = tk.Button(
+                canvas, image=self.trash_button_image, bd=0, highlightthickness=0,
+                highlightbackground="#FBF8F5", bg="#FBF8F5", activebackground="#FBF8F5",
+                command=lambda idx=i: self.delete_name(canvas, idx)
+            )
+            trash_button.place(x=x_position - 55, y=y_position + 9)
+            self.active_widgets.append(trash_button)  # Track trash button for removal
 
-            # Place the trash button
-            trash_button.place(x=x_position - 55, y=y_position + 9)  # Position right of the name box
-            self.active_widgets.append(trash_button)  # Track the button for later removal
-
-            # Create a clickable rectangle that matches the player box image dimensions
+            # Set up clickable area for player box
             clickable_area = canvas.create_rectangle(
-                x_position, y_position, x_position + 1.2 * image_width, y_position + 1.2 * image_height,
+                x_position, y_position, x_position + 1.2 * player_box_image.width(),
+                                        y_position + 1.2 * player_box_image.height(),
                 outline="", fill=""
             )
-
-            # Bind click event to the player box area to open an entry for manual name input
             canvas.tag_bind(clickable_area, "<Button-1>",
                             lambda e, idx=i, x=x_position, y=y_position: self.show_insert_entry(canvas, idx, x, y))
 
@@ -278,6 +268,11 @@ class NewGameFrame(DisplayManager):
         canvas.tag_bind(play_button_clickable_area, "<Button-1>", lambda e: self.check_and_start_game(input_handler))
 
         return canvas
+
+    def clear_active_widgets(self):
+        for widget in self.active_widgets:
+            widget.place_forget()
+        self.active_widgets.clear()  # Reset active widgets list
 
     def delete_name(self, canvas, idx):
         # Clear the player's name from the entry
