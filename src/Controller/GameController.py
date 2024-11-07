@@ -21,6 +21,9 @@ class GameController:
         self.input_handler = InputHandler()
         self.click_var = tk.StringVar()
 
+        # button_config
+        self.pass_color_information()
+
     def get_player_list(self):
         return self.player_list
 
@@ -50,6 +53,14 @@ class GameController:
 
     def set_remove_last_round(self, remove_last_round):
         self.game_logic.set_removed_last_round(remove_last_round)
+
+    def pass_color_information(self):
+        for i in range(0, 20):
+            self.gui.gameplay_frame.tile_colors.append(None)
+            has_color = self.gui.gameplay_frame.get_color_coord(i)
+            if has_color:
+                color = self.board.tiles[i].get_color()
+                self.gui.gameplay_frame.set_color(i, color)
 
     # TODO By Kent: We need to program to detect the click events from the users. The click will call the functions for us. """
     def start_game(self):

@@ -30,14 +30,20 @@ class DisplayManager:
         canvas.create_image(0, 0, anchor="nw", image=background)
         return canvas
 
+    @staticmethod
+    def calc_button_dim(button_image):
+        return button_image.width(), button_image.height()
+
 
 class GameplayFrame(DisplayManager):
-    def __init__(self, gui, controller):
-        # New Gameplay frame images
+    def __init__(self, gui):
         super().__init__(gui)
-        self.controller = controller # gets the game controller to retrieve information to setup the board
+
+        # New Gameplay frame images
         self.new_gameplay_frame_background = tk.PhotoImage(
             file=os.path.join(assets_base_path, "gameplay_frame/gameplay_frame_background.png"))
+        self.roll_dice_image = tk.PhotoImage(file = os.path.join(assets_base_path, "gameplay_frame/roll_dice.png"))
+        self.save_quit_image = tk.PhotoImage(file = os.path.join(assets_base_path, "gameplay_frame/save_quit.png"))
 
         # Gameboard tiles colors empty list, will get loaded from the Gameboard model
         self.tile_colors = []
@@ -45,35 +51,41 @@ class GameplayFrame(DisplayManager):
         # Tile color coordinates from anchor (reference point) "NW" corner
         self.__tile_color_coord = [
             None,
-            [563, 819],
-            [428, 819],
+            [565, 818],
+            [430, 818],
             None,
-            [158, 819],
+            [160, 818],
             None,
-            [116, 684],
-            [116, 549],
+            [118, 683],
+            [118, 548],
             None,
-            [116, 279],
+            [118, 278],
             None,
-            [563, 237],
+            [565, 236],
             None,
-            [428, 237],
-            [158, 237],
+            [430, 236],
+            [160, 236],
             None,
-            [698, 279],
-            [698, 414],
+            [700, 278],
+            [700, 413],
             None,
-            [698, 684]
+            [700, 683]
         ]
 
 # ------------------------------------# Game Play Frame #------------------------------------#
 
+    def set_color(self, pos, color):
+        self.tile_colors[pos] = color
+
+    def get_color_coord(self, pos):
+        return self.__tile_color_coord[pos]
+
+    # from the gameboard information loads the appropriate colors in the game frame
     def load_tile_colors(self):
         for i in range(0,20):
-            has_color = self.__tile_color_coord[i]
-            self.tile_colors.append(None) # initializes the empty position
-            if has_color:   # if it has color then pulls the color from the gameboard and modifies the new entry
-                self.modify_tile_color(self.controller.board.tiles[i].get_color(), i)
+            color = self.tile_colors[i]
+            if color:
+                self.modify_tile_color(color, i)
 
     # gets the information from the lists above and display all the tiles colors
     def overlay_tile_colors(self, canvas):
@@ -85,10 +97,47 @@ class GameplayFrame(DisplayManager):
                 tile_color = self.tile_colors[i]
                 canvas.create_image(x_pos, y_pos, anchor="nw", image=tile_color)
 
+    # rolls the dice
+    def roll_dice(self):
+        print("Rolling dice...")
+
+    def save_quit(self):
+        print("Saving quit...")
+
+    # called to set up the entire gameplay_frame
     def setup_new_gameplay_frame(self, frame):
         canvas = self.clear_widgets_create_canvas_set_background(frame, self.new_gameplay_frame_background)
+
+        # loads tile colors and displays them
         self.load_tile_colors()
         self.overlay_tile_colors(canvas)
+
+        # buttons dimensions
+        roll_dice_width, roll_dice_height = self.calc_button_dim(self.roll_dice_image)
+        save_quit_width, save_quit_height = self.calc_button_dim(self.save_quit_image)
+
+        # roll_dice_button & clickable area
+        # position based on center
+        roll_dice_x_pos = self.gui.image_width * 2 / 7
+        roll_dice_y_pos = self.gui.image_height * 2 / 5
+        roll_dice_button = canvas.create_image(roll_dice_x_pos, roll_dice_y_pos, anchor="center", image=self.roll_dice_image)
+        roll_dice_clickable_area = canvas.create_rectangle(
+            (roll_dice_x_pos - roll_dice_width // 2), (roll_dice_y_pos - roll_dice_height // 2),
+            (roll_dice_x_pos + roll_dice_width // 2), (roll_dice_y_pos + roll_dice_height // 2),
+            outline="", fill=""
+        )
+        canvas.tag_bind(roll_dice_clickable_area, "<Button-1>", lambda e:self.roll_dice())
+
+        # save_quit button & clickable area
+        save_quit_x_pos = self.gui.image_width * 10 / 14
+        save_quit_y_pos = self.gui.image_height * 9 / 10
+        save_quit_button = canvas.create_image(save_quit_x_pos, save_quit_y_pos, anchor="center", image=self.save_quit_image)
+        save_quit_clickable_area = canvas.create_rectangle(
+            (save_quit_x_pos - roll_dice_width // 2), (save_quit_y_pos - roll_dice_height // 2),
+            (save_quit_x_pos + roll_dice_width // 2), (save_quit_y_pos + roll_dice_height // 2),
+            outline="", fill=""
+        )
+        canvas.tag_bind(save_quit_clickable_area, "<Button-1>", lambda e:self.save_quit())
         return canvas
 
     #------------------------#
@@ -391,6 +440,8 @@ class NewGameFrame(DisplayManager):
         self.active_widgets.append(self.error_labels[idx])  # Track the label for later removal
 
     def check_and_start_game(self, input_handler):
+        self.gui.show_game_play_frame()  # TODO uncomment this line later
+
         # Retrieve all player names
         player_names = input_handler.get_all_player_names()
 
@@ -483,10 +534,10 @@ class MainMenuFrame(DisplayManager):
         button_y_positions = [self.gui.image_height * 0.55, self.gui.image_height * 0.70, self.gui.image_height * 0.85]
 
         # Calculate dimensions for each button to set clickable areas
-        new_game_width, new_game_height = self.new_game_image.width(), self.new_game_image.height()
-        load_game_width, load_game_height = self.load_game_image.width(), self.load_game_image.height()
-        exit_width, exit_height = self.exit_image.width(), self.exit_image.height()
-        info_width, info_height = self.info_image.width(), self.info_image.height()
+        new_game_width, new_game_height = self.calc_button_dim(self.new_game_image)
+        load_game_width, load_game_height = self.calc_button_dim(self.load_game_image)
+        exit_width, exit_height = self.calc_button_dim(self.exit_image)
+        info_width, info_height = self.calc_button_dim(self.info_image)
 
         # "New Game" button and clickable area
         new_game_button = canvas.create_image(self.gui.image_width // 2, button_y_positions[0],
