@@ -1,6 +1,9 @@
 import tkinter as tk
 import os
 
+# Base path for assets
+assets_base_path = os.path.join(os.path.dirname(__file__), "../../assets")
+
 class DisplayManager:
     def __init__(self, gui):
         self.gui = gui  # Reference to the main GUI instance
@@ -13,10 +16,9 @@ class DisplayManager:
         self.active_widgets = []  # Store references to active widgets
         self.hidden_widgets = {}  # Dictionary to store widgets and their positions for hiding/showing
 
-        # Base path for assets
-        assets_base_path = os.path.join(os.path.dirname(__file__), "../../assets")
 
         # Main frame images
+        # Main Menu images
         self.startup_background = tk.PhotoImage(
             file=os.path.join(assets_base_path, "main_menu_frame/startup_frame_background.png"))
         self.new_game_image = tk.PhotoImage(file=os.path.join(assets_base_path, "main_menu_frame/new_game_button.png"))
@@ -68,17 +70,31 @@ class DisplayManager:
         # Game Board frame images
         self.new_gameplay_frame_background = tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/gameplay_frame_background.png"))
 
+    def clear_widgets_create_canvas_set_background(self, frame, background):
+        # Clear any existing widgets in the frame
+        for widget in frame.winfo_children():
+            widget.destroy()
+
+        # Create the canvas and set the background image
+        canvas = tk.Canvas(frame, bg="#FFFFFF", height=self.gui.image_height, width=self.gui.image_width, bd=0,
+                           highlightthickness=0, relief="ridge")
+        canvas.place(x=0, y=0)
+        canvas.create_image(0, 0, anchor="nw", image=background)
+        return canvas
+
 #------------------------------------# Main Menu Frame #------------------------------------#
     def setup_main_menu_frame(self, frame):
         # Clear any existing widgets in the frame
         for widget in frame.winfo_children():
             widget.destroy()
 
+        # Create the canvas and set the background image
         canvas = tk.Canvas(frame, bg="#FFFFFF", height=self.gui.image_height, width=self.gui.image_width, bd=0,
                            highlightthickness=0, relief="ridge")
         canvas.place(x=0, y=0)
         canvas.create_image(0, 0, anchor="nw", image=self.startup_background)
 
+        # Button positions
         button_y_positions = [self.gui.image_height * 0.55, self.gui.image_height * 0.70, self.gui.image_height * 0.85]
 
         # Calculate dimensions for each button to set clickable areas
@@ -127,17 +143,8 @@ class DisplayManager:
 
         return canvas
 
-#------------------------------------# Info Frame #------------------------------------#
-    def setup_info_frame(self, frame):
-        # Clear any existing widgets in the frame
-        for widget in frame.winfo_children():
-            widget.destroy()
-
-        # Create the canvas and set the background image
-        canvas = tk.Canvas(frame, bg="#FFFFFF", height=self.gui.image_height, width=self.gui.image_width, bd=0,
-                           highlightthickness=0, relief="ridge")
-        canvas.place(x=0, y=0)
-        canvas.create_image(0, 0, anchor="nw", image=self.info_frame_background)
+    def setup_info_page(self, frame):
+        canvas = self.clear_widgets_create_canvas_set_background(frame, self.info_frame_background)
 
         # Back button dimensions for creating a larger clickable area
         back_button_width, back_button_height = self.back_arrow_image.width(), self.back_arrow_image.height()
@@ -157,17 +164,8 @@ class DisplayManager:
 
         return canvas
 
-#------------------------------------# New Game Frame #------------------------------------#
-    def setup_new_game_frame(self, frame, input_handler):
-        # Clear any existing widgets in the frame
-        for widget in frame.winfo_children():
-            widget.destroy()
-
-        # Create the canvas and set the background image
-        canvas = tk.Canvas(frame, bg="#FFFFFF", height=self.gui.image_height, width=self.gui.image_width, bd=0,
-                           highlightthickness=0, relief="ridge")
-        canvas.place(x=0, y=0)
-        canvas.create_image(0, 0, anchor="nw", image=self.new_game_frame_background)
+    def setup_new_game_page(self, frame, input_handler):
+        canvas = self.clear_widgets_create_canvas_set_background(frame, self.new_game_frame_background)
 
         # Display the back button to return to the main menu
         back_button = canvas.create_image(50, 50, image=self.back_arrow_image)
@@ -190,6 +188,13 @@ class DisplayManager:
             player_box = canvas.create_image(x_position, y_position, anchor="nw", image=player_box_image)
             self.player_box_images_refs.append(player_box)  # Store the image reference
 
+            # Add a die image next to each player box for random name generation
+            dice_x_position = x_position - 55  # Adjust position to the left of the player box
+            dice_y_position = y_position + 10  # Slightly aligned with the player box
+            dice_button = canvas.create_image(dice_x_position, dice_y_position, anchor="nw",
+                                              image=self.random_name_button_image)
+
+            # Creating the dice button
             # Creat the dice button
             dice_button = tk.Button(canvas, image=self.random_name_button_image, bd=0,  # No border
                 highlightthickness=0, highlightbackground="#FBF8F5", bg="#FBF8F5", activebackground="#FBF8F5",
@@ -373,7 +378,7 @@ class DisplayManager:
             if self.player_text_refs[idx]:
                 canvas.delete(self.player_text_refs[idx])
                 self.player_text_refs[idx] = None
-
+            
             entry.delete(0, tk.END)  # Clear the entry to remove any leftover invalid text
             entry.insert(0, player_name)  # Ensure the valid name is displayed
             entry.destroy()
@@ -489,3 +494,93 @@ class DisplayManager:
 #------------------------------------# Game Play Frame #------------------------------------#
     def setup_gameplay_frame(self, frame):
         pass
+
+class GameplayFrame(DisplayManager):
+    def __init__(self, gui):
+        # New Gameplay frame images
+        super().__init__(gui)
+        self.new_gameplay_frame_background = tk.PhotoImage(
+            file=os.path.join(assets_base_path, "gameplay_frame/gameplay_frame_background.png"))
+
+        # Gameboard tiles colors
+        self.tile_colors = [
+            None,
+            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/cyan_h.png")),
+            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/cyan_h.png")),
+            None,
+            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/cyan_h.png")),
+            None,
+            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/red_v.png")),
+            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/red_v.png")),
+            None,
+            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/red_v.png")),
+            None,
+            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/dark_grey_h.png")),
+            None,
+            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/dark_grey_h.png")),
+            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/dark_grey_h.png")),
+            None,
+            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/yellow_v.png")),
+            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/yellow_v.png")),
+            None,
+            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/yellow_v.png"))
+        ]
+
+        #tile color coordinates from anchor (reference point) "NW" corner
+        self.tile_color_coord = [
+            None,
+            [563, 819],
+            [428, 819],
+            None,
+            [158, 819],
+            None,
+            [116, 684],
+            [116, 549],
+            None,
+            [116, 279],
+            None,
+            [563, 237],
+            None,
+            [428, 237],
+            [158, 237],
+            None,
+            [698, 279],
+            [698, 414],
+            None,
+            [698, 684]
+        ]
+
+    # gets the information from the lists above and display all the tiles colors
+    def overlay_tile_colors(self, canvas):
+        for i in range(0, 20):
+            color_tuple = self.tile_color_coord[i]
+            if color_tuple: # if None (meaning at that position there is a tile that has no color) doesn't execute
+                x_pos = color_tuple[0]
+                y_pos = color_tuple[1]
+                tile_color = self.tile_colors[i]
+                canvas.create_image(x_pos, y_pos, anchor="nw", image=tile_color)
+
+    def setup_new_gameplay_frame(self, frame):
+        canvas = self.clear_widgets_create_canvas_set_background(frame, self.new_gameplay_frame_background)
+        self.overlay_tile_colors(canvas)
+        return canvas
+
+    #------------------------#
+    # EDITING MODE FUNCTIONS #
+    #------------------------#
+
+    # modifies the color of the tile in the board editor
+    def modify_tile_color(self, color, tile_position):
+        # gets the right color path based on the tile position (vertical or horizontal)
+        if 0 < tile_position < 5 or 10 < tile_position < 15: #tile is horizontal
+            color_path = f"/gameplay_frame/{color}_h.png"
+        else:
+            color_path = f"/gameplay_frame/{color}_v.png"
+
+        #gets the appropriate image path
+        image_color_path = os.path.join(assets_base_path, color_path)
+
+        #modifies the list at the appropriate position with the new tile color reference
+        self.tile_colors[tile_position] = tk.PhotoImage(file=image_color_path)
+
+

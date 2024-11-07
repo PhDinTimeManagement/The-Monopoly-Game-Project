@@ -1,13 +1,12 @@
 # main.py
 import tkinter as tk
 import os
-from src.View.DisplayManager import DisplayManager
+from src.View.DisplayManager import *
 from src.Controller.InputHandler import InputHandler
 
 class GUI(tk.Tk):
     def __init__(self):
         super().__init__()
-
         imgpath = os.path.join(os.path.dirname(__file__), "../../assets/main_menu_frame/startup_frame_background.png")
 
         self.background_image = tk.PhotoImage(file=imgpath)
@@ -28,6 +27,7 @@ class GUI(tk.Tk):
 
         # Initialize DisplayManager and InputHandler
         self.display_manager = DisplayManager(self)
+        self.gameplay_frame = GameplayFrame(self)
         self.input_handler = InputHandler()
 
         # Set up frames
@@ -51,13 +51,13 @@ class GUI(tk.Tk):
     def show_info_frame(self):
         frame = tk.Frame(self)
         self.frames["info"] = frame
-        self.info_canvas = self.display_manager.setup_info_frame(frame)
+        # TODO self.info_canvas = self.display_manager.setup_info_frame(frame)
 
     # Start a new game
     def show_new_game_frame(self):
         frame = tk.Frame(self)
         self.frames["new_game"] = frame
-        self.new_game_canvas = self.display_manager.setup_new_game_frame(frame, self.input_handler)
+        self.new_game_canvas = self.display_manager.setup_new_game_page(frame, self.input_handler)
 
     # Edit the game board
     def show_edit_board_frame(self):
@@ -75,7 +75,7 @@ class GUI(tk.Tk):
     def show_game_play_frame(self):
         frame = tk.Frame(self)
         self.frames["gameplay"] = frame
-        self.game_canvas = self.display_manager.setup_gameplay_frame(frame)
+        self.game_canvas = self.gameplay_frame.setup_new_gameplay_frame(frame)
 
     def show_frame(self, frame_name):
         for frame in self.frames.values():
