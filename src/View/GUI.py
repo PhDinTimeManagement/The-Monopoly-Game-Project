@@ -29,6 +29,10 @@ class GUI(tk.Tk):
 
         # Initialize DisplayManager and InputHandler
         self.display_manager = DisplayManager(self)
+        self.main_menu_frame = MainMenuFrame(self)
+        self.info_page_frame = InfoPageFrame(self)
+        self.new_game_frame = NewGameFrame(self)
+        self.load_game_frame = LoadGameFrame(self)
         self.gameplay_frame = GameplayFrame(self, controller)
         self.input_handler = InputHandler()
 
@@ -47,19 +51,19 @@ class GUI(tk.Tk):
     def show_main_menu(self):
         frame = tk.Frame(self)
         self.frames["main_menu"] = frame
-        self.canvas = self.display_manager.setup_main_menu_frame(frame)
+        self.canvas = self.main_menu_frame.setup_main_menu_frame(frame)
 
     # Show the game information
     def show_info_frame(self):
         frame = tk.Frame(self)
         self.frames["info"] = frame
-        # TODO self.info_canvas = self.display_manager.setup_info_frame(frame)
+        self.info_canvas = self.info_page_frame.setup_info_page(frame)
 
     # Start a new game
     def show_new_game_frame(self):
         frame = tk.Frame(self)
         self.frames["new_game"] = frame
-        self.new_game_canvas = self.display_manager.setup_new_game_page(frame, self.input_handler)
+        self.new_game_canvas = self.new_game_frame.setup_new_game_page(frame, self.input_handler)
 
     # Edit the game board
     def show_edit_board_frame(self):

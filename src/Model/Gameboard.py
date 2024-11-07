@@ -261,7 +261,7 @@ class Gameboard:
                       Property("Shatin", 11, 700, 75, None, "blue"),
                       Chance(12),
                       Property("Tuen Mun", 13, 400, 20, None, "blue"),
-                      Property("Tai Po", 14, 500, 25, None, "blue"),
+                      Property("Tai Po", 14, 500, 25, None, "pink"),
                       GoToJail(15),
                       Property("Sai Kung", 16, 400, 10, None, "yellow"),
                       Property("Yuen Long", 17, 400, 25, None, "yellow"),
