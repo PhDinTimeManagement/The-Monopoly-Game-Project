@@ -135,13 +135,19 @@ class GameplayFrame(DisplayManager):
         return button_click_area, canvas
 
     def show_pay_fine_button(self, canvas):
-        return self.create_button(canvas, self.pay_fine_x_pos, self.pay_fine_y_pos, self.pay_fine_image)
+        pay_fine_click_area, canvas = self.create_button(canvas, self.pay_fine_x_pos, self.pay_fine_y_pos, self.pay_fine_image)
+        # TODO BIND FUNCTION canvas.tag_bind(pay_fine_click_area, "<Button-1>", lambda e: )
+        return canvas
 
     def show_yes_button(self, canvas):
-        return self.create_button(canvas, self.yes_x_pos, self.yes_y_pos, self.yes_image)
+        yes_click_area, canvas = self.create_button(canvas, self.yes_x_pos, self.yes_y_pos, self.yes_image)
+        # TODO BIND FUNCTION canvas.tag_bind(yes_click_area, "<Button-1>", lambda e: )
+        return canvas
 
     def show_no_button(self, canvas):
-        return self.create_button(canvas, self.no_x_pos, self.no_y_pos, self.no_image)
+        no_click_area, canvas = self.create_button(canvas, self.no_x_pos, self.no_y_pos, self.no_image)
+        # TODO BIND FUNCTION canvas.tag_bind(no_click_area, "<Button-1>", lambda e: )
+        return canvas
 
     # called to set up the entire gameplay_frame
     def setup_new_gameplay_frame(self, frame):
@@ -162,9 +168,9 @@ class GameplayFrame(DisplayManager):
 
 
         # OTHER BUTTONS JUST FOR TESTING POS WONT BE SHOWN ALL THE TIME
-        pay_fine_click_area, canvas = self.show_pay_fine_button(canvas)
-        yes_click_area, canvas = self.show_yes_button(canvas)
-        no_click_area, canvas = self.show_no_button(canvas)
+        canvas = self.show_pay_fine_button(canvas)
+        canvas = self.show_yes_button(canvas)
+        canvas = self.show_no_button(canvas)
 
         return canvas
 
@@ -612,6 +618,8 @@ class LoadGameFrame(DisplayManager):
     def __init__(self, gui):
         super().__init__(gui)
 
+        self.load_and_play_button_id = None
+        self.saved_game_slots = []
         self.slot_item_ids = [] # Track item IDs for slots
 
         # Load Game frame images
