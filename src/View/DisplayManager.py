@@ -272,13 +272,8 @@ class DisplayManager:
             # Save the generated name immediately
             self.gui.input_handler.players_names[idx] = player_name
 
-            # Update the entry widget if it’s open, otherwise show the generated name in the box
-            if self.player_entries[idx]:  # If entry widget is open
-                self.player_entries[idx].delete(0, tk.END)  # Clear current text
-                self.player_entries[idx].insert(0, player_name)  # Insert generated name
-            else:
-                # Pass the valid name to show_insert_entry for display, replacing the demo image
-                self.show_insert_entry(canvas, idx, name=player_name)
+            # Always show the generated name in the player box
+            self.show_insert_entry(canvas, idx, name=player_name)
 
             # Show a hint message to prompt the user to press Enter if they want to save manually
             self.show_msg(canvas, idx, "* You can modify the name and press <Return> to save.", is_error=False)
@@ -290,13 +285,19 @@ class DisplayManager:
         if name:
             # If a generated name is provided, show and save it immediately
             player_name = name
+            self.gui.input_handler.players_names[idx] = player_name
+
+            # Remove any existing entry widget to update the display with the new name
+            if self.player_entries[idx]:
+                self.player_entries[idx].destroy()
+                self.player_entries[idx] = None  # Clear the reference
+
             canvas.itemconfig(self.player_box_images_refs[idx], image=self.player_insert_demo_image)
             if self.player_text_refs[idx]:
                 canvas.delete(self.player_text_refs[idx])
             self.player_text_refs[idx] = canvas.create_text(
                 400, 290 + idx * 100, text=player_name, font=("Comic Sans MS", 20), fill="#000000"
             )
-            self.gui.input_handler.players_names[idx] = player_name
         else:
             # Code for opening an entry widget for manual input
             if self.player_entries[idx]:
@@ -423,6 +424,9 @@ class DisplayManager:
         self.gui.show_frame("gameplay")
 
     def confirm_exit_new_game(self, canvas):
+        # Clear any previously saved positions
+        self.hidden_widgets.clear()
+
         # Hide all tracked widgets by storing their positions and calling `place_forget`
         for widget in self.active_widgets:
             try:
@@ -435,7 +439,6 @@ class DisplayManager:
         # Now display exit confirmation
         exit_hint = canvas.create_image(self.gui.image_width // 2 + 297, self.gui.image_height // 2 + 50,
                                         image=self.exit_new_game_hint_image)
-
         # Create Yes and No buttons in the popup
         yes_button = canvas.create_image(self.gui.image_width // 2 + 150, self.gui.image_height // 2 + 200,
                                          image=self.yes_button_image)
