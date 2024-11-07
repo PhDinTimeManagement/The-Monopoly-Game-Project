@@ -289,9 +289,9 @@ class NewGameFrame(DisplayManager):
         self.clicked_boxes[idx] = False  # Reset the clicked state
 
     def generate_random_name(self, canvas, idx):
-        # Check if the previous player name has been entered (except for the first player)
-        if idx > 0 and not self.gui.input_handler.players_names[idx - 1]:
-            self.show_msg(canvas, idx, "* Previous player name must be entered first.", is_error=True)
+        # Ensure that all previous player names (up to idx-1) have been entered
+        if any(not self.gui.input_handler.players_names[i] for i in range(idx)):
+            self.show_msg(canvas, idx, "* All previous player names must be entered first.", is_error=True)
             return
 
         # Generate a random name
