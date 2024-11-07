@@ -1,8 +1,6 @@
 # main.py
 import tkinter as tk
 import os
-
-from src.Controller.GameController import GameController
 from src.View.DisplayManager import *
 from src.Controller.InputHandler import InputHandler
 
@@ -33,7 +31,8 @@ class GUI(tk.Tk):
         self.info_page_frame = InfoPageFrame(self)
         self.new_game_frame = NewGameFrame(self)
         self.load_game_frame = LoadGameFrame(self)
-        self.gameplay_frame = GameplayFrame(self, controller)
+        #TODO <Remove the controller object from the GameplayFrame>
+        #self.gameplay_frame = GameplayFrame(self, controller)
         self.input_handler = InputHandler()
 
         # Set up frames
@@ -42,7 +41,7 @@ class GUI(tk.Tk):
         self.show_new_game_frame()
         self.show_edit_board_frame()
         self.show_load_game_frame()
-        self.show_game_play_frame()
+        #self.show_game_play_frame() TODO uncomment this line later
 
         # Initially show the main menu
         self.show_frame("main_menu")
@@ -81,7 +80,7 @@ class GUI(tk.Tk):
     def show_game_play_frame(self):
         frame = tk.Frame(self)
         self.frames["gameplay"] = frame
-        self.game_canvas = self.gameplay_frame.setup_new_gameplay_frame(frame)
+        #self.game_canvas = self.gameplay_frame.setup_new_gameplay_frame(frame) TODO uncomment this line later
 
     def show_frame(self, frame_name):
         for frame in self.frames.values():
@@ -89,6 +88,6 @@ class GUI(tk.Tk):
         self.frames[frame_name].place(x=0, y=0, width=self.image_width, height=self.image_height)
 
 # Run the GUI
-controller = GameController()
 gui = GUI()
-gui.mainloop()
+#controller = GameController(gui)
+#gui.mainloop()

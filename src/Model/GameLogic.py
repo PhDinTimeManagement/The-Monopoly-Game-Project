@@ -1,7 +1,6 @@
 import random
 
-from src.Controller.GameController import *
-from src.Model.Player import *
+#from src.Controller.GameController import GameController
 #from tests.test_GameLogic import game_logic
 
 
@@ -63,6 +62,8 @@ class GameLogic:
         return gameboard.tiles[player.get_square()]
 
     """Three functions are for in jail"""
+    # TODO what is this???
+
     @staticmethod
     def player_first_round(player):
         return player.get_in_jail_turns() == 3
@@ -89,9 +90,11 @@ class GameLogic:
 
     @staticmethod
     def out_jail_on_double(player, dice_number1, dice_number2, gameboard):
+        # TODO problem here, wont move properly (NOW FIXED BUT CHECK)
         tile = GameLogic.player_move(dice_number1 + dice_number2, player, gameboard)
-        GameController.land_and_complete_round(tile, player)
+        #GameController.land_and_complete_round(tile, player)
         gameboard.get_jail_tile().free_player(player)
+        return tile
 
     """Pay the fine of 150 in jail"""
 
@@ -163,7 +166,9 @@ class GameLogic:
         #if the player is in jail
         if player_next_turn.get_jail_status():
             #the player has paid the fine in jail or is in the third round, only roll button is displayed, therefore return "jail_roll"
-            if player_next_turn.get_fine_payed() or GameLogic.player_third_round(player_next_turn):
+            #IMPORTANT, if a player initially has a balance that is less than the fine, the player cannot choose to pay fine
+            if player_next_turn.get_fine_payed() or GameLogic.player_third_round(player_next_turn) or (
+               not GameLogic.player_third_round(player_next_turn) and player_next_turn.get_current_money() < game_logic.get_fine()):
                 action = ["jail_roll",player_next_turn]
             else:
                 #in other cases, the player can either choose to pay fine or to roll the dice, therefore return "pay_fine_and_jail_roll"
@@ -175,3 +180,28 @@ class GameLogic:
             action = ["Roll",player_next_turn]
 
             return action
+
+    @staticmethod
+    def in_jail_roll(game_logic,player_this_turn, board):
+        dice_roll1, dice_roll2 = GameLogic.roll_dice()
+        if (not GameLogic.same_double(dice_roll1, dice_roll2)) and GameLogic.player_third_round(player_this_turn):
+            action = ["show_pay_fine",None]
+            board.tiles[player_this_turn.get_current_square()].freeplayer(player_this_turn)
+            if player_this_turn.get_current_money() > game_logic.get_fine():
+                landed_tile = GameLogic.player_move(dice_roll1 + dice_roll2, player_this_turn, board)
+                action[1] = landed_tile
+            return action
+        else:
+            flag = False
+            if GameLogic.same_double(dice_roll1, dice_roll2) or (
+                    GameLogic.player_second_round(player_this_turn) and player_this_turn.get_fine_payed()):
+                flag = True
+            if flag:
+                board.tiles[player_this_turn.get_current_square()].freeplayer(player_this_turn)
+                landed_tile = GameLogic.player_move(dice_roll1 + dice_roll2, player_this_turn, board)
+                action = ["move", landed_tile]
+            else:
+                action = ["not_move"]
+
+            return action
+

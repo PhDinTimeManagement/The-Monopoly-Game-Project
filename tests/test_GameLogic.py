@@ -27,12 +27,12 @@ class TestGameLogic(TestCase):
         self.assertLessEqual(number2, 4)
 
     def test_player_move(self):
-        GameLogic.player_move(3, player3, gameboard)
-        self.assertEqual(player3.get_current_money(), 1350)
-        GameLogic.player_move(20, player4, gameboard)
-        self.assertEqual(player4.get_current_money(), 3000)
-        GameLogic.player_move(23, player5, gameboard)
-        self.assertEqual(player5.get_current_money(), 2700)
+        tile = GameLogic.player_move(3, player3, gameboard)
+        self.assertEqual(tile.get_tile_type(), "income_tax")
+        tile1 = GameLogic.player_move(20, player4, gameboard)
+        self.assertEqual(tile1.get_tile_type(), "go")
+        tile2 = GameLogic.player_move(23, player5, gameboard)
+        self.assertEqual(tile2.get_tile_type(), "income_tax")
 
     def test_player_first_round(self):
         player1.set_in_jail_turns(3)
