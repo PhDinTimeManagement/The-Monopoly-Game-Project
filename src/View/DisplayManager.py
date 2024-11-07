@@ -40,6 +40,7 @@ class GameplayFrame(DisplayManager):
         super().__init__(gui)
 
         # New Gameplay frame images
+        self.colors_not_loaded = True
         self.new_gameplay_frame_background = tk.PhotoImage(
             file=os.path.join(assets_base_path, "gameplay_frame/gameplay_frame_background.png"))
         self.roll_dice_image = tk.PhotoImage(file = os.path.join(assets_base_path, "gameplay_frame/roll_dice.png"))
@@ -86,6 +87,8 @@ class GameplayFrame(DisplayManager):
             color = self.tile_colors[i]
             if color:
                 self.modify_tile_color(color, i)
+        self.colors_not_loaded = False
+
 
     # gets the information from the lists above and display all the tiles colors
     def overlay_tile_colors(self, canvas):
@@ -109,7 +112,8 @@ class GameplayFrame(DisplayManager):
         canvas = self.clear_widgets_create_canvas_set_background(frame, self.new_gameplay_frame_background)
 
         # loads tile colors and displays them
-        self.load_tile_colors()
+        if self.colors_not_loaded:
+            self.load_tile_colors()
         self.overlay_tile_colors(canvas)
 
         # buttons dimensions
