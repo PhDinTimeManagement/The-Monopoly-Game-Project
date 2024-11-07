@@ -1,6 +1,8 @@
 # main.py
 import tkinter as tk
 import os
+
+from src.Controller.GameController import GameController
 from src.View.DisplayManager import *
 from src.Controller.InputHandler import InputHandler
 
@@ -27,7 +29,7 @@ class GUI(tk.Tk):
 
         # Initialize DisplayManager and InputHandler
         self.display_manager = DisplayManager(self)
-        self.gameplay_frame = GameplayFrame(self)
+        self.gameplay_frame = GameplayFrame(self, controller)
         self.input_handler = InputHandler()
 
         # Set up frames
@@ -83,5 +85,6 @@ class GUI(tk.Tk):
         self.frames[frame_name].place(x=0, y=0, width=self.image_width, height=self.image_height)
 
 # Run the GUI
+controller = GameController()
 gui = GUI()
 gui.mainloop()

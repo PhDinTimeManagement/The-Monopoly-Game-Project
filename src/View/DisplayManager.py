@@ -65,7 +65,7 @@ class DisplayManager:
         self.saved_game_slot4_image = tk.PhotoImage(file=os.path.join(assets_base_path, "load_game_frame/saved_game_slot4.png"))
         self.saved_game_slot5_image = tk.PhotoImage(file=os.path.join(assets_base_path, "load_game_frame/saved_game_slot5.png"))
         self.selected_saved_game_slot_image = tk.PhotoImage(file=os.path.join(assets_base_path, "load_game_frame/selected_saved_game_slot.png"))
-        self.laod_and_play_button_image = tk.PhotoImage(file=os.path.join(assets_base_path, "load_game_frame/load_and_play_button.png"))
+        self.load_and_play_button_image = tk.PhotoImage(file=os.path.join(assets_base_path, "load_game_frame/load_and_play_button.png"))
 
         # Game Board frame images
         self.new_gameplay_frame_background = tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/gameplay_frame_background.png"))
@@ -83,16 +83,9 @@ class DisplayManager:
         return canvas
 
 #------------------------------------# Main Menu Frame #------------------------------------#
-    def setup_main_menu_frame(self, frame):
-        # Clear any existing widgets in the frame
-        for widget in frame.winfo_children():
-            widget.destroy()
 
-        # Create the canvas and set the background image
-        canvas = tk.Canvas(frame, bg="#FFFFFF", height=self.gui.image_height, width=self.gui.image_width, bd=0,
-                           highlightthickness=0, relief="ridge")
-        canvas.place(x=0, y=0)
-        canvas.create_image(0, 0, anchor="nw", image=self.startup_background)
+    def setup_main_menu_frame(self, frame):
+        canvas = self.clear_widgets_create_canvas_set_background(frame, self.startup_background)
 
         # Button positions
         button_y_positions = [self.gui.image_height * 0.55, self.gui.image_height * 0.70, self.gui.image_height * 0.85]
@@ -143,6 +136,8 @@ class DisplayManager:
 
         return canvas
 
+# --------------------------------------# Info Page #---------------------------------------#
+
     def setup_info_page(self, frame):
         canvas = self.clear_widgets_create_canvas_set_background(frame, self.info_frame_background)
 
@@ -163,6 +158,8 @@ class DisplayManager:
         canvas.tag_bind(back_button_clickable_area, "<Button-1>", lambda e: self.gui.show_frame("main_menu"))
 
         return canvas
+
+# ------------------------------------# New Game Frame #------------------------------------#
 
     def setup_new_game_page(self, frame, input_handler):
         canvas = self.clear_widgets_create_canvas_set_background(frame, self.new_game_frame_background)
@@ -484,49 +481,33 @@ class DisplayManager:
             self.delete_name(canvas, idx)
 
 #------------------------------------# Edit Board Frame #------------------------------------#
+
     def setup_edit_board_frame(self, frame):
         pass
 
 #------------------------------------# Load Game Frame #------------------------------------#
+
     def setup_load_game_frame(self, frame):
         pass
 
 #------------------------------------# Game Play Frame #------------------------------------#
+
     def setup_gameplay_frame(self, frame):
         pass
 
+
 class GameplayFrame(DisplayManager):
-    def __init__(self, gui):
+    def __init__(self, gui, controller):
         # New Gameplay frame images
         super().__init__(gui)
+        self.controller = controller # gets the game controller to retrieve information to setup the board
         self.new_gameplay_frame_background = tk.PhotoImage(
             file=os.path.join(assets_base_path, "gameplay_frame/gameplay_frame_background.png"))
 
-        # Gameboard tiles colors
-        self.tile_colors = [
-            None,
-            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/cyan_h.png")),
-            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/cyan_h.png")),
-            None,
-            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/cyan_h.png")),
-            None,
-            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/red_v.png")),
-            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/red_v.png")),
-            None,
-            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/red_v.png")),
-            None,
-            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/dark_grey_h.png")),
-            None,
-            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/dark_grey_h.png")),
-            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/dark_grey_h.png")),
-            None,
-            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/yellow_v.png")),
-            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/yellow_v.png")),
-            None,
-            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/yellow_v.png"))
-        ]
+        # Gameboard tiles colors empty list, will get loaded from the Gameboard model
+        self.tile_colors = []
 
-        #tile color coordinates from anchor (reference point) "NW" corner
+        # Tile color coordinates from anchor (reference point) "NW" corner
         self.tile_color_coord = [
             None,
             [563, 819],
@@ -550,6 +531,13 @@ class GameplayFrame(DisplayManager):
             [698, 684]
         ]
 
+    def load_tile_colors(self):
+        for i in range(0,20):
+            has_color = self.tile_color_coord[i]
+            self.tile_colors.append(None) # initializes the empty position
+            if has_color:   # if it has color then pulls the color from the gameboard and modifies the new entry
+                self.modify_tile_color(self.controller.board.tiles[i].get_color(), i)
+
     # gets the information from the lists above and display all the tiles colors
     def overlay_tile_colors(self, canvas):
         for i in range(0, 20):
@@ -562,6 +550,7 @@ class GameplayFrame(DisplayManager):
 
     def setup_new_gameplay_frame(self, frame):
         canvas = self.clear_widgets_create_canvas_set_background(frame, self.new_gameplay_frame_background)
+        self.load_tile_colors()
         self.overlay_tile_colors(canvas)
         return canvas
 
