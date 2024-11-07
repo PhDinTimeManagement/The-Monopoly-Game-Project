@@ -532,6 +532,9 @@ class MainMenuFrame(DisplayManager):
 class LoadGameFrame(DisplayManager):
     def __init__(self, gui):
         super().__init__(gui)
+
+        self.slot_item_ids = [] # Track item IDs for slots
+
         # Load Game frame images
         self.load_game_frame_background = tk.PhotoImage(
             file=os.path.join(assets_base_path, "load_game_frame/load_game_frame_background.png"))
@@ -553,7 +556,72 @@ class LoadGameFrame(DisplayManager):
     # ------------------------------------# Load Game Frame #------------------------------------#
 
     def setup_load_game_frame(self, frame):
-        pass
+        canvas = self.clear_widgets_create_canvas_set_background(frame, self.load_game_frame_background)
+
+        # Saved game slot selection image positions
+        saved_game_slot_positions = [
+            (self.gui.image_width // 2, 370),
+            (self.gui.image_width // 2, 452),
+            (self.gui.image_width // 2, 534),
+            (self.gui.image_width // 2, 616),
+            (self.gui.image_width // 2, 698)
+        ]
+
+        # Saved game slot images
+        self.saved_game_slots = [
+            self.saved_game_slot1_image,
+            self.saved_game_slot2_image,
+            self.saved_game_slot3_image,
+            self.saved_game_slot4_image,
+            self.saved_game_slot5_image
+        ]
+
+        # Display saved game slots
+        for i, slot_image in enumerate(self.saved_game_slots):
+            slot_x, slot_y = saved_game_slot_positions[i]  # Unpack coordinates
+            slot_id = canvas.create_image(slot_x, slot_y, image=slot_image)
+            self.slot_item_ids.append(slot_id)
+
+            # Create a clickable area for each slot
+            clickable_area = canvas.create_rectangle(
+                slot_x - (0.5 * slot_image.width()), slot_y - (0.5 * slot_image.height()),
+                slot_x + (0.5 * slot_image.width()), slot_y + (0.5 * slot_image.height()),
+                outline="", fill=""
+            )
+
+            # Bind click event to select the slot
+            canvas.tag_bind(clickable_area, "<Button-1>",
+                            lambda e, idx=i: self.select_saved_game_slot(canvas, idx))
+
+        return canvas
+
+    def select_saved_game_slot(self, canvas, idx):
+        # Clear any previously selected slots by resetting all slots to their original images
+        for i, slot_id in enumerate(self.slot_item_ids):
+            canvas.itemconfig(slot_id, image=self.saved_game_slots[i])
+
+        # Update only the selected slot with the highlight image
+        canvas.itemconfig(self.slot_item_ids[idx], image=self.selected_saved_game_slot_image)
+        self.gui.selected_saved_game_slot = idx
+
+        # Display Load and Play button once a slot is selected
+        if not hasattr(self, 'load_and_play_button_id'):
+            # Reuse this Load and Play button
+            load_button_x, load_button_y = self.gui.image_width // 2, 835
+            self.load_and_play_button_id = canvas.create_image(load_button_x, load_button_y,
+                                                               image=self.load_and_play_button_image)
+            load_and_play_clickable_area = canvas.create_rectangle(
+                load_button_x - (0.5 * self.load_and_play_button_image.width()),
+                load_button_y - (0.5 * self.load_and_play_button_image.height()),
+                load_button_x + (0.5 * self.load_and_play_button_image.width()),
+                load_button_y + (0.5 * self.load_and_play_button_image.height()),
+                outline="", fill=""
+            )
+
+            # TODO Once the button is clicked, pass the json file name to the controller to load the game board
+            # canvas.tag_bind(load_and_play_clickable_area, "<Button-1>", lambda e: self.gui.show_frame("gameplay"))
+
+        return canvas
 
 
 class InfoPageFrame(DisplayManager):
@@ -592,9 +660,3 @@ class EditBoardFrame(DisplayManager):
     def __init__(self, gui):
         super().__init__(gui)
 
-        # Edit Board frame images
-
-#------------------------------------# Edit Board Frame #------------------------------------#
-
-    def setup_edit_board_frame(self, frame):
-        pass

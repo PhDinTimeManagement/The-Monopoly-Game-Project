@@ -75,7 +75,7 @@ class GUI(tk.Tk):
     def show_load_game_frame(self):
         frame = tk.Frame(self)
         self.frames["load_game"] = frame
-        pass
+        self.load_game_frame = self.load_game_frame.setup_load_game_frame(frame)
 
     # Enter the main game board
     def show_game_play_frame(self):
