@@ -490,6 +490,11 @@ class NewGameFrame(DisplayManager):
         self.cancel_exit_and_restore_widgets(canvas, exit_hint, yes_button, no_button)
         self.gui.show_frame("main_menu")
 
+        # Also clear all the hint messages shown in the new game frame before
+        for idx in range(6):
+            if self.error_labels[idx]:
+                self.error_labels[idx].destroy()
+
     def cancel_exit_and_restore_widgets(self, canvas, exit_hint, yes_button, no_button):
         # Clear the exit hint and buttons
         canvas.delete(exit_hint)
