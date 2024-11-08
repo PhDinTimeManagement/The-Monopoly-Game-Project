@@ -82,7 +82,8 @@ class GameController:
 
     def pass_color_information_for_display(self):
         for i in range(0, 20):
-            self.gui.gameplay_frame.tile_colors.append(None)
+            color_tuple = [None, None]
+            self.gui.gameplay_frame.tile_colors.append(color_tuple)
             has_color = self.gui.gameplay_frame.get_color_coord(i)
             if has_color:
                 color = self.board.tiles[i].get_color()

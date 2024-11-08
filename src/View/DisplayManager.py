@@ -40,7 +40,6 @@ class GameplayFrame(DisplayManager):
         super().__init__(gui)
 
         # New Gameplay frame images
-        self.colors_not_loaded = True
         self.new_gameplay_frame_background = tk.PhotoImage(
             file=os.path.join(assets_base_path, "gameplay_frame/gameplay_frame_background.png"))
         self.roll_dice_image = tk.PhotoImage(file = os.path.join(assets_base_path, "gameplay_frame/roll_dice.png"))
@@ -89,20 +88,20 @@ class GameplayFrame(DisplayManager):
             [365, 870, 365, 930, None, None, None, None],   # income tax
             [230, 880, 230, 905, 230, 930, 230, 840], # prop3
             [None, None, None, None, None, None, None, None], # jail
-            [100, 750, 75, 750, 50, 750, 142, 750], # prop4
-            [100, 615, 75, 615, 50, 615, 142, 615], # prop5
+            [100, 752, 75, 752, 50, 752, 142, 752], # prop4
+            [100, 617, 75, 617, 50, 617, 142, 617], # prop5
             [95, 510, None, None, None, None, None, None], # chance
-            [100, 345, 75, 345, 50, 345, 142, 345], # prop6
+            [100, 347, 75, 347, 50, 347, 142, 347], # prop6
             [95 , 210, None, None, None, None, None, None], # free parking
             [635, 165, 635, 190, 635, 215, 635, 258],  # prop7
             [365, 240, 365, 190, None, None, None, None],  # chance
             [500, 165, 500, 190, 500, 215, 500, 258],  # prop8
             [230, 165, 230, 190, 230, 215, 230, 258],  # prop9
             [None, None, None, None, None, None, None, None],  # go to jail
-            [765, 345, 790, 345, 815, 345, 722, 345],  # prop10
-            [765, 480, 790, 480, 815, 480, 722, 480],  # prop11
+            [765, 347, 790, 347, 815, 347, 722, 347],  # prop10
+            [765, 482, 790, 482, 815, 482, 722, 482],  # prop11
             [770, 645, None, None, None, None, None, None],  # chance
-            [765, 750, 790, 750, 815, 750, 722, 750],  # prop12
+            [765, 752, 790, 752, 815, 752, 722, 752]  # prop12
         ]
 
         # Buttons Coordinates
@@ -118,103 +117,57 @@ class GameplayFrame(DisplayManager):
         self.no_y_pos = self.gui.image_height * 4 / 5 - 20
 
 
-
-
 # ------------------------------------# Game Play Frame #------------------------------------#
+    @staticmethod
+    def set_appropriate_text_dimension(name, price, rent, owner):
+        name_size = 16
+        price_size = 16
+        rent_size = 16
+        owner_size = 16
 
-    def display_tile_info(self, canvas):
-        for i in range(0, len(self.__tile_info_coord)):
-            # gets all information necessary to display
-            tile_type = self.tile_info[i][0]
-            tile_name = self.tile_info[i][1]
-            tile_price = self.tile_info[i][2]
-            tile_rent = f"{self.tile_info[i][3]} HDK"
-            tile_owner = self.tile_info[i][4]
-            name_x_pos = self.__tile_info_coord[i][0]
-            name_y_pos = self.__tile_info_coord[i][1]
-            price_x_pos = self.__tile_info_coord[i][2]
-            price_y_pos = self.__tile_info_coord[i][3]
-            rent_x_pos = self.__tile_info_coord[i][4]
-            rent_y_pos = self.__tile_info_coord[i][5]
-            owner_x_pos = self.__tile_info_coord[i][6]
-            owner_y_pos = self.__tile_info_coord[i][7]
-            text_rotate = 0.0
-            text_name_size = 20
+        if len(name) > 12:
+            name_size -= 4
+        elif len(name) > 10:
+            name_size -= 2
 
-            # text rotation information
-            if 5 < i < 10:  # left board side
-                text_rotate = 270.0
-            elif 15 < i < 20:   # right board side
-                text_rotate = 90.0
+        if len(price) > 12:
+            price_size -= 4
+        elif len(price) > 10:
+            price_size -= 2
 
-            if len(tile_name) > 12:
-                text_name_size -= 8
-            elif len(tile_name) > 10:
-                text_name_size -= 6
-            elif len(tile_name) > 0:
-                text_name_size -= 4
+        if len(rent) > 12:
+            rent_size -= 4
+        elif len(rent) > 10:
+            rent_size -= 2
 
-            # information objects will overwrite the text information
-            if tile_type == "property":
-                self.tile_info[i][5] = canvas.create_text(name_x_pos, name_y_pos, text= tile_name,
-                                                          font=("Comic Sans MS", text_name_size, "bold"), fill="#000000", angle= text_rotate)
-                tile_price = f"{tile_price} HKD"
-                self.tile_info[i][6] = canvas.create_text(price_x_pos, price_y_pos, text= tile_price,
-                                                          font=("Comic Sans MS", 16), fill="#000000", angle= text_rotate)
-                self.tile_info[i][7] = canvas.create_text(rent_x_pos, rent_y_pos, text= tile_rent,
-                                                          font=("Comic Sans MS", 16), fill="#000000", angle= text_rotate)
-                if tile_owner is None:
-                    #tile_owner = tile_owner.get_name()
-                    tile_owner = "TEST OWNER"
-                    self.tile_info[i][8] = canvas.create_text(owner_x_pos, owner_y_pos, text= tile_owner,
-                                                           font=("Comic Sans MS", 14), fill="#000000", angle= text_rotate)
-            elif tile_type == "go":
-                tile_price = f"Collect\n{tile_price} HKD"
-                self.tile_info[i][6] = canvas.create_text(price_x_pos, price_y_pos, text= tile_price,
-                                                          font=("Comic Sans MS", 18, "bold"), fill="#000000", justify="center")
-            elif tile_type == "free_parking":
-                tile_name = tile_name.replace(" ", "\n")
-                self.tile_info[i][6] = canvas.create_text(name_x_pos, name_y_pos, text= tile_name,
-                                                          font=("Comic Sans MS", 20, "bold"), fill="#000000", justify="center")
-            elif tile_type == "chance":
-                self.tile_info[i][6] = canvas.create_text(name_x_pos, name_y_pos, text= tile_name,
-                                                          font=("Comic Sans MS", 20, "bold"), fill="#000000")
-            elif tile_type == "income_tax":
-                tile_name = tile_name.replace(" ", "\n")
-                self.tile_info[i][6] = canvas.create_text(name_x_pos, name_y_pos, text= tile_name,
-                                                          font=("Comic Sans MS", 20, "bold"), fill="#000000", justify="center")
-                tile_price = f"{tile_price} %"
-                self.tile_info[i][7] = canvas.create_text(price_x_pos, price_y_pos, text= tile_price,
-                                                          font=("Comic Sans MS", 16), fill="#000000")
+        if len(owner) > 12:
+            owner_size -= 4
+        elif len(owner) > 10:
+            owner_size -= 2
+
+        return name_size, price_size, rent_size, owner_size
+
+    @staticmethod
+    def rotate_text(i):
+        text_rotate = 0
+        # text rotation information
+        if 5 < i < 10:  # left board side
+            text_rotate = 270.0
+        elif 15 < i < 20:  # right board side
+            text_rotate = 90.0
+        return text_rotate
 
     def set_color(self, pos, color):
-        self.tile_colors[pos] = color
+        self.tile_colors[pos][0] = color
 
     def get_color_coord(self, pos):
         return self.__tile_color_coord[pos]
 
-    # from the gameboard information loads the appropriate colors in the game frame
-    def load_tile_colors(self):
-        for i in range(0,20):
-            color = self.tile_colors[i]
-            if color:
-                self.modify_tile_color(color, i)
-        self.colors_not_loaded = False
-
-    # gets the information from the lists above and display all the tiles colors
-    def display_tile_colors(self, canvas):
-        for i in range(0, 20):
-            color_tuple = self.__tile_color_coord[i]
-            if color_tuple: # if None (meaning at that position there is a tile that has no color) doesn't execute
-                x_pos = color_tuple[0]
-                y_pos = color_tuple[1]
-                tile_color = self.tile_colors[i]
-                canvas.create_image(x_pos, y_pos, anchor="nw", image=tile_color)
-
-    # rolls the dice
+    #for testing
     def roll_dice(self):
         print("Rolling dice...")
 
+    #for testing
     def save_quit(self):
         print("Saving quit...")
 
@@ -243,13 +196,103 @@ class GameplayFrame(DisplayManager):
         # TODO BIND FUNCTION canvas.tag_bind(no_click_area, "<Button-1>", lambda e: )
         return canvas
 
+    def display_player_info(self, canvas):
+        pass
+
+    # from the gameboard information loads the appropriate colors in the game frame
+    def load_tile_colors(self):
+        for i in range(0,20):
+            color = self.tile_colors[i][0]
+            if color:
+                self.modify_tile_color(color, i)
+
+    # gets the information from the lists above and display all the tiles colors
+    def display_tile_colors(self, canvas):
+        self.load_tile_colors()
+        for i in range(0, 20):
+            color_coord = self.__tile_color_coord[i]
+            if color_coord: # if None (meaning at that position there is a tile that has no color) doesn't execute
+                x_pos = color_coord[0]
+                y_pos = color_coord[1]
+                tile_color = self.tile_colors[i][1]
+                canvas.create_image(x_pos, y_pos, anchor="nw", image=tile_color)
+
+    # from the info in the gameboard, displays it on the gameboard
+    def display_tile_info(self, canvas):
+        for i in range(0, len(self.__tile_info_coord)):
+            # gets all information necessary to display
+            tile_type = self.tile_info[i][0]
+            tile_name = self.tile_info[i][1]
+            tile_price = str(self.tile_info[i][2])
+            tile_rent = f"{self.tile_info[i][3]} HDK"
+            tile_owner = self.tile_info[i][4]
+            name_x_pos = self.__tile_info_coord[i][0]
+            name_y_pos = self.__tile_info_coord[i][1]
+            price_x_pos = self.__tile_info_coord[i][2]
+            price_y_pos = self.__tile_info_coord[i][3]
+            rent_x_pos = self.__tile_info_coord[i][4]
+            rent_y_pos = self.__tile_info_coord[i][5]
+            owner_x_pos = self.__tile_info_coord[i][6]
+            owner_y_pos = self.__tile_info_coord[i][7]
+
+            # gets owner name only when there is a player object
+            if tile_owner is None:
+                # tile_owner = tile_owner.get_name()
+                tile_owner = "test owner"
+
+            # calculates text sizes
+            text_name_size, text_price_size, text_rent_size, text_owner_size = self.set_appropriate_text_dimension(
+                tile_name, tile_rent, tile_price, tile_owner)
+
+            # calculates text rotation
+            text_rotate = self.rotate_text(i)
+
+            # displays text based on tile type
+            if tile_type == "property":
+                self.tile_info[i][5] = canvas.create_text(name_x_pos, name_y_pos, text=tile_name,
+                                                          font=("Comic Sans MS", text_name_size, "bold"),
+                                                          fill="#000000", angle=text_rotate)
+                tile_price = f"{tile_price} HKD"
+                self.tile_info[i][6] = canvas.create_text(price_x_pos, price_y_pos, text=tile_price,
+                                                          font=("Comic Sans MS", text_price_size), fill="#000000",
+                                                          angle=text_rotate)
+                self.tile_info[i][7] = canvas.create_text(rent_x_pos, rent_y_pos, text=tile_rent,
+                                                          font=("Comic Sans MS", text_rent_size), fill="#000000",
+                                                          angle=text_rotate)
+                self.tile_info[i][8] = canvas.create_text(owner_x_pos, owner_y_pos, text=tile_owner,
+                                                          font=("Comic Sans MS", text_owner_size), fill="#000000",
+                                                          angle=text_rotate)
+
+            elif tile_type == "go":
+                tile_price = f"Collect\n{tile_price} HKD"
+                self.tile_info[i][6] = canvas.create_text(price_x_pos, price_y_pos, text=tile_price,
+                                                          font=("Comic Sans MS", 18, "bold"), fill="#000000",
+                                                          justify="center")
+
+            elif tile_type == "free_parking":
+                tile_name = tile_name.replace(" ", "\n")
+                self.tile_info[i][6] = canvas.create_text(name_x_pos, name_y_pos, text=tile_name,
+                                                          font=("Comic Sans MS", 20, "bold"), fill="#000000",
+                                                          justify="center")
+
+            elif tile_type == "chance":
+                self.tile_info[i][6] = canvas.create_text(name_x_pos, name_y_pos, text=tile_name,
+                                                          font=("Comic Sans MS", 20, "bold"), fill="#000000")
+
+            elif tile_type == "income_tax":
+                tile_name = tile_name.replace(" ", "\n")
+                self.tile_info[i][6] = canvas.create_text(name_x_pos, name_y_pos, text=tile_name,
+                                                          font=("Comic Sans MS", 20, "bold"), fill="#000000",
+                                                          justify="center")
+                tile_price = f"{tile_price} %"
+                self.tile_info[i][7] = canvas.create_text(price_x_pos, price_y_pos, text=tile_price,
+                                                          font=("Comic Sans MS", 16), fill="#000000")
+
     # called to set up the entire gameplay_frame
     def setup_new_gameplay_frame(self, frame):
         canvas = self.clear_widgets_create_canvas_set_background(frame, self.new_gameplay_frame_background)
 
         # loads tile colors and displays them
-        if self.colors_not_loaded:
-            self.load_tile_colors()
         self.display_tile_colors(canvas)
 
         # loads tile information
@@ -287,7 +330,7 @@ class GameplayFrame(DisplayManager):
         image_color_path = os.path.join(assets_base_path, color_path)
 
         #modifies the list at the appropriate position with the new tile color reference
-        self.tile_colors[tile_position] = tk.PhotoImage(file=image_color_path)
+        self.tile_colors[tile_position][1] = tk.PhotoImage(file=image_color_path)
 
 
 class NewGameFrame(DisplayManager):

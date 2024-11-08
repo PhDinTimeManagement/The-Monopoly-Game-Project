@@ -129,7 +129,6 @@ class Property(Tile):
             return None
 
 
-
 class Jail(Tile):
     """Initialize the empty array of jailed players"""
     def __init__(self, board_pos, jailed_players):
