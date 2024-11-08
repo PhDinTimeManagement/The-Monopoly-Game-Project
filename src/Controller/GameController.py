@@ -18,8 +18,12 @@ class GameController:
         self.gui = the_gui
         self.player_list = []
         self.broke_list = []
-        self.input_handler = InputHandler()
+        self.input_handler = self.gui.input_handler
         self.click_var = tk.StringVar()
+        self.new_name_frame = self.gui.new_game_frame
+
+        #binding the buttons
+        self.gui.new_game_canvas.tag_bind(self.gui.play_button_clickable_area, "<Button-1>", lambda e: self.button_play())
 
         # button_config
         self.pass_color_information()
@@ -62,20 +66,26 @@ class GameController:
                 color = self.board.tiles[i].get_color()
                 self.gui.gameplay_frame.set_color(i, color)
 
-    # TODO By Kent: We need to program to detect the click events from the users. The click will call the functions for us. """
-    def start_game(self):
-        self.initialize_players()
-        while not GameLogic.game_ends(self.game_logic, self.get_player_list()):
-            # TODO self.play_round()
-            self.game_logic.set_current_round(self.game_logic.get_current_round() + 1)
+    # # TODO By Kent: We need to program to detect the click events from the users. The click will call the functions for us. """
+    # def start_game(self):
+    #     self.initialize_players()
+    #     while not GameLogic.game_ends(self.game_logic, self.get_player_list()):
+    #         # TODO self.play_round()
+    #         self.game_logic.set_current_round(self.game_logic.get_current_round() + 1)
 
     """ This function is called after the 'Play' button is clicked in the game """
 
     def button_play(self):
-        self.game_logic.set_player_turn(self.get_player_list())
-        player_this_turn = self.get_player_list()[self.game_logic.get_player_turn()]
-
-    # TODO <show the roll dice button and display player_this_turn ONLY. IMPORTANT: CONFIG ALL THE BUTTONS WITH ITS FUNCTIONS>
+        if self.new_name_frame.check_and_start_game(self.input_handler):
+            print("In the Game!!!",len(self.input_handler.players_names))
+            for player_name in self.input_handler.players_names:
+                if player_name is not None:
+                    player = Player(player_name)
+                    self.player_list.append(player)
+            self.game_logic.set_player_turn(self.get_player_list())
+            player_this_turn = self.get_player_list()[self.game_logic.get_player_turn()]
+            print(player_this_turn.get_name()," is now playing")
+            # TODO <show the roll dice button and display player_this_turn ONLY. IMPORTANT: CONFIG ALL THE BUTTONS WITH ITS FUNCTIONS>
 
     def determine_next_round(self, player_this_turn):
         """ Action is an array that stores the state of the Model after calling the 'determine_next_round' function """

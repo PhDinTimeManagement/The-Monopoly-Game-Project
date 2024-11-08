@@ -299,9 +299,9 @@ class NewGameFrame(DisplayManager):
         # Bind actions for Edit Board and Play clickable areas
         canvas.tag_bind(edit_board_clickable_area, "<Button-1>",
                         lambda e: print("Edit board clicked"))  # Placeholder action
-        canvas.tag_bind(play_button_clickable_area, "<Button-1>", lambda e: self.check_and_start_game(input_handler))
+        #canvas.tag_bind(play_button_clickable_area, "<Button-1>", lambda e: self.check_and_start_game(input_handler))
 
-        return canvas
+        return canvas, play_button_clickable_area
 
     def clear_active_widgets(self):
         for widget in self.active_widgets:
@@ -479,8 +479,7 @@ class NewGameFrame(DisplayManager):
             # Show error message below play button if fewer than 2 players
             self.show_msg(self.gui.frames["new_game"], 0, "* At least two players are required to start the game.",
                           is_error=True, x_position=self.gui.image_width - 550, y_position=722)
-            return
-
+            return False
         # If all checks pass, transition to the GameBoard frame
         print("Starting game with players:")
         for idx, name in enumerate(player_names, start=1):
@@ -489,6 +488,7 @@ class NewGameFrame(DisplayManager):
 
         # Show the GameBoard frame
         self.gui.show_frame("gameplay")
+        return True
 
     def confirm_exit_new_game(self, canvas):
         # Clear any previously saved positions
