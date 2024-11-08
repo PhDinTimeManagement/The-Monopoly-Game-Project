@@ -49,7 +49,7 @@ class GameplayFrame(DisplayManager):
         self.yes_image = tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/yes.png"))
         self.no_image = tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/no.png"))
 
-        # Gameboard tiles colors empty list, will get loaded from the Gameboard model
+        # Gameboard tiles colors empty list, will get loaded in by the Controller
         self.tile_colors = []
 
         # Tile color coordinates from anchor (reference point) "NW" corner
@@ -59,21 +59,50 @@ class GameplayFrame(DisplayManager):
             [430, 818],
             None,
             [160, 818],
-            None,
+            None,   # jail
             [118, 683],
             [118, 548],
             None,
             [118, 278],
-            None,
+            None, # free parking
             [565, 236],
             None,
             [430, 236],
             [160, 236],
-            None,
+            None, # go to jail
             [700, 278],
             [700, 413],
             None,
             [700, 683]
+        ]
+
+        # Gameboard tiles 7-tuple will get loaded in by the Controller
+        #  [type, name, price, rent, owner, nameObj, priceObj, rentObj, ownerObj]
+        self.tile_info = []
+
+        # Tile info coordinates, 6-tuple
+        self.__tile_info_coord = [
+            # TODO add coordinates OWNER
+            [None, None, 770, 860, None, None, None, None], # go
+            [635, 880, 635, 905, 635, 930, None, None], # prop1
+            [500, 880, 500, 905, 500, 930, None, None], # prop2
+            [365, 870, 365, 930, None, None, None, None],   # income tax
+            [230, 880, 230, 905, 230, 930, None, None], # prop3
+            [None, None, None, None, None, None, None, None], # jail
+            [100, 750, 75, 750, 50, 750, None, None], # prop4
+            [100, 615, 75, 615, 50, 615, None, None], # prop5
+            [95, 510, None, None, None, None, None, None], # chance
+            [100, 345, 75, 345, 50, 345, None, None], # prop6
+            [95 , 210, None, None, None, None, None, None], # free parking
+            [635, 165, 635, 190, 635, 215, None, None],  # prop7
+            [365, 240, 365, 190, None, None, None, None],  # chance
+            [500, 165, 500, 190, 500, 215, None, None],  # prop8
+            [230, 165, 230, 190, 230, 215, None, None],  # prop9
+            [None, None, None, None, None, None, None, None],  # go to jail
+            [765, 345, 790, 345, 815, 345, None, None],  # prop10
+            [765, 480, 790, 480, 815, 480, None, None],  # prop11
+            [770, 645, None, None, None, None, None, None],  # chance
+            [765, 750, 790, 750, 815, 750, None, None],  # prop12
         ]
 
         # Buttons Coordinates
@@ -93,6 +122,70 @@ class GameplayFrame(DisplayManager):
 
 # ------------------------------------# Game Play Frame #------------------------------------#
 
+    def display_tile_info(self, canvas):
+        for i in range(0, len(self.__tile_info_coord)):
+            # gets all information necessary to display
+            tile_type = self.tile_info[i][0]
+            tile_name = self.tile_info[i][1]
+            tile_price = self.tile_info[i][2]
+            tile_rent = f"{self.tile_info[i][3]} HDK"
+            tile_owner = self.tile_info[i][4]
+            name_x_pos = self.__tile_info_coord[i][0]
+            name_y_pos = self.__tile_info_coord[i][1]
+            price_x_pos = self.__tile_info_coord[i][2]
+            price_y_pos = self.__tile_info_coord[i][3]
+            rent_x_pos = self.__tile_info_coord[i][4]
+            rent_y_pos = self.__tile_info_coord[i][5]
+            owner_x_pos = self.__tile_info_coord[i][6]
+            owner_y_pos = self.__tile_info_coord[i][7]
+            text_rotate = 0.0
+            text_name_size = 20
+
+            # text rotation information
+            if 5 < i < 10:  # left board side
+                text_rotate = 270.0
+            elif 15 < i < 20:   # right board side
+                text_rotate = 90.0
+
+            if len(tile_name) > 12:
+                text_name_size -= 8
+            elif len(tile_name) > 10:
+                text_name_size -= 6
+            elif len(tile_name) > 0:
+                text_name_size -= 4
+
+            # information objects will overwrite the text information
+            if tile_type == "property":
+                self.tile_info[i][5] = canvas.create_text(name_x_pos, name_y_pos, text= tile_name,
+                                                          font=("Comic Sans MS", text_name_size, "bold"), fill="#000000", angle= text_rotate)
+                tile_price = f"{tile_price} HKD"
+                self.tile_info[i][6] = canvas.create_text(price_x_pos, price_y_pos, text= tile_price,
+                                                          font=("Comic Sans MS", 16), fill="#000000", angle= text_rotate)
+                self.tile_info[i][7] = canvas.create_text(rent_x_pos, rent_y_pos, text= tile_rent,
+                                                          font=("Comic Sans MS", 16), fill="#000000", angle= text_rotate)
+                if tile_owner:
+                    tile_owner = tile_owner.get_name()
+                    self.tile_info[8] = canvas.create_text(owner_x_pos, owner_y_pos, text= tile_owner,
+                                                           font=("Comic Sans MS", 16), fill="#000000", angle= text_rotate)
+            elif tile_type == "go":
+                tile_price = f"Collect\n{tile_price} HKD"
+                self.tile_info[i][6] = canvas.create_text(price_x_pos, price_y_pos, text= tile_price,
+                                                          font=("Comic Sans MS", 18, "bold"), fill="#000000", justify="center")
+            elif tile_type == "free_parking":
+                tile_name = tile_name.replace(" ", "\n")
+                self.tile_info[i][6] = canvas.create_text(name_x_pos, name_y_pos, text= tile_name,
+                                                          font=("Comic Sans MS", 20, "bold"), fill="#000000", justify="center")
+            elif tile_type == "chance":
+                self.tile_info[i][6] = canvas.create_text(name_x_pos, name_y_pos, text= tile_name,
+                                                          font=("Comic Sans MS", 20, "bold"), fill="#000000")
+            elif tile_type == "income_tax":
+                tile_name = tile_name.replace(" ", "\n")
+                self.tile_info[i][6] = canvas.create_text(name_x_pos, name_y_pos, text= tile_name,
+                                                          font=("Comic Sans MS", 20, "bold"), fill="#000000", justify="center")
+                tile_price = f"{tile_price} %"
+                self.tile_info[i][7] = canvas.create_text(price_x_pos, price_y_pos, text= tile_price,
+                                                          font=("Comic Sans MS", 16), fill="#000000")
+
     def set_color(self, pos, color):
         self.tile_colors[pos] = color
 
@@ -108,7 +201,7 @@ class GameplayFrame(DisplayManager):
         self.colors_not_loaded = False
 
     # gets the information from the lists above and display all the tiles colors
-    def overlay_tile_colors(self, canvas):
+    def display_tile_colors(self, canvas):
         for i in range(0, 20):
             color_tuple = self.__tile_color_coord[i]
             if color_tuple: # if None (meaning at that position there is a tile that has no color) doesn't execute
@@ -156,7 +249,10 @@ class GameplayFrame(DisplayManager):
         # loads tile colors and displays them
         if self.colors_not_loaded:
             self.load_tile_colors()
-        self.overlay_tile_colors(canvas)
+        self.display_tile_colors(canvas)
+
+        # loads tile information
+        self.display_tile_info(canvas)
 
         # ROLL DICE BUTTON
         roll_dice_click_area, canvas = self.create_button(canvas, self.roll_dice_x_pos, self.roll_dice_y_pos, self.roll_dice_image)
@@ -469,8 +565,6 @@ class NewGameFrame(DisplayManager):
         self.active_widgets.append(self.error_labels[idx])  # Track the label for later removal
 
     def check_and_start_game(self, input_handler):
-        self.gui.show_game_play_frame()  # TODO uncomment this line later
-
         # Retrieve all player names
         player_names = input_handler.get_all_player_names()
 

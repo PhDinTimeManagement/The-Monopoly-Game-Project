@@ -217,9 +217,12 @@ class Chance(Tile):
 
 class IncomeTax(Tile):
     def __init__(self, board_pos, new_tax):
-        super().__init__("IncomeTax", board_pos)
+        super().__init__("Income Tax", board_pos)
         self.tax_percentage = new_tax
         self.tile_type = "income_tax"
+
+    def get_income_tax(self):
+        return self.tax_percentage
 
     def set_income_tax(self, new_tax):
         self.tax_percentage = new_tax
@@ -254,14 +257,14 @@ class Gameboard:
                       Property("Stanley", 4, 600, 60, None, "cyan"),
                       Jail(5, []),
                       Property("Shek-O", 6, 400, 10, None, "red"),
-                      Property("Mong Kok", 7, 500, 40, None, "red"),
+                      Property("Mong Kok Li", 7, 500, 40, None, "red"),
                       Chance(8),
                       Property("Tsing Yi", 9, 400, 15, None, "red"),
                       FreeParking(10),
                       Property("Shatin", 11, 700, 75, None, "blue"),
                       Chance(12),
                       Property("Tuen Mun", 13, 400, 20, None, "blue"),
-                      Property("Tai Po", 14, 500, 25, None, "pink"),
+                      Property("Tai Po", 14, 500, 25, None, "blue"),
                       GoToJail(15),
                       Property("Sai Kung", 16, 400, 10, None, "yellow"),
                       Property("Yuen Long", 17, 400, 25, None, "yellow"),

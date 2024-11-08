@@ -21,8 +21,11 @@ class GameController:
         self.input_handler = InputHandler()
         self.click_var = tk.StringVar()
 
-        # button_config
-        self.pass_color_information()
+        # passes necessary information to the gui and creates missing frames
+        self.pass_color_information_for_display()
+        self.pass_tile_information_for_display()
+        self.gui.show_game_play_frame()
+        self.gui.show_frame("gameplay")
 
     def get_player_list(self):
         return self.player_list
@@ -54,7 +57,30 @@ class GameController:
     def set_remove_last_round(self, remove_last_round):
         self.game_logic.set_removed_last_round(remove_last_round)
 
-    def pass_color_information(self):
+    def pass_tile_information_for_display(self):
+        for i in range(0, 20):
+            empty_7tuple = [None, None, None, None, None, None, None, None]
+            # creates new empty row
+            self.gui.gameplay_frame.tile_info.append(empty_7tuple)
+
+            # for easier reading of code
+            tile_info = self.gui.gameplay_frame.tile_info[i]
+            board_tile = self.board.tiles[i]
+
+            # updates fields with relevant information
+            tile_info[0] = board_tile.get_tile_type()
+            tile_info[1] = board_tile.get_tile_name()
+            if tile_info[0] == "property":
+                tile_info[2] = board_tile.get_price()
+                tile_info[3] = board_tile.get_rent()
+                tile_info[4] = board_tile.get_owner()
+            elif tile_info[0] == "go":
+                tile_info[2] = board_tile.get_pass_prize()
+            elif tile_info[0] == "income_tax":
+                tile_info[2] = board_tile.get_income_tax()
+
+
+    def pass_color_information_for_display(self):
         for i in range(0, 20):
             self.gui.gameplay_frame.tile_colors.append(None)
             has_color = self.gui.gameplay_frame.get_color_coord(i)
