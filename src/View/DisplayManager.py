@@ -76,7 +76,7 @@ class GameplayFrame(DisplayManager):
             [700, 683]
         ]
 
-        # Gameboard tiles 7-tuple will get loaded in by the Controller
+        # Gameboard tiles 9-tuple will get loaded in by the Controller
         #  [type, name, price, rent, owner, nameObj, priceObj, rentObj, ownerObj]
         self.tile_info = []
 
@@ -84,25 +84,25 @@ class GameplayFrame(DisplayManager):
         self.__tile_info_coord = [
             # TODO add coordinates OWNER
             [None, None, 770, 860, None, None, None, None], # go
-            [635, 880, 635, 905, 635, 930, None, None], # prop1
-            [500, 880, 500, 905, 500, 930, None, None], # prop2
+            [635, 880, 635, 905, 635, 930, 635, 840], # prop1
+            [500, 880, 500, 905, 500, 930, 500, 840], # prop2
             [365, 870, 365, 930, None, None, None, None],   # income tax
-            [230, 880, 230, 905, 230, 930, None, None], # prop3
+            [230, 880, 230, 905, 230, 930, 230, 840], # prop3
             [None, None, None, None, None, None, None, None], # jail
-            [100, 750, 75, 750, 50, 750, None, None], # prop4
-            [100, 615, 75, 615, 50, 615, None, None], # prop5
+            [100, 750, 75, 750, 50, 750, 142, 750], # prop4
+            [100, 615, 75, 615, 50, 615, 142, 615], # prop5
             [95, 510, None, None, None, None, None, None], # chance
-            [100, 345, 75, 345, 50, 345, None, None], # prop6
+            [100, 345, 75, 345, 50, 345, 142, 345], # prop6
             [95 , 210, None, None, None, None, None, None], # free parking
-            [635, 165, 635, 190, 635, 215, None, None],  # prop7
+            [635, 165, 635, 190, 635, 215, 635, 258],  # prop7
             [365, 240, 365, 190, None, None, None, None],  # chance
-            [500, 165, 500, 190, 500, 215, None, None],  # prop8
-            [230, 165, 230, 190, 230, 215, None, None],  # prop9
+            [500, 165, 500, 190, 500, 215, 500, 258],  # prop8
+            [230, 165, 230, 190, 230, 215, 230, 258],  # prop9
             [None, None, None, None, None, None, None, None],  # go to jail
-            [765, 345, 790, 345, 815, 345, None, None],  # prop10
-            [765, 480, 790, 480, 815, 480, None, None],  # prop11
+            [765, 345, 790, 345, 815, 345, 722, 345],  # prop10
+            [765, 480, 790, 480, 815, 480, 722, 480],  # prop11
             [770, 645, None, None, None, None, None, None],  # chance
-            [765, 750, 790, 750, 815, 750, None, None],  # prop12
+            [765, 750, 790, 750, 815, 750, 722, 750],  # prop12
         ]
 
         # Buttons Coordinates
@@ -163,10 +163,11 @@ class GameplayFrame(DisplayManager):
                                                           font=("Comic Sans MS", 16), fill="#000000", angle= text_rotate)
                 self.tile_info[i][7] = canvas.create_text(rent_x_pos, rent_y_pos, text= tile_rent,
                                                           font=("Comic Sans MS", 16), fill="#000000", angle= text_rotate)
-                if tile_owner:
-                    tile_owner = tile_owner.get_name()
-                    self.tile_info[8] = canvas.create_text(owner_x_pos, owner_y_pos, text= tile_owner,
-                                                           font=("Comic Sans MS", 16), fill="#000000", angle= text_rotate)
+                if tile_owner is None:
+                    #tile_owner = tile_owner.get_name()
+                    tile_owner = "TEST OWNER"
+                    self.tile_info[i][8] = canvas.create_text(owner_x_pos, owner_y_pos, text= tile_owner,
+                                                           font=("Comic Sans MS", 14), fill="#000000", angle= text_rotate)
             elif tile_type == "go":
                 tile_price = f"Collect\n{tile_price} HKD"
                 self.tile_info[i][6] = canvas.create_text(price_x_pos, price_y_pos, text= tile_price,

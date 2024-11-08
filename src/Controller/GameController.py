@@ -59,9 +59,9 @@ class GameController:
 
     def pass_tile_information_for_display(self):
         for i in range(0, 20):
-            empty_7tuple = [None, None, None, None, None, None, None, None]
+            empty_9tuple = [None, None, None, None, None, None, None, None, None]
             # creates new empty row
-            self.gui.gameplay_frame.tile_info.append(empty_7tuple)
+            self.gui.gameplay_frame.tile_info.append(empty_9tuple)
 
             # for easier reading of code
             tile_info = self.gui.gameplay_frame.tile_info[i]
