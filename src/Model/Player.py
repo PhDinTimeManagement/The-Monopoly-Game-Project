@@ -32,7 +32,7 @@ class Player:
     def set_fine_payed(self, fine_payed):
         self._fine_payed = fine_payed
 
-    def get_square(self):
+    def get_current_position(self):
         return self._current_square
 
     def update_square(self,value):
@@ -70,6 +70,9 @@ class Player:
 
     def delete_properties(self, new_properties):
         pass
+
+    def get_properties_list(self):
+        return self._properties
 
     def update_values(self, name, money, jail_status, fine_payed, current_square, in_jail_turns, properties):
         self.set_name(name)

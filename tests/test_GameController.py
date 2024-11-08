@@ -49,7 +49,7 @@ class TestGameController(TestCase):
         assert local_controller.get_broke_player_list()[0].get_name() == "BROKE PLAYER"
         assert local_controller.get_broke_player_list()[0].get_current_money() == -1500
         assert local_controller.get_broke_player_list()[0].get_jail_status() == True
-        assert local_controller.get_broke_player_list()[0].get_square() == 6
+        assert local_controller.get_broke_player_list()[0].get_current_position() == 6
         assert local_controller.get_broke_player_list()[0].get_in_jail_turns() == 2
         self.assertEqual(len(local_controller.board.tiles[5].get_jailed_players()), 1)
 

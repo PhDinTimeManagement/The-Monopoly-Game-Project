@@ -8,6 +8,7 @@ from src.Model.Player import *
 from src.Model.GameLogic import GameLogic
 from datetime import datetime
 from src.View.GUI import *
+from tests.test_GameLogic import players_list
 
 
 class GameController:
@@ -18,17 +19,16 @@ class GameController:
         self.gui = the_gui
         self.player_list = []
         self.broke_list = []
+        self.all_players = []
         self.input_handler = self.gui.input_handler
         self.click_var = tk.StringVar()
         self.new_name_frame = self.gui.new_game_frame
-
         #binding the buttons
         self.gui.new_game_canvas.tag_bind(self.gui.play_button_clickable_area, "<Button-1>", lambda e: self.button_play())
 
         # passes necessary information to the gui and creates missing frames
         self.pass_color_information_for_display()
         self.pass_tile_information_for_display()
-        self.gui.show_game_play_frame()
         # self.gui.show_frame("gameplay")
 
     def get_player_list(self):
@@ -83,6 +83,22 @@ class GameController:
             elif tile_info[0] == "income_tax":
                 tile_info[2] = board_tile.get_income_tax()
 
+    def update_player_list(self):
+        for i in range(0, len(self.all_players)):
+            self.gui.gameplay_frame.player_info[i][1] = self.all_players[i].get_current_money()
+            curr_pos = self.all_players[i].get_current_position()
+            self.gui.gameplay_frame.player_info[i][2] = self.board.tiles[curr_pos].get_tile_name()
+            self.gui.gameplay_frame.player_info[i][3] = self.all_players[i].get_jail_status()
+            self.gui.gameplay_frame.player_info[i][4] = self.all_players[i].get_in_jail_turns()
+            self.gui.gameplay_frame.player_info[i][5] = len(self.all_players[i].get_properties_list())
+
+    def pass_player_information_for_display(self):
+        for i in range(0, len(self.all_players)):
+            # info passed: [name, balance, position, isJailed, inJailTurns, #propOwned]
+            player_tuple = [None, None, None, None, None, None]
+            self.gui.gameplay_frame.player_info.append(player_tuple)    #adds new 6-tuple
+            self.gui.gameplay_frame.player_info[i][0] = self.all_players[i].get_name()
+        self.update_player_list()
 
     def pass_color_information_for_display(self):
         for i in range(0, 20):
@@ -109,9 +125,15 @@ class GameController:
                 if player_name is not None:
                     player = Player(player_name)
                     self.player_list.append(player)
+            self.all_players = self.player_list.copy()  # maintains a record copy of all players obj to keep updating the view even after they are broke
+            self.pass_player_information_for_display()  # now that players are created, informations are passed to the view
+            self.gui.show_game_play_frame()     # builds gameplay frame when it has all necessary information
             self.game_logic.set_player_turn(self.get_player_list())
             player_this_turn = self.get_player_list()[self.game_logic.get_player_turn()]
             print(player_this_turn.get_name()," is now playing")
+
+            # Show the GameBoard frame
+            self.gui.show_frame("gameplay")
             # TODO <show the roll dice button and display player_this_turn ONLY. IMPORTANT: CONFIG ALL THE BUTTONS WITH ITS FUNCTIONS>
 
     def determine_next_round(self, player_this_turn):

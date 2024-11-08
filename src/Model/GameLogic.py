@@ -52,14 +52,14 @@ class GameLogic:
     def player_move(dice_number, player, gameboard):
         for i in range(0, dice_number):
             player.update_square(1)
-            if player.get_square() > 19:
+            if player.get_current_position() > 19:
                 player.set_square(0)
             # TODO i != dice_number always since range is not inclusive
-            if gameboard.tiles[player.get_square()].name == "Go" and i != dice_number:
-                gameboard.tiles[player.get_square()].player_landed(player, )  # Import Logic for 'Go'
+            if gameboard.tiles[player.get_current_position()].name == "Go" and i != dice_number:
+                gameboard.tiles[player.get_current_position()].player_landed(player, )  # Import Logic for 'Go'
 
         # returns the new_tile
-        return gameboard.tiles[player.get_square()]
+        return gameboard.tiles[player.get_current_position()]
 
     """Three functions are for in jail"""
     # TODO what is this???

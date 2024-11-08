@@ -35,6 +35,7 @@ class DisplayManager:
         return button_image.width(), button_image.height()
 
 
+# noinspection DuplicatedCode
 class GameplayFrame(DisplayManager):
     def __init__(self, gui):
         super().__init__(gui)
@@ -81,7 +82,6 @@ class GameplayFrame(DisplayManager):
 
         # Tile info coordinates, 6-tuple
         self.__tile_info_coord = [
-            # TODO add coordinates OWNER
             [None, None, 770, 860, None, None, None, None], # go
             [635, 880, 635, 905, 635, 930, 635, 840], # prop1
             [500, 880, 500, 905, 500, 930, 500, 840], # prop2
@@ -103,6 +103,9 @@ class GameplayFrame(DisplayManager):
             [770, 645, None, None, None, None, None, None],  # chance
             [765, 752, 790, 752, 815, 752, 722, 752]  # prop12
         ]
+
+        # players information
+        self.player_info = []
 
         # Buttons Coordinates
         self.roll_dice_x_pos = self.gui.image_width * 2 / 7
@@ -197,7 +200,36 @@ class GameplayFrame(DisplayManager):
         return canvas
 
     def display_player_info(self, canvas):
-        pass
+        starting_pos = 200
+        bottom_border = 860
+        right_border = 950
+        left_border = 1430
+        total_players = len(self.player_info)
+        name_size = 22
+        info_size = 20
+        increment = (bottom_border - starting_pos) / total_players
+        for i in range(0, total_players):
+            player_name = self.player_info[i][0]
+            player_balance = f"Balance: {self.player_info[i][1]} HKD"
+            player_position = f" is in {self.player_info[i][2]}"
+            player_jail_status = self.player_info[i][3]
+            player_jail_turns = {self.player_info[i][4]}
+            player_total_properties = f"Properties: {self.player_info[i][5]}"
+
+            name_id = canvas.create_text(right_border, starting_pos, text= player_name, anchor="w",
+                               font=("Comic Sans MS", name_size, "bold"), fill="#000000")
+
+            # calculates dimensions of name box
+            name_box = canvas.bbox(name_id)
+            name_width = name_box[2] - name_box[0] + 5
+
+            canvas.create_text(right_border + name_width, starting_pos, text= player_position, anchor="w",
+                               font=("Comic Sans MS", info_size), fill="#000000")
+            canvas.create_text(right_border, starting_pos + 40, text= player_balance, anchor="w",
+                               font=("Comic Sans MS", info_size), fill="#000000")
+            canvas.create_text(left_border, starting_pos + 40, text= player_total_properties, anchor="e",
+                               font=("Comic Sans MS", info_size), fill="#000000")
+            starting_pos += increment
 
     # from the gameboard information loads the appropriate colors in the game frame
     def load_tile_colors(self):
@@ -292,11 +324,14 @@ class GameplayFrame(DisplayManager):
     def setup_new_gameplay_frame(self, frame):
         canvas = self.clear_widgets_create_canvas_set_background(frame, self.new_gameplay_frame_background)
 
-        # loads tile colors and displays them
+        # TILE COLORS
         self.display_tile_colors(canvas)
 
-        # loads tile information
+        # TILE INFORMATION
         self.display_tile_info(canvas)
+
+        # PLAYER INFORMATION
+        self.display_player_info(canvas)
 
         # ROLL DICE BUTTON
         roll_dice_click_area, canvas = self.create_button(canvas, self.roll_dice_x_pos, self.roll_dice_y_pos, self.roll_dice_image)
@@ -623,9 +658,6 @@ class NewGameFrame(DisplayManager):
         for idx, name in enumerate(player_names, start=1):
             if name:
                 print(f"Player {idx}: {name}")
-
-        # Show the GameBoard frame
-        self.gui.show_frame("gameplay")
         return True
 
     def confirm_exit_new_game(self, canvas):
