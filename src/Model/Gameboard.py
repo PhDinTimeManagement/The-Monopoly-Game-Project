@@ -124,7 +124,7 @@ class Property(Tile):
         if action == "buy":
             self.buy(player)
         elif action == "rent":
-            self.rent(player)
+            self.pay_rent(player)
         else:
             return None
 

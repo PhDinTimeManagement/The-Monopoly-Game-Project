@@ -23,12 +23,17 @@ class GameController:
         self.input_handler = self.gui.input_handler
         self.click_var = tk.StringVar()
         self.new_name_frame = self.gui.new_game_frame
+
+        #store the function related to all the buttons to an array for better initialization in button_play
+        self.function_array = [self.roll_dice,self.buy_button,self.no_buy_button]
+
         #binding the buttons
         self.gui.new_game_canvas.tag_bind(self.gui.play_button_clickable_area, "<Button-1>", lambda e: self.button_play())
 
         # passes necessary information to the gui and creates missing frames
         self.pass_color_information_for_display()
         self.pass_tile_information_for_display()
+        #self.gui.show_game_play_frame()
         # self.gui.show_frame("gameplay")
 
     def get_player_list(self):
@@ -109,18 +114,89 @@ class GameController:
                 color = self.board.tiles[i].get_color()
                 self.gui.gameplay_frame.set_color(i, color)
 
-    # # TODO By Kent: We need to program to detect the click events from the users. The click will call the functions for us. """
-    # def start_game(self):
-    #     self.initialize_players()
-    #     while not GameLogic.game_ends(self.game_logic, self.get_player_list()):
-    #         # TODO self.play_round()
-    #         self.game_logic.set_current_round(self.game_logic.get_current_round() + 1)
+    # ----------Hiding logic in controller----------#
+    def hide_roll_image(self):
+        self.gui.gameplay_frame.hide_roll_image(self.gui.game_canvas)
+
+    def hide_yes_buy_image(self):
+        self.gui.gameplay_frame.hide_yes_image(self.gui.game_canvas)
+        # bind 'buy'
+
+    def hide_no_buy_image(self):
+        self.gui.gameplay_frame.hide_no_image(self.gui.game_canvas)
+
+    def hide_pay_fine_image(self):
+        self.gui.gameplay_frame.hide_pay_fine_image(self.gui.game_canvas)
+
+    def unbind_roll_button(self):
+        self.hide_roll_image()
+        self.gui.game_canvas.tag_unbind(self.gui.game_frame_click_areas[0], "<Button-1>")
+
+    def unbind_yes_buy_button(self):
+        self.hide_yes_buy_image()
+        self.gui.game_canvas.tag_unbind(self.gui.game_frame_click_areas[1], "<Button-1>")
+
+    def unbind_no_buy_button(self):
+        self.hide_no_buy_image()
+        self.gui.game_canvas.tag_unbind(self.gui.game_frame_click_areas[2], "<Button-1>")
+
+    def unbind_pay_fine_button(self, player_this_turn):
+        self.hide_pay_fine_image()
+        self.gui.game_canvas.tag_unbind(self.gui.game_frame_click_areas[3], "<Button-1>")
+
+    def unbind_in_jail_roll_button(self, player_this_turn):
+        self.hide_roll_image()
+        self.gui.game_canvas.tag_unbind(self.gui.game_frame_click_areas[0], "<Button-1>")
+
+    # ----------------------------------------------#
+
+    # ----------Showing logic in controller---------#
+    def show_roll_image(self):
+        self.gui.gameplay_frame.show_roll_image(self.gui.game_canvas)
+
+    def show_yes_buy_image(self):
+        self.gui.gameplay_frame.show_yes_image(self.gui.game_canvas)  # show the buy(yes) image
+
+    def show_no_buy_image(self):
+        self.gui.gameplay_frame.show_no_image(self.gui.game_canvas)  # show the no_buy(no) image
+
+    def show_pay_fine_image(self):
+        self.gui.gameplay_frame.show_pay_fine_image(self.gui.game_canvas)
+
+    def bind_roll_button(self, action):
+        self.show_roll_image()
+        self.gui.game_canvas.tag_bind(self.gui.game_frame_click_areas[0], "<Button-1>",
+                                      lambda e: self.roll_dice(
+                                          action[1]))  # selection player next turn to roll the dice
+
+    def bind_yes_buy_button(self):
+        self.show_yes_buy_image()
+        self.gui.game_canvas.tag_bind(self.gui.game_frame_click_areas[1], "<Button-1>",
+                                      lambda e: self.buy_button())  # bind 'buy'
+
+    def bind_no_buy_button(self):
+        self.show_no_buy_image()
+        self.gui.game_canvas.tag_bind(self.gui.game_frame_click_areas[2], "<Button-1>",
+                                      lambda e: self.no_buy_button())  # bind 'not_buy'
+
+    def bind_pay_fine_button(self, player_this_turn):
+        self.show_pay_fine_image()
+        self.gui.game_canvas.tag_bind(self.gui.game_frame_click_areas[3], "<Button-1>",
+                                      lambda e: self.pay_fine(player_this_turn))  # bind 'not_buy'
+
+    def bind_in_jail_roll_button(self, player_this_turn):
+        self.show_roll_image()
+        self.gui.game_canvas.tag_bind(self.gui.game_frame_click_areas[0], "<Button-1>",
+                                      lambda e: self.in_jail_roll(player_this_turn))  # bind 'in_jail_roll'
+
+    # ----------------------------------------------#
 
     """ This function is called after the 'Play' button is clicked in the game """
 
     def button_play(self):
         if self.new_name_frame.check_and_start_game(self.input_handler):
-            print("In the Game!!!",len(self.input_handler.players_names))
+
+            print("In the Game!!!",len(self.input_handler.players_names))#TODO del this line later
             for player_name in self.input_handler.players_names:
                 if player_name is not None:
                     player = Player(player_name)
@@ -130,16 +206,22 @@ class GameController:
             self.gui.show_game_play_frame()     # builds gameplay frame when it has all necessary information
             self.game_logic.set_player_turn(self.get_player_list())
             player_this_turn = self.get_player_list()[self.game_logic.get_player_turn()]
-            print(player_this_turn.get_name()," is now playing")
 
             # Show the GameBoard frame
             self.gui.show_frame("gameplay")
-            # TODO <show the roll dice button and display player_this_turn ONLY. IMPORTANT: CONFIG ALL THE BUTTONS WITH ITS FUNCTIONS>
+            print(player_this_turn.get_name()," is now playing") #TODO del this line later
+            # hide all the buttons apart from the roll button
+            self.gui.gameplay_frame.hide_yes_image(self.gui.game_canvas)
+            self.gui.gameplay_frame.hide_no_image(self.gui.game_canvas)
+            self.gui.gameplay_frame.hide_pay_fine_image(self.gui.game_canvas)
+            #bind the buttons
+            self.gui.game_canvas.tag_bind(self.gui.game_frame_click_areas[0], "<Button-1>", lambda e: self.roll_dice(player_this_turn))
+            # TODO <display highlight player_this_turn ONLY.>
+
 
     def determine_next_round(self, player_this_turn):
         """ Action is an array that stores the state of the Model after calling the 'determine_next_round' function """
-        action = GameLogic.determine_next_round(self.game_logic, player_this_turn, self.get_player_list(),
-                                                self.get_broke_player_list())
+        action = GameLogic.determine_next_round(self.game_logic, player_this_turn, self.player_list,self.broke_list)
 
         if action[0] == "game_ends":
             print(action[1])
@@ -150,41 +232,60 @@ class GameController:
         # TODO <Display the player for next round>
         if action[0] == "jail_roll":
             # TODO <display jail_roll only>
-            return action  # del
+            self.bind_in_jail_roll_button(action[1])
+            print("\nNext round, click roll\n")  # TODO del later
+            if action[2] == "fine_payed":
+                print(action[1].get_name(), "is in Jail. Fine already paid. Can move out of Jail after roll") #TODO del
+            elif action[2] == "player_third_turn":
+                print(action[1].get_name(), "is in Jail, and in third turn. Roll first") #TODO del
+            else:
+                print(action[1].get_name(), "is in Jail, and have no money to pay fine") #TODO del
         elif action[0] == "pay_fine_and_jail_roll":
             # TODO <display jail_roll and pay fine>
-            return action  # del
-        elif action[0] == "Roll":
-            # TODO <display roll only>
-            return action  # del
+            self.bind_in_jail_roll_button(action[1])
+            self.bind_pay_fine_button(action[1])
+            print("\nNext round, click roll\n")  # TODO del later
+            print(action[1].get_name(), "Not yet paid and in Jail") #TODO del
+        elif action[0] == "roll":
+            self.gui.gameplay_frame.show_roll_image(self.gui.game_canvas)
+            self.gui.game_canvas.tag_bind(self.gui.game_frame_click_areas[0], "<Button-1>", lambda e: self.roll_dice(action[1])) #selection player next turn to roll the dice
+            print("Current Money: ",player_this_turn.get_current_money()) #TODO del later
+            print("\nNext round,", action[1].get_name(),"'s turn. click roll\n") #TODO del later
 
     def land_and_complete_round(self, tile, player_this_turn):
         tile_type = tile.get_tile_type()
         action = None
         if tile_type == "property":
             if tile.get_owner() is None:
-                if tile.can_buy(player_this_turn):
-                    # TODO show button buy or not buy
-                    pass  # del
-                else:
-                    # TODO show not buy only
-                    pass  # del
+                can_buy = tile.can_buy(player_this_turn)
+                # TODO show button buy or not buy
+                print("buy(Yes) or not buy(No)") #TODO del later
+                self.bind_yes_buy_button() #show and bind the yes(buy) button
+                self.bind_no_buy_button() #show and bind the no(buy) button
                 self.gui.wait_variable(self.click_var)  # waits for the click_var to update before allowing execution
-                if self.click_var == "buy":
-                    action = "buy"
-                elif self.click_var == "not_buy":
+                if self.click_var.get() == "buy":
+                    if can_buy:
+                        action = "buy"
+                        print(player_this_turn.get_name()," is now buying") #TODO del later
+                    else:
+                        #TODO display not enough money
+                        print("Not enough money") #del
+                        action = "not_buy"
+                elif self.click_var.get() == "not_buy":
                     action = "not_buy"
                 pass
             else:
                 # TODO update view for rent
                 action = "rent"
             tile.player_landed(player_this_turn, action)
-            if self.click_var == "buy":
+            if action == "buy":
                 # TODO display property
                 pass  # del
             else:
                 # TODO display property not bought
                 pass  # del
+            self.unbind_yes_buy_button() #unbind and hide the yes_buy_button
+            self.unbind_no_buy_button() #unbind and the hide the no_buy_button
             return
         elif tile_type == "jail":
             # TODO update view just visiting
@@ -192,65 +293,78 @@ class GameController:
         elif tile_type == "go":
             # TODO update view
             pass
-        elif tile_type == "go_to_jail":
+        elif tile_type == "go_to_jail": ######### Problem here, fix later parameter's problem
+            tile.player_landed(player_this_turn, self.board.get_jail_tile())
             # TODO jail animation
-            pass
+            return
         elif tile_type == "income_tax":
             # TODO tax animation
             pass
         elif tile_type == "free_parking":
             # TODO parking animation
             pass
-        tile.player_landed(tile, player_this_turn, action)
+        tile.player_landed(player_this_turn)
 
     """This function is called after pressing the 'Roll' button in the game window."""
 
-    def roll_dice(self):
-        player_this_turn = self.get_player_list()[self.game_logic.get_player_turn()]
+    def roll_dice(self,player_this_turn):
+        self.unbind_roll_button() #unbind the roll button
         dice_roll1, dice_roll2 = GameLogic.roll_dice()
         tile = GameLogic.player_move(dice_roll1 + dice_roll2, player_this_turn, self.board)
+        #player_this_turn = self.get_player_list()[self.game_logic.get_player_turn()]
+        print(player_this_turn.get_name(), "is Rolling, and rolled: ", dice_roll1+dice_roll2)#TODO del this line later
+        print("Money: ",player_this_turn.get_current_money())#TODO del this line later
+        print("Square:",player_this_turn.get_current_position())#TODO del this line later
+        print(tile.get_tile_name()) #TODO del
         # TODO<Call function to display the animation in the view>
         self.land_and_complete_round(tile, player_this_turn)
         self.determine_next_round(player_this_turn)
 
     # Roll function for player in jail
     def in_jail_roll(self, player_this_turn):
+        #unbind the in_jail_roll button and pay_fine button
+        self.unbind_roll_button()
+        self.unbind_pay_fine_button(player_this_turn)
+
+        print(player_this_turn.get_name(), "is Rolling IN JAIL.") # TODO del this line later
+        print("Money: ", player_this_turn.get_current_money())  # TODO del this line later
+        print("Square:", player_this_turn.get_current_position())  # TODO del this line later
+
         action = GameLogic.in_jail_roll(self.game_logic, player_this_turn, self.board)
         if action[0] == "show_pay_fine":
             # TODO <show the pay fine button>
-            # wait for pay fine button to be clicked
+            self.bind_pay_fine_button(player_this_turn) #bind and show the pay_fine button
+            self.gui.wait_variable(self.click_var)  # wait for pay fine button to be clicked
+            #TODO display fine paid
             if action[1] is not None:
+                print("Fine paid. Move on") #TODO del
                 self.land_and_complete_round(action[1], player_this_turn)
                 # TODO <show moving animation>
         elif action[0] == "move":
             # TODO <show animation for player moving>
+            print("Out of Jail, Move on") #TODO del
             self.land_and_complete_round(action[1], player_this_turn)
         elif action[0] == 'not_move':
-            # TODO <display the normal roll button>
             pass  # del
         self.determine_next_round(player_this_turn)
 
     def pay_fine(self, player_this_turn):
         # pay_fine_logic
         GameLogic.pay_fine(self.game_logic, player_this_turn)
+        self.click_var.set("pay_fine")
+        print("Paying fine") #TODO del
+        self.unbind_pay_fine_button(player_this_turn)
         # TODO <Show the money is deduced>
 
-    def buy_button(self, name_of_action):
-        self.click_var.set(name_of_action)
+    def buy_button(self):
+        self.click_var.set("buy")
+        print("Buying") #TODO del
 
-    def no_buy_button(self, name_of_action):
-        self.click_var.set(name_of_action)
+    def no_buy_button(self):
+        self.click_var.set("no_buy")
+        print("Not Buying") #TODO del
         # TODO <Show did not buy property>
 
-    """By Kent: we don't need loop here. Instead we get a list from the view after the player clicks 'play'"""
-
-    def initialize_players(self):
-        num_players = self.input_handler.get_name_or_players("Enter the number of players (2-6): ")
-        for i in range(num_players):
-            player_name = self.input_handler.get_name_or_players(f"Enter name for Player {i + 1}: ")
-            new_player = Player(player_name)
-            self.get_player_list().append(new_player)
-        print("Players initialized successfully.\n")
 
     def end_game(self):
         # Need to modify the logic in GameLogic endgame

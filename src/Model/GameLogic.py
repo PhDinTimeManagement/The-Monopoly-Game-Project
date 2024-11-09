@@ -56,14 +56,14 @@ class GameLogic:
                 player.set_square(0)
             # TODO i != dice_number always since range is not inclusive
             if gameboard.tiles[player.get_current_position()].name == "Go" and i != dice_number:
-                gameboard.tiles[player.get_current_position()].player_landed(player, )  # Import Logic for 'Go'
+                gameboard.tiles[player.get_current_position()].player_landed(player)  # Import Logic for 'Go'
 
         # returns the new_tile
         return gameboard.tiles[player.get_current_position()]
 
     """Three functions are for in jail"""
-    # TODO what is this???
 
+    #For checking the round number in jail. 3 is the first round, 1 is the third round, 2 stays the same
     @staticmethod
     def player_first_round(player):
         return player.get_in_jail_turns() == 3
@@ -90,9 +90,7 @@ class GameLogic:
 
     @staticmethod
     def out_jail_on_double(player, dice_number1, dice_number2, gameboard):
-        # TODO problem here, wont move properly (NOW FIXED BUT CHECK)
         tile = GameLogic.player_move(dice_number1 + dice_number2, player, gameboard)
-        #GameController.land_and_complete_round(tile, player)
         gameboard.get_jail_tile().free_player(player)
         return tile
 
@@ -101,7 +99,8 @@ class GameLogic:
     @staticmethod
     def pay_fine(game_logic,player):
         player.remove_money(game_logic.get_fine())
-        player.set_fine_payed(True)
+        if player.get_jail_status():
+            player.set_fine_payed(True)
 
     """Check if player is broke, negative money"""
 
@@ -120,7 +119,7 @@ class GameLogic:
 
     @staticmethod
     def game_ends(player_list,game_round):
-        return game_round == 100 or len(player_list)== 1
+        return game_round == 100 or len(player_list) == 1
 
     @staticmethod
     def display_winner(game_logic,players_list):
@@ -151,7 +150,7 @@ class GameLogic:
         game_logic.set_current_round(game_logic.get_current_round() + 1)
 
         #After each round check if the round ends
-        if GameLogic.game_ends(game_logic.get_current_round(),player_list):
+        if GameLogic.game_ends(player_list, game_logic.get_current_round()):
             # display the message showing the winner, pass the message as a parameter to display
             message = GameLogic.display_winner(game_logic,player_list)
             action = ["game_ends",message]
@@ -167,26 +166,44 @@ class GameLogic:
         if player_next_turn.get_jail_status():
             #the player has paid the fine in jail or is in the third round, only roll button is displayed, therefore return "jail_roll"
             #IMPORTANT, if a player initially has a balance that is less than the fine, the player cannot choose to pay fine
-            if player_next_turn.get_fine_payed() or GameLogic.player_third_round(player_next_turn) or (
-               not GameLogic.player_third_round(player_next_turn) and player_next_turn.get_current_money() < game_logic.get_fine()):
-                action = ["jail_roll",player_next_turn]
+            if player_next_turn.get_fine_payed():
+                action =["jail_roll", player_next_turn,"fine_payed"]
+            elif GameLogic.player_third_round(player_next_turn):
+                action = ["jail_roll", player_next_turn,"player_third_turn"]
+            elif not GameLogic.player_third_round(player_next_turn) and player_next_turn.get_current_money() < game_logic.get_fine():
+                action = ["jail_roll",player_next_turn,"Insufficient_money"]
             else:
                 #in other cases, the player can either choose to pay fine or to roll the dice, therefore return "pay_fine_and_jail_roll"
                 action = ["pay_fine_and_jail_roll",player_next_turn]
             return action
 
-        #if the player is not in jail, not shows the roll button
+        #if the player is not in jail, shows the roll button
         else:
-            action = ["Roll",player_next_turn]
-
+            action = ["roll",player_next_turn]
             return action
+
+
+    #TODO del later after all the message display has been moved to the GUI
+    #Converts the turns_in_jail into visually correct numbers.
+    @staticmethod
+    def _convert_turns_in_jail(number):
+        match number:
+            case 1:
+                return 3
+            case 3:
+                return 1
+            case _:
+                return 2
+
 
     @staticmethod
     def in_jail_roll(game_logic,player_this_turn, board):
+        print("Player turn in jail is: ", GameLogic._convert_turns_in_jail(player_this_turn.get_in_jail_turns())) #TODO del
         dice_roll1, dice_roll2 = GameLogic.roll_dice()
+        print("Rolled: dice one: (",dice_roll1, ") dice two: (", dice_roll2,") move: (", dice_roll1+dice_roll2,")") #TODO del later
         if (not GameLogic.same_double(dice_roll1, dice_roll2)) and GameLogic.player_third_round(player_this_turn):
             action = ["show_pay_fine",None]
-            board.tiles[player_this_turn.get_current_square()].freeplayer(player_this_turn)
+            board.tiles[player_this_turn.get_current_position()].free_player(player_this_turn)
             if player_this_turn.get_current_money() > game_logic.get_fine():
                 landed_tile = GameLogic.player_move(dice_roll1 + dice_roll2, player_this_turn, board)
                 action[1] = landed_tile
@@ -197,11 +214,12 @@ class GameLogic:
                     GameLogic.player_second_round(player_this_turn) and player_this_turn.get_fine_payed()):
                 flag = True
             if flag:
-                board.tiles[player_this_turn.get_current_square()].freeplayer(player_this_turn)
+                board.tiles[player_this_turn.get_current_position()].free_player(player_this_turn)
                 landed_tile = GameLogic.player_move(dice_roll1 + dice_roll2, player_this_turn, board)
                 action = ["move", landed_tile]
             else:
                 action = ["not_move"]
-
+                player_this_turn.set_in_jail_turns(player_this_turn.get_in_jail_turns() - 1)
+            print("action: ", action[0]) #TODO del later
             return action
 

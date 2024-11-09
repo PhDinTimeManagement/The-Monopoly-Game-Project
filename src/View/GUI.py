@@ -79,7 +79,7 @@ class GUI(tk.Tk):
     def show_game_play_frame(self):
         frame = tk.Frame(self)
         self.frames["gameplay"] = frame
-        self.game_canvas = self.gameplay_frame.setup_new_gameplay_frame(frame) #TODO uncomment this line later
+        self.game_canvas, self.game_frame_click_areas = self.gameplay_frame.setup_new_gameplay_frame(frame) #TODO uncomment this line later
 
     def show_frame(self, frame_name):
         for frame in self.frames.values():

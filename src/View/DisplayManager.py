@@ -176,28 +176,28 @@ class GameplayFrame(DisplayManager):
 
     def create_button(self, canvas, x_pos, y_pos, button_image):
         button_width, button_height = self.calc_button_dim(button_image)
-        canvas.create_image(x_pos, y_pos, anchor="center", image=button_image)
+        image_id = canvas.create_image(x_pos, y_pos, anchor="center", image=button_image)
         button_click_area = canvas.create_rectangle(
             (x_pos - button_width // 2), (y_pos - button_height // 2),
             (x_pos + button_width // 2), (y_pos + button_height // 2),
             outline="", fill=""
         )
-        return button_click_area, canvas
+        return button_click_area, canvas, image_id
 
     def show_pay_fine_button(self, canvas):
-        pay_fine_click_area, canvas = self.create_button(canvas, self.pay_fine_x_pos, self.pay_fine_y_pos, self.pay_fine_image)
+        pay_fine_click_area, canvas, pay_fine_image_id = self.create_button(canvas, self.pay_fine_x_pos, self.pay_fine_y_pos, self.pay_fine_image)
         # TODO BIND FUNCTION canvas.tag_bind(pay_fine_click_area, "<Button-1>", lambda e: )
-        return canvas
+        return pay_fine_click_area, canvas, pay_fine_image_id
 
     def show_yes_button(self, canvas):
-        yes_click_area, canvas = self.create_button(canvas, self.yes_x_pos, self.yes_y_pos, self.yes_image)
+        yes_click_area, canvas, yes_button_image_id = self.create_button(canvas, self.yes_x_pos, self.yes_y_pos, self.yes_image)
         # TODO BIND FUNCTION canvas.tag_bind(yes_click_area, "<Button-1>", lambda e: )
-        return canvas
+        return yes_click_area,canvas,yes_button_image_id
 
     def show_no_button(self, canvas):
-        no_click_area, canvas = self.create_button(canvas, self.no_x_pos, self.no_y_pos, self.no_image)
+        no_click_area, canvas, no_button_image_id = self.create_button(canvas, self.no_x_pos, self.no_y_pos, self.no_image)
         # TODO BIND FUNCTION canvas.tag_bind(no_click_area, "<Button-1>", lambda e: )
-        return canvas
+        return no_click_area,canvas, no_button_image_id
 
     def display_player_info(self, canvas):
         starting_pos = 200
@@ -230,6 +230,37 @@ class GameplayFrame(DisplayManager):
             canvas.create_text(left_border, starting_pos + 40, text= player_total_properties, anchor="e",
                                font=("Comic Sans MS", info_size), fill="#000000")
             starting_pos += increment
+
+    #----------Handles hiding the button IMAGE in the canvas----------#
+    def hide_yes_image(self,canvas):
+        canvas.coords(self.yes_image_id,-100,-100)
+
+    def hide_no_image(self,canvas):
+        canvas.coords(self.no_image_id,-100,-100)
+
+    def hide_roll_image(self,canvas):
+        canvas.coords(self.roll_dice_image_id,-100,-100)
+
+    def hide_pay_fine_image(self,canvas):
+        canvas.coords(self.pay_fine_image_id,-100,-100)
+
+    #------------------------------------------------------------------#
+
+
+    #----------Handles showing the button image in the canvas----------#
+    def show_yes_image(self,canvas):
+        canvas.coords(self.yes_image_id,self.yes_x_pos, self.yes_y_pos)
+
+    def show_no_image(self,canvas):
+        canvas.coords(self.no_image_id,self.no_x_pos, self.no_y_pos)
+
+    def show_roll_image(self,canvas):
+        canvas.coords(self.roll_dice_image_id, self.roll_dice_x_pos, self.roll_dice_y_pos)
+
+    def show_pay_fine_image(self,canvas):
+        canvas.coords(self.pay_fine_image_id, self.pay_fine_x_pos, self.pay_fine_y_pos)
+
+    # ------------------------------------------------------------------#
 
     # from the gameboard information loads the appropriate colors in the game frame
     def load_tile_colors(self):
@@ -334,20 +365,23 @@ class GameplayFrame(DisplayManager):
         self.display_player_info(canvas)
 
         # ROLL DICE BUTTON
-        roll_dice_click_area, canvas = self.create_button(canvas, self.roll_dice_x_pos, self.roll_dice_y_pos, self.roll_dice_image)
-        canvas.tag_bind(roll_dice_click_area, "<Button-1>", lambda e: self.roll_dice())
+        roll_dice_click_area, canvas,self.roll_dice_image_id = self.create_button(canvas, self.roll_dice_x_pos, self.roll_dice_y_pos, self.roll_dice_image)
+        #canvas.tag_bind(roll_dice_click_area, "<Button-1>", lambda e: self.roll_dice())
 
         # SAVE QUIT BUTTON
-        save_quit_click_area, canvas = self.create_button(canvas, self.save_quit_x_pos, self.save_quit_y_pos, self.save_quit_image)
+        save_quit_click_area, canvas,self.save_quit_image_id = self.create_button(canvas, self.save_quit_x_pos, self.save_quit_y_pos, self.save_quit_image)
         canvas.tag_bind(save_quit_click_area, "<Button-1>", lambda e:self.save_quit())
 
 
         # OTHER BUTTONS JUST FOR TESTING POS WONT BE SHOWN ALL THE TIME
-        canvas = self.show_pay_fine_button(canvas)
-        canvas = self.show_yes_button(canvas)
-        canvas = self.show_no_button(canvas)
+        pay_fine_click_area,canvas,self.pay_fine_image_id = self.show_pay_fine_button(canvas)
 
-        return canvas
+        #return the id so that image can be hidden and shown
+        yes_click_area,canvas,self.yes_image_id = self.show_yes_button(canvas)
+        no_click_area, canvas,self.no_image_id = self.show_no_button(canvas)
+
+        click_area = [roll_dice_click_area,yes_click_area,no_click_area,pay_fine_click_area] #TODO place other click area for other buttons
+        return canvas, click_area
 
     #------------------------#
     # EDITING MODE FUNCTIONS #
