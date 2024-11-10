@@ -48,6 +48,7 @@ class GameplayFrame(DisplayManager):
         self.pay_fine_image = tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/pay_fine.png"))
         self.yes_image = tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/yes.png"))
         self.no_image = tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/no.png"))
+        self.player_info_ID = []
 
         # Gameboard tiles colors empty list, will get loaded in by the Controller
         self.tile_colors = []
@@ -128,25 +129,26 @@ class GameplayFrame(DisplayManager):
         rent_size = 16
         owner_size = 16
 
-        if len(name) > 12:
+        if len(name) > 11:
             name_size -= 4
-        elif len(name) > 10:
+        elif len(name) > 9:
             name_size -= 2
 
-        if len(price) > 12:
+        if len(price) > 11:
             price_size -= 4
-        elif len(price) > 10:
+        elif len(price) > 9:
             price_size -= 2
 
-        if len(rent) > 12:
+        if len(rent) > 11:
             rent_size -= 4
-        elif len(rent) > 10:
+        elif len(rent) > 9:
             rent_size -= 2
 
-        if len(owner) > 12:
-            owner_size -= 4
-        elif len(owner) > 10:
-            owner_size -= 2
+        if owner:
+            if len(owner) > 11:
+                owner_size -= 4
+            elif len(owner) >= 9:
+                owner_size -= 2
 
         return name_size, price_size, rent_size, owner_size
 
@@ -199,6 +201,21 @@ class GameplayFrame(DisplayManager):
         # TODO BIND FUNCTION canvas.tag_bind(no_click_area, "<Button-1>", lambda e: )
         return no_click_area,canvas, no_button_image_id
 
+    def destroy_old_info(self, canvas):
+        # destroys old tile_info widgets
+        for i in [1, 2, 4, 6, 7, 9, 11, 13, 14, 16, 17, 19]:
+            for j in range(5, 9):
+                canvas.delete(self.tile_info[i][j])
+
+        # destroys player_info widgets
+        for i in range(0, len(self.player_info_ID)):
+            canvas.delete(self.player_info_ID[i])
+
+    def update_display_info(self, canvas):
+        self.destroy_old_info(canvas)
+        self.display_player_info(canvas)
+        self.display_tile_info(canvas)
+
     def display_player_info(self, canvas):
         starting_pos = 200
         bottom_border = 860
@@ -223,13 +240,17 @@ class GameplayFrame(DisplayManager):
             name_box = canvas.bbox(name_id)
             name_width = name_box[2] - name_box[0] + 5
 
-            canvas.create_text(right_border + name_width, starting_pos, text= player_position, anchor="w",
+            pos_id = canvas.create_text(right_border + name_width, starting_pos, text= player_position, anchor="w",
                                font=("Comic Sans MS", info_size), fill="#000000")
-            canvas.create_text(right_border, starting_pos + 40, text= player_balance, anchor="w",
+            balance_id = canvas.create_text(right_border, starting_pos + 40, text= player_balance, anchor="w",
                                font=("Comic Sans MS", info_size), fill="#000000")
-            canvas.create_text(left_border, starting_pos + 40, text= player_total_properties, anchor="e",
+            tot_prop_id = canvas.create_text(left_border, starting_pos + 40, text= player_total_properties, anchor="e",
                                font=("Comic Sans MS", info_size), fill="#000000")
             starting_pos += increment
+            self.player_info_ID.append(name_id)
+            self.player_info_ID.append(pos_id)
+            self.player_info_ID.append(balance_id)
+            self.player_info_ID.append(tot_prop_id)
 
     #----------Handles hiding the button IMAGE in the canvas----------#
     def hide_yes_image(self,canvas):
@@ -299,9 +320,8 @@ class GameplayFrame(DisplayManager):
             owner_y_pos = self.__tile_info_coord[i][7]
 
             # gets owner name only when there is a player object
-            if tile_owner is None:
-                # tile_owner = tile_owner.get_name()
-                tile_owner = "test owner"
+            if tile_owner:
+                tile_owner = tile_owner.get_name()
 
             # calculates text sizes
             text_name_size, text_price_size, text_rent_size, text_owner_size = self.set_appropriate_text_dimension(

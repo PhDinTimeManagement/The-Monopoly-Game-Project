@@ -4,14 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e63f52e8-b5e2-4b82-8eb0-ddb8c465611b" name="Changes" comment="displayed info on board">
+    <list default="true" id="e63f52e8-b5e2-4b82-8eb0-ddb8c465611b" name="Changes" comment="displayed PLAYER info on board">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Controller/GameController.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Controller/GameController.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Model/GameLogic.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Model/GameLogic.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Model/Gameboard.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Model/Gameboard.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Model/Player.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Model/Player.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/View/DisplayManager.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/View/DisplayManager.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_GameController.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_GameController.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/View/GUI.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/View/GUI.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -241,10 +239,10 @@
     <list>
       <item itemvalue="Python.GUI.py" />
       <item itemvalue="Python.play_game" />
-      <item itemvalue="Python tests.Python tests in tests" />
+      <item itemvalue="Python tests.Python tests for test_GameController.TestGameController" />
       <item itemvalue="Python tests.Python tests for test_GameController.TestGameController.test_set_player_list" />
       <item itemvalue="Python tests.Python tests for test_GameLogic.TestGameLogic" />
-      <item itemvalue="Python tests.Python tests for test_GameController.TestGameController" />
+      <item itemvalue="Python tests.Python tests in tests" />
     </list>
     <recent_temporary>
       <list>
@@ -307,7 +305,12 @@
       <workItem from="1731031523855" duration="11977000" />
       <workItem from="1731054695566" duration="118000" />
       <workItem from="1731074412556" duration="1797000" />
-      <workItem from="1731078137827" duration="9893000" />
+      <workItem from="1731078137827" duration="10029000" />
+      <workItem from="1731196069487" duration="215000" />
+      <workItem from="1731196700593" duration="162000" />
+      <workItem from="1731201908878" duration="156000" />
+      <workItem from="1731242001093" duration="3471000" />
+      <workItem from="1731245527946" duration="2981000" />
     </task>
     <task id="LOCAL-00001" summary="gameboard functions">
       <created>1729259402457</created>
@@ -509,7 +512,15 @@
       <option name="project" value="LOCAL" />
       <updated>1731081428735</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL-00027" summary="displayed info on board">
+      <option name="closed" value="true" />
+      <created>1731088137797</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1731088137797</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -583,7 +594,7 @@
     <SUITE FILE_PATH="coverage/Game_py$GUI.coverage" NAME="GUI Coverage Results" MODIFIED="1730824526772" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/View" />
     <SUITE FILE_PATH="coverage/The_Monopoly_Game_py$GUI.coverage" NAME="GUI Coverage Results" MODIFIED="1730881360455" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/View" />
     <SUITE FILE_PATH="coverage/The_Monopoly_Game_py$.coverage" NAME=" Coverage Results" MODIFIED="1730997293414" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
-    <SUITE FILE_PATH="coverage/The_Monopoly_Game_py$play_game.coverage" NAME="play_game Coverage Results" MODIFIED="1731088078408" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/The_Monopoly_Game_py$play_game.coverage" NAME="play_game Coverage Results" MODIFIED="1731250518060" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Game_py$.coverage" NAME=" Coverage Results" MODIFIED="1730198824506" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/Game_py$Test.coverage" NAME="Test Coverage Results" MODIFIED="1730432574768" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Game_py$gui.coverage" NAME="gui Coverage Results" MODIFIED="1730294710638" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/View" />

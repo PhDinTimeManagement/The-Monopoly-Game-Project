@@ -86,7 +86,20 @@ class GameController:
             elif tile_info[0] == "income_tax":
                 tile_info[2] = board_tile.get_income_tax()
 
-    def update_player_list(self):
+    def update_all_game_info(self):
+        self.pass_updated_tile_ownership_info()
+        self.pass_updated_players_info()
+        self.gui.gameplay_frame.update_display_info(self.gui.game_canvas)
+
+    # for each tile in the
+    def pass_updated_tile_ownership_info(self):
+        # checks only the property positions
+        for i in [1, 2, 4, 6, 7, 9, 11, 13, 14, 16, 17, 19]:
+            board_tile = self.board.tiles[i]
+            tile_info = self.gui.gameplay_frame.tile_info[i]
+            tile_info[4] = board_tile.get_owner()
+
+    def pass_updated_players_info(self):
         for i in range(0, len(self.all_players)):
             self.gui.gameplay_frame.player_info[i][1] = self.all_players[i].get_current_money()
             curr_pos = self.all_players[i].get_current_position()
@@ -101,7 +114,7 @@ class GameController:
             player_tuple = [None, None, None, None, None, None]
             self.gui.gameplay_frame.player_info.append(player_tuple)    #adds new 6-tuple
             self.gui.gameplay_frame.player_info[i][0] = self.all_players[i].get_name()
-        self.update_player_list()
+        self.pass_updated_players_info()
 
     def pass_color_information_for_display(self):
         for i in range(0, 20):
@@ -271,20 +284,12 @@ class GameController:
                         action = "not_buy"
                 elif self.click_var.get() == "not_buy":
                     action = "not_buy"
-                pass
             else:
                 # TODO update view for rent
                 action = "rent"
             tile.player_landed(player_this_turn, action)
-            if action == "buy":
-                # TODO display property
-                pass  # del
-            else:
-                # TODO display property not bought
-                pass  # del
             self.unbind_yes_buy_button() #unbind and hide the yes_buy_button
             self.unbind_no_buy_button() #unbind and the hide the no_buy_button
-            return
         elif tile_type == "jail":
             # TODO update view just visiting
             pass
@@ -292,16 +297,18 @@ class GameController:
             # TODO update view
             pass
         elif tile_type == "go_to_jail": ######### Problem here, fix later parameter's problem
-            tile.player_landed(player_this_turn, self.board.get_jail_tile())
+            tile.player_landed(player_this_turn)
             # TODO jail animation
-            return
         elif tile_type == "income_tax":
+            tile.player_landed()
             # TODO tax animation
             pass
         elif tile_type == "free_parking":
             # TODO parking animation
             pass
-        tile.player_landed(player_this_turn)
+        else:
+            tile.player_landed(player_this_turn)
+        self.update_all_game_info()
 
     """This function is called after pressing the 'Roll' button in the game window."""
 
@@ -315,6 +322,7 @@ class GameController:
         print("Square:",player_this_turn.get_current_position())#TODO del this line later
         print(tile.get_tile_name()) #TODO del
         # TODO<Call function to display the animation in the view>
+        self.update_all_game_info()
         self.land_and_complete_round(tile, player_this_turn)
         self.determine_next_round(player_this_turn)
 
@@ -349,6 +357,7 @@ class GameController:
     def pay_fine(self, player_this_turn):
         # pay_fine_logic
         GameLogic.pay_fine(self.game_logic, player_this_turn)
+        self.update_all_game_info()
         self.click_var.set("pay_fine")
         print("Paying fine") #TODO del
         self.unbind_pay_fine_button(player_this_turn)
