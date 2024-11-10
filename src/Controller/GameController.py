@@ -33,8 +33,6 @@ class GameController:
         # passes necessary information to the gui and creates missing frames
         self.pass_color_information_for_display()
         self.pass_tile_information_for_display()
-        #self.gui.show_game_play_frame()
-        # self.gui.show_frame("gameplay")
 
     def get_player_list(self):
         return self.player_list
