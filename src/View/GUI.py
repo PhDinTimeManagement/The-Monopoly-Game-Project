@@ -81,14 +81,13 @@ class GUI(tk.Tk):
     def show_save_game_frame(self):
         frame = tk.Frame(self)
         self.frames["save_game"] = frame
-        self.save_game_canvas, self.save_delete_click_areas  = self.save_game_frame.setup_save_game_frame(frame)
-        print("The length of this array is: ", len(self.save_delete_click_areas))
+        self.save_game_frame = self.save_game_frame.setup_save_game_frame(frame)
 
     # Enter the main game board
     def show_game_play_frame(self):
         frame = tk.Frame(self)
         self.frames["gameplay"] = frame
-        self.game_canvas, self.game_frame_click_areas = self.gameplay_frame.setup_new_gameplay_frame(frame)
+        self.game_canvas, self.game_frame_click_areas = self.gameplay_frame.setup_new_gameplay_frame(frame) #TODO uncomment this line later
 
     def show_frame(self, frame_name):
         for frame in self.frames.values():
