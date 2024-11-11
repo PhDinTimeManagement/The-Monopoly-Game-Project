@@ -438,7 +438,7 @@ class GameController:
                 return
 
         # gameboard_setup is a list of dictionaries, will cycle and update appropriately
-        gameboard_info = game_data_dict["gameboard_data"]["gameboard_setup"]
+        gameboard_info = game_data_dict["gameboard_setup"]
         for tile_info, i in zip(gameboard_info, range(20)):
             self.board.tiles[i].update_name_pos_type(tile_info["name"], tile_info["board_pos"], tile_info["tile_type"])
             tile_type = tile_info["tile_type"]
@@ -477,7 +477,7 @@ class GameController:
         self.set__turn(game_data_dict["_turn"])
         self.set_remove_last_round(game_data_dict["remove_last_round"])
 
-        self.load_gameboard("", game_data_dict)
+        self.load_gameboard("", game_data_dict["gameboard_data"])
 
         # creates players objects and copies information from the dictionary
         players = game_data_dict["players_list"]
