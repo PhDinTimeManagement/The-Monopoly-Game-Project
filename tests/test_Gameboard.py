@@ -84,8 +84,8 @@ class TestGo(TestCase):
 class TestGoToJail(TestCase):
     def test_player_landed(self):
         JailTile = gameboard.get_jail_tile()
-        go_to_jail.player_landed(player1)
-        go_to_jail.player_landed(player2)
+        go_to_jail.player_landed(player1, JailTile)
+        go_to_jail.player_landed(player2, JailTile)
 
     def test_update_values(self):
         testUpdate = GoToJail(10)

@@ -184,21 +184,18 @@ class GoToJail(Tile):
     def __init__(self, board_pos):
         super().__init__("Go To Jail", board_pos)
         self.tile_type = "go_to_jail"
-        self.jail_tile = None
 
-    def set_jail_tile(self, gameboard):
-        self.jail_tile = gameboard.get_jail_tile()
-
-    def arrest_player(self, player):
+    @staticmethod
+    def arrest_player(player, jail):
         player.set_jail_status(True)
         player.set_in_jail_turns(3)     # sets max turns to spend in jail
-        player.set_current_square(self.jail_tile.get_tile_position())    # the player position is updated to the jail position
-        self.jail_tile.jailed_players.append(player.get_name())      # puts the player name in the jail list of detainees
+        player.set_current_square(jail.get_tile_position())    # the player position is updated to the jail position
+        jail.jailed_players.append(player.get_name())      # puts the player name in the jail list of detainees
         message = "{player.get_name()} has been locked up"
         return message
 
-    def player_landed(self, player):
-        return self.arrest_player(player)
+    def player_landed(self, player, jailTile):
+        return self.arrest_player(player, jailTile)
 
 
 class Chance(Tile):
@@ -273,8 +270,6 @@ class Gameboard:
                       Chance(18),
                       Property("Tai O", 19, 600, 25, None, "yellow")
                       ]     # Stores different Tile Objects. Can be customized by the user
-
-        self.tiles[15].set_jail_tile() # sets jail tile in go to jail
 
     def get_jail_tile(self) -> Jail:
         for i in range (0,len(self.tiles)):
