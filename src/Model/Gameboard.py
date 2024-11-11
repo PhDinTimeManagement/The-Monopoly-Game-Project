@@ -249,7 +249,7 @@ class FreeParking(Tile):
 
 class Gameboard:
     def __init__(self):
-        self.tiles = [Go(1500),
+        self.tiles = [Go(150),
                       Property("Central", 1, 800, 90, None, "cyan"),
                       Property("Wan Chai", 2, 700, 65, None, "cyan"),
                       IncomeTax(3, 10),
