@@ -888,9 +888,9 @@ class LoadGameFrame(DisplayManager):
             canvas.tag_bind(clickable_area, "<Button-1>",
                             lambda e, idx=i: self.select_saved_game_slot(canvas, idx))
 
-            # Display the back button to return to the main menu
-            back_button = canvas.create_image(50, 50, image=self.back_arrow_image)
-            canvas.tag_bind(back_button, "<Button-1>", lambda e: self.gui.show_frame("main_menu"))
+        # Display the back button to return to the main menu
+        back_button = canvas.create_image(50, 50, image=self.back_arrow_image)
+        canvas.tag_bind(back_button, "<Button-1>", lambda e: self.gui.show_frame("main_menu"))
 
         self.show_save_file(canvas)
 
@@ -906,6 +906,8 @@ class LoadGameFrame(DisplayManager):
         self.gui.selected_saved_game_slot = idx
 
         # Display Load and Play button once a slot is selected
+        if self.load_and_play_button_id is not None:
+            canvas.delete(self.load_and_play_button_id)
         load_button_x, load_button_y = self.gui.image_width // 2, 835
         self.load_and_play_button_id = canvas.create_image(load_button_x, load_button_y,
                                                            image=self.load_and_play_button_image)
@@ -958,7 +960,8 @@ class SaveGameFrame(DisplayManager):
     def __init__(self, gui):
         super().__init__(gui)
 
-        self.load_and_play_button_id = None
+        self.save_button_id = None
+        self.delete_button_id = None
         self.saved_game_slots = []
         self.slot_item_ids = [] # Track item IDs for slots
 
@@ -971,6 +974,8 @@ class SaveGameFrame(DisplayManager):
             file=os.path.join(assets_base_path, "save_game_frame/selected_saved_game.png"))
         self.save_button_image = tk.PhotoImage(
             file=os.path.join(assets_base_path, "save_game_frame/save.png"))
+        self.delete_button_image = tk.PhotoImage(
+            file=os.path.join(assets_base_path, "save_game_frame/delete.png"))
         self.back_arrow_image = tk.PhotoImage(file=os.path.join(assets_base_path, "info_frame/back_arrow.png"))
         self.save_base_path = os.path.join(os.path.dirname(__file__), "../../saves/games")
         self.display_text=[]
@@ -1014,9 +1019,9 @@ class SaveGameFrame(DisplayManager):
             # Bind click event to select the slot
             canvas.tag_bind(clickable_area, "<Button-1>",
                             lambda e, idx=i: self.select_saved_game_slot(canvas, idx))
-            # Display the back button to return to the main menu
-            back_button = canvas.create_image(50, 50, image=self.back_arrow_image)
-            canvas.tag_bind(back_button, "<Button-1>", lambda e: self.gui.show_frame("gameplay"))
+        # Display the back button to return to the main menu
+        back_button = canvas.create_image(50, 50, image=self.back_arrow_image)
+        canvas.tag_bind(back_button, "<Button-1>", lambda e: self.gui.show_frame("gameplay"))
 
         self.show_save_file(canvas)
 
@@ -1031,35 +1036,61 @@ class SaveGameFrame(DisplayManager):
         canvas.itemconfig(self.slot_item_ids[idx], image=self.selected_saved_game_image)
         self.gui.selected_saved_game_slot = idx
 
-        # Display Load and Play button once a slot is selected
-        #if not hasattr(self, 'load_and_play_button_id'):
-        # Reuse this Load and Play button
-        load_button_x, load_button_y = self.gui.image_width // 2, 835
-        self.load_and_play_button_id = canvas.create_image(load_button_x, load_button_y,
-                                                           image=self.save_button_image)
-        load_and_play_clickable_area = canvas.create_rectangle(
-            load_button_x - (0.5 * self.save_button_image.width()),
-            load_button_y - (0.5 * self.save_button_image.height()),
-            load_button_x + (0.5 * self.save_button_image.width()),
-            load_button_y + (0.5 * self.save_button_image.height()),
+        #delete button
+        if self.delete_button_id is not None:
+            canvas.delete(self.delete_button_id)
+        delete_button_x, delete_button_y = self.gui.image_width // 3, 835
+        self.delete_button_id = canvas.create_image(delete_button_x, delete_button_y,
+                                                           image=self.delete_button_image)
+        delete_clickable_area = canvas.create_rectangle(
+            delete_button_x - (0.5 * self.save_button_image.width()),
+            delete_button_y - (0.5 * self.save_button_image.height()),
+            delete_button_x + (0.5 * self.save_button_image.width()),
+            delete_button_y + (0.5 * self.save_button_image.height()),
             outline="", fill=""
         )
 
         # TODO Once the button is clicked, pass the json file name to the controller to load the game board
-        canvas.tag_bind(load_and_play_clickable_area, "<Button-1>", lambda e: self.save_data(canvas))
+        canvas.tag_bind(delete_clickable_area, "<Button-1>", lambda e: self.delete_data(canvas))
+        #delete button end
+
+        # save button
+        if self.save_button_id is not None:
+            canvas.delete(self.save_button_id)
+        save_button_x, save_button_y = self.gui.image_width*2 // 3, 835
+        self.save_button_id = canvas.create_image(save_button_x, save_button_y,
+                                                           image=self.save_button_image)
+        save_clickable_area = canvas.create_rectangle(
+            save_button_x - (0.5 * self.save_button_image.width()),
+            save_button_y - (0.5 * self.save_button_image.height()),
+            save_button_x + (0.5 * self.save_button_image.width()),
+            save_button_y + (0.5 * self.save_button_image.height()),
+            outline="", fill=""
+        )
+
+        # TODO Once the button is clicked, pass the json file name to the controller to load the game board
+        canvas.tag_bind(save_clickable_area, "<Button-1>", lambda e: self.save_data(canvas))
+        #save button end
 
         return canvas
+
+    def delete_data(self,canvas):
+        if self.gui.selected_saved_game_slot<len(self.display_text):
+            filepath=os.path.join(self.save_base_path,self.display_text[self.gui.selected_saved_game_slot][2])
+            os.remove(filepath)
+        self.show_save_file(canvas)
 
     def save_data(self,canvas):
         from src.Controller.GameController import GameController
         g=GameController(self.gui)
-        g.save_game("Save"+str(len(self.display_text)//2))
-        g.save_gameboard("Save"+str(len(self.display_text)//2))
+        g.save_game("Save"+str(len(self.display_text)))
+        g.save_gameboard("Save"+str(len(self.display_text)))
         self.show_save_file(canvas)
 
     def show_save_file(self,canvas):
-        for o in self.display_text:
-            canvas.delete(o)
+        for obj in self.display_text:
+            for i in range(2):
+                canvas.delete(obj[i])
         self.display_text=[]
 
         file_info = []
@@ -1074,8 +1105,7 @@ class SaveGameFrame(DisplayManager):
                                    font=("Comic Sans MS", 16), fill="#000000")
                 text2=canvas.create_text(self.gui.image_width * 19 // 30, self.saved_game_slot_positions[i][1], text=file_info[i][1], anchor="center",
                                    font=("Comic Sans MS", 16), fill="#000000")
-                self.display_text.append(text1)
-                self.display_text.append(text2)
+                self.display_text.append([text1,text2,file_info[i][0]])
                 canvas.tag_bind(text1, "<Button-1>",
                                 lambda e, idx=i: self.select_saved_game_slot(canvas, idx))
                 canvas.tag_bind(text2, "<Button-1>",
