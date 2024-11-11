@@ -1,6 +1,5 @@
 import tkinter as tk
 import os
-import time
 
 # Base path for assets
 assets_base_path = os.path.join(os.path.dirname(__file__), "../../assets")
@@ -31,359 +30,66 @@ class DisplayManager:
         canvas.create_image(0, 0, anchor="nw", image=background)
         return canvas
 
-    @staticmethod
-    def calc_button_dim(button_image):
-        return button_image.width(), button_image.height()
 
-
-# noinspection DuplicatedCode
 class GameplayFrame(DisplayManager):
-    def __init__(self, gui):
-        super().__init__(gui)
-
+    def __init__(self, gui, controller):
         # New Gameplay frame images
+        super().__init__(gui)
+        self.controller = controller # gets the game controller to retrieve information to setup the board
         self.new_gameplay_frame_background = tk.PhotoImage(
             file=os.path.join(assets_base_path, "gameplay_frame/gameplay_frame_background.png"))
-        self.roll_dice_image = tk.PhotoImage(file = os.path.join(assets_base_path, "gameplay_frame/roll_dice.png"))
-        self.save_quit_image = tk.PhotoImage(file = os.path.join(assets_base_path, "gameplay_frame/save_quit.png"))
-        self.pay_fine_image = tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/pay_fine.png"))
-        self.yes_image = tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/yes.png"))
-        self.no_image = tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/no.png"))
 
-        # Gameboard tiles colors empty list, will get loaded in by the Controller
+        # Gameboard tiles colors empty list, will get loaded from the Gameboard model
         self.tile_colors = []
 
         # Tile color coordinates from anchor (reference point) "NW" corner
         self.__tile_color_coord = [
             None,
-            [565, 818],
-            [430, 818],
+            [563, 819],
+            [428, 819],
             None,
-            [160, 818],
-            None,   # jail
-            [118, 683],
-            [118, 548],
+            [158, 819],
             None,
-            [118, 278],
-            None, # free parking
-            [565, 236],
+            [116, 684],
+            [116, 549],
             None,
-            [430, 236],
-            [160, 236],
-            None, # go to jail
-            [700, 278],
-            [700, 413],
+            [116, 279],
             None,
-            [700, 683]
+            [563, 237],
+            None,
+            [428, 237],
+            [158, 237],
+            None,
+            [698, 279],
+            [698, 414],
+            None,
+            [698, 684]
         ]
-
-        # Gameboard tiles 9-tuple will get loaded in by the Controller
-        #  [type, name, price, rent, owner, nameObj, priceObj, rentObj, ownerObj]
-        self.tile_info = []
-
-        # Tile info coordinates, 6-tuple
-        self.__tile_info_coord = [
-            [None, None, 770, 860, None, None, None, None], # go
-            [635, 880, 635, 905, 635, 930, 635, 840], # prop1
-            [500, 880, 500, 905, 500, 930, 500, 840], # prop2
-            [365, 870, 365, 930, None, None, None, None],   # income tax
-            [230, 880, 230, 905, 230, 930, 230, 840], # prop3
-            [None, None, None, None, None, None, None, None], # jail
-            [100, 752, 75, 752, 50, 752, 142, 752], # prop4
-            [100, 617, 75, 617, 50, 617, 142, 617], # prop5
-            [95, 510, None, None, None, None, None, None], # chance
-            [100, 347, 75, 347, 50, 347, 142, 347], # prop6
-            [95 , 210, None, None, None, None, None, None], # free parking
-            [635, 165, 635, 190, 635, 215, 635, 258],  # prop7
-            [365, 240, 365, 190, None, None, None, None],  # chance
-            [500, 165, 500, 190, 500, 215, 500, 258],  # prop8
-            [230, 165, 230, 190, 230, 215, 230, 258],  # prop9
-            [None, None, None, None, None, None, None, None],  # go to jail
-            [765, 347, 790, 347, 815, 347, 722, 347],  # prop10
-            [765, 482, 790, 482, 815, 482, 722, 482],  # prop11
-            [770, 645, None, None, None, None, None, None],  # chance
-            [765, 752, 790, 752, 815, 752, 722, 752]  # prop12
-        ]
-
-        # players information
-        self.player_info = []
-
-        # Buttons Coordinates
-        self.roll_dice_x_pos = self.gui.image_width * 2 / 7
-        self.roll_dice_y_pos = self.gui.image_height * 2 / 5 - 50
-        self.save_quit_x_pos = self.gui.image_width * 11 / 14
-        self.save_quit_y_pos = self.gui.image_height * 9 / 10
-        self.pay_fine_x_pos = self.gui.image_width * 2 / 7
-        self.pay_fine_y_pos = self.gui.image_height * 5 / 10 - 45
-        self.yes_x_pos = self.gui.image_width * 5 / 14
-        self.yes_y_pos = self.gui.image_height * 4 / 5 - 20
-        self.no_x_pos = self.gui.image_width * 3 / 14
-        self.no_y_pos = self.gui.image_height * 4 / 5 - 20
-
 
 # ------------------------------------# Game Play Frame #------------------------------------#
-    @staticmethod
-    def set_appropriate_text_dimension(name, price, rent, owner):
-        name_size = 16
-        price_size = 16
-        rent_size = 16
-        owner_size = 16
 
-        if len(name) > 12:
-            name_size -= 4
-        elif len(name) > 10:
-            name_size -= 2
-
-        if len(price) > 12:
-            price_size -= 4
-        elif len(price) > 10:
-            price_size -= 2
-
-        if len(rent) > 12:
-            rent_size -= 4
-        elif len(rent) > 10:
-            rent_size -= 2
-
-        if len(owner) > 12:
-            owner_size -= 4
-        elif len(owner) > 10:
-            owner_size -= 2
-
-        return name_size, price_size, rent_size, owner_size
-
-    @staticmethod
-    def rotate_text(i):
-        text_rotate = 0
-        # text rotation information
-        if 5 < i < 10:  # left board side
-            text_rotate = 270.0
-        elif 15 < i < 20:  # right board side
-            text_rotate = 90.0
-        return text_rotate
-
-    def set_color(self, pos, color):
-        self.tile_colors[pos][0] = color
-
-    def get_color_coord(self, pos):
-        return self.__tile_color_coord[pos]
-
-    #for testing
-    def roll_dice(self):
-        print("Rolling dice...")
-
-    #for testing
-    def save_quit(self):
-        self.gui.show_frame("save_game")
-
-
-    def create_button(self, canvas, x_pos, y_pos, button_image):
-        button_width, button_height = self.calc_button_dim(button_image)
-        image_id = canvas.create_image(x_pos, y_pos, anchor="center", image=button_image)
-        button_click_area = canvas.create_rectangle(
-            (x_pos - button_width // 2), (y_pos - button_height // 2),
-            (x_pos + button_width // 2), (y_pos + button_height // 2),
-            outline="", fill=""
-        )
-        return button_click_area, canvas, image_id
-
-    def show_pay_fine_button(self, canvas):
-        pay_fine_click_area, canvas, pay_fine_image_id = self.create_button(canvas, self.pay_fine_x_pos, self.pay_fine_y_pos, self.pay_fine_image)
-        # TODO BIND FUNCTION canvas.tag_bind(pay_fine_click_area, "<Button-1>", lambda e: )
-        return pay_fine_click_area, canvas, pay_fine_image_id
-
-    def show_yes_button(self, canvas):
-        yes_click_area, canvas, yes_button_image_id = self.create_button(canvas, self.yes_x_pos, self.yes_y_pos, self.yes_image)
-        # TODO BIND FUNCTION canvas.tag_bind(yes_click_area, "<Button-1>", lambda e: )
-        return yes_click_area,canvas,yes_button_image_id
-
-    def show_no_button(self, canvas):
-        no_click_area, canvas, no_button_image_id = self.create_button(canvas, self.no_x_pos, self.no_y_pos, self.no_image)
-        # TODO BIND FUNCTION canvas.tag_bind(no_click_area, "<Button-1>", lambda e: )
-        return no_click_area,canvas, no_button_image_id
-
-    def display_player_info(self, canvas):
-        starting_pos = 200
-        bottom_border = 860
-        right_border = 950
-        left_border = 1430
-        total_players = len(self.player_info)
-        name_size = 22
-        info_size = 20
-        increment = (bottom_border - starting_pos) / total_players
-        for i in range(0, total_players):
-            player_name = self.player_info[i][0]
-            player_balance = f"Balance: {self.player_info[i][1]} HKD"
-            player_position = f" is in {self.player_info[i][2]}"
-            player_jail_status = self.player_info[i][3]
-            player_jail_turns = {self.player_info[i][4]}
-            player_total_properties = f"Properties: {self.player_info[i][5]}"
-
-            name_id = canvas.create_text(right_border, starting_pos, text= player_name, anchor="w",
-                               font=("Comic Sans MS", name_size, "bold"), fill="#000000")
-
-            # calculates dimensions of name box
-            name_box = canvas.bbox(name_id)
-            name_width = name_box[2] - name_box[0] + 5
-
-            canvas.create_text(right_border + name_width, starting_pos, text= player_position, anchor="w",
-                               font=("Comic Sans MS", info_size), fill="#000000")
-            canvas.create_text(right_border, starting_pos + 40, text= player_balance, anchor="w",
-                               font=("Comic Sans MS", info_size), fill="#000000")
-            canvas.create_text(left_border, starting_pos + 40, text= player_total_properties, anchor="e",
-                               font=("Comic Sans MS", info_size), fill="#000000")
-            starting_pos += increment
-
-    #----------Handles hiding the button IMAGE in the canvas----------#
-    def hide_yes_image(self,canvas):
-        canvas.coords(self.yes_image_id,-100,-100)
-
-    def hide_no_image(self,canvas):
-        canvas.coords(self.no_image_id,-100,-100)
-
-    def hide_roll_image(self,canvas):
-        canvas.coords(self.roll_dice_image_id,-100,-100)
-
-    def hide_pay_fine_image(self,canvas):
-        canvas.coords(self.pay_fine_image_id,-100,-100)
-
-    #------------------------------------------------------------------#
-
-
-    #----------Handles showing the button image in the canvas----------#
-    def show_yes_image(self,canvas):
-        canvas.coords(self.yes_image_id,self.yes_x_pos, self.yes_y_pos)
-
-    def show_no_image(self,canvas):
-        canvas.coords(self.no_image_id,self.no_x_pos, self.no_y_pos)
-
-    def show_roll_image(self,canvas):
-        canvas.coords(self.roll_dice_image_id, self.roll_dice_x_pos, self.roll_dice_y_pos)
-
-    def show_pay_fine_image(self,canvas):
-        canvas.coords(self.pay_fine_image_id, self.pay_fine_x_pos, self.pay_fine_y_pos)
-
-    # ------------------------------------------------------------------#
-
-    # from the gameboard information loads the appropriate colors in the game frame
     def load_tile_colors(self):
         for i in range(0,20):
-            color = self.tile_colors[i][0]
-            if color:
-                self.modify_tile_color(color, i)
+            has_color = self.__tile_color_coord[i]
+            self.tile_colors.append(None) # initializes the empty position
+            if has_color:   # if it has color then pulls the color from the gameboard and modifies the new entry
+                self.modify_tile_color(self.controller.board.tiles[i].get_color(), i)
 
     # gets the information from the lists above and display all the tiles colors
-    def display_tile_colors(self, canvas):
-        self.load_tile_colors()
+    def overlay_tile_colors(self, canvas):
         for i in range(0, 20):
-            color_coord = self.__tile_color_coord[i]
-            if color_coord: # if None (meaning at that position there is a tile that has no color) doesn't execute
-                x_pos = color_coord[0]
-                y_pos = color_coord[1]
-                tile_color = self.tile_colors[i][1]
+            color_tuple = self.__tile_color_coord[i]
+            if color_tuple: # if None (meaning at that position there is a tile that has no color) doesn't execute
+                x_pos = color_tuple[0]
+                y_pos = color_tuple[1]
+                tile_color = self.tile_colors[i]
                 canvas.create_image(x_pos, y_pos, anchor="nw", image=tile_color)
 
-    # from the info in the gameboard, displays it on the gameboard
-    def display_tile_info(self, canvas):
-        for i in range(0, len(self.__tile_info_coord)):
-            # gets all information necessary to display
-            tile_type = self.tile_info[i][0]
-            tile_name = self.tile_info[i][1]
-            tile_price = str(self.tile_info[i][2])
-            tile_rent = f"{self.tile_info[i][3]} HDK"
-            tile_owner = self.tile_info[i][4]
-            name_x_pos = self.__tile_info_coord[i][0]
-            name_y_pos = self.__tile_info_coord[i][1]
-            price_x_pos = self.__tile_info_coord[i][2]
-            price_y_pos = self.__tile_info_coord[i][3]
-            rent_x_pos = self.__tile_info_coord[i][4]
-            rent_y_pos = self.__tile_info_coord[i][5]
-            owner_x_pos = self.__tile_info_coord[i][6]
-            owner_y_pos = self.__tile_info_coord[i][7]
-
-            # gets owner name only when there is a player object
-            if tile_owner is None:
-                # tile_owner = tile_owner.get_name()
-                tile_owner = "test owner"
-
-            # calculates text sizes
-            text_name_size, text_price_size, text_rent_size, text_owner_size = self.set_appropriate_text_dimension(
-                tile_name, tile_rent, tile_price, tile_owner)
-
-            # calculates text rotation
-            text_rotate = self.rotate_text(i)
-
-            # displays text based on tile type
-            if tile_type == "property":
-                self.tile_info[i][5] = canvas.create_text(name_x_pos, name_y_pos, text=tile_name,
-                                                          font=("Comic Sans MS", text_name_size, "bold"),
-                                                          fill="#000000", angle=text_rotate)
-                tile_price = f"{tile_price} HKD"
-                self.tile_info[i][6] = canvas.create_text(price_x_pos, price_y_pos, text=tile_price,
-                                                          font=("Comic Sans MS", text_price_size), fill="#000000",
-                                                          angle=text_rotate)
-                self.tile_info[i][7] = canvas.create_text(rent_x_pos, rent_y_pos, text=tile_rent,
-                                                          font=("Comic Sans MS", text_rent_size), fill="#000000",
-                                                          angle=text_rotate)
-                self.tile_info[i][8] = canvas.create_text(owner_x_pos, owner_y_pos, text=tile_owner,
-                                                          font=("Comic Sans MS", text_owner_size), fill="#000000",
-                                                          angle=text_rotate)
-
-            elif tile_type == "go":
-                tile_price = f"Collect\n{tile_price} HKD"
-                self.tile_info[i][6] = canvas.create_text(price_x_pos, price_y_pos, text=tile_price,
-                                                          font=("Comic Sans MS", 18, "bold"), fill="#000000",
-                                                          justify="center")
-
-            elif tile_type == "free_parking":
-                tile_name = tile_name.replace(" ", "\n")
-                self.tile_info[i][6] = canvas.create_text(name_x_pos, name_y_pos, text=tile_name,
-                                                          font=("Comic Sans MS", 20, "bold"), fill="#000000",
-                                                          justify="center")
-
-            elif tile_type == "chance":
-                self.tile_info[i][6] = canvas.create_text(name_x_pos, name_y_pos, text=tile_name,
-                                                          font=("Comic Sans MS", 20, "bold"), fill="#000000")
-
-            elif tile_type == "income_tax":
-                tile_name = tile_name.replace(" ", "\n")
-                self.tile_info[i][6] = canvas.create_text(name_x_pos, name_y_pos, text=tile_name,
-                                                          font=("Comic Sans MS", 20, "bold"), fill="#000000",
-                                                          justify="center")
-                tile_price = f"{tile_price} %"
-                self.tile_info[i][7] = canvas.create_text(price_x_pos, price_y_pos, text=tile_price,
-                                                          font=("Comic Sans MS", 16), fill="#000000")
-
-    # called to set up the entire gameplay_frame
     def setup_new_gameplay_frame(self, frame):
         canvas = self.clear_widgets_create_canvas_set_background(frame, self.new_gameplay_frame_background)
-
-        # TILE COLORS
-        self.display_tile_colors(canvas)
-
-        # TILE INFORMATION
-        self.display_tile_info(canvas)
-
-        # PLAYER INFORMATION
-        self.display_player_info(canvas)
-
-        # ROLL DICE BUTTON
-        roll_dice_click_area, canvas,self.roll_dice_image_id = self.create_button(canvas, self.roll_dice_x_pos, self.roll_dice_y_pos, self.roll_dice_image)
-        #canvas.tag_bind(roll_dice_click_area, "<Button-1>", lambda e: self.roll_dice())
-
-        # SAVE QUIT BUTTON
-        save_quit_click_area, canvas,self.save_quit_image_id = self.create_button(canvas, self.save_quit_x_pos, self.save_quit_y_pos, self.save_quit_image)
-        canvas.tag_bind(save_quit_click_area, "<Button-1>", lambda e:self.save_quit())
-
-
-        # OTHER BUTTONS JUST FOR TESTING POS WONT BE SHOWN ALL THE TIME
-        pay_fine_click_area,canvas,self.pay_fine_image_id = self.show_pay_fine_button(canvas)
-
-        #return the id so that image can be hidden and shown
-        yes_click_area,canvas,self.yes_image_id = self.show_yes_button(canvas)
-        no_click_area, canvas,self.no_image_id = self.show_no_button(canvas)
-
-        click_area = [roll_dice_click_area,yes_click_area,no_click_area,pay_fine_click_area] #TODO place other click area for other buttons
-        return canvas, click_area
+        self.load_tile_colors()
+        self.overlay_tile_colors(canvas)
+        return canvas
 
     #------------------------#
     # EDITING MODE FUNCTIONS #
@@ -401,7 +107,7 @@ class GameplayFrame(DisplayManager):
         image_color_path = os.path.join(assets_base_path, color_path)
 
         #modifies the list at the appropriate position with the new tile color reference
-        self.tile_colors[tile_position][1] = tk.PhotoImage(file=image_color_path)
+        self.tile_colors[tile_position] = tk.PhotoImage(file=image_color_path)
 
 
 class NewGameFrame(DisplayManager):
@@ -435,10 +141,6 @@ class NewGameFrame(DisplayManager):
     # ------------------------------------# New Game Frame #------------------------------------#
 
     def setup_new_game_page(self, frame, input_handler):
-        # Clear previously active widgets (including dice buttons)
-        self.clear_active_widgets()
-
-        # Create canvas and set background image
         canvas = self.clear_widgets_create_canvas_set_background(frame, self.new_game_frame_background)
 
         # Display the back button to return to the main menu
@@ -454,34 +156,48 @@ class NewGameFrame(DisplayManager):
         y_position = 260  # Starting Y position for player boxes
 
         for i, player_box_image in enumerate(self.player_box_images):
+            # Get dimensions of the player box image
+            image_width = player_box_image.width()
+            image_height = player_box_image.height()
+
             # Display each player box image
             player_box = canvas.create_image(x_position, y_position, anchor="nw", image=player_box_image)
-            self.player_box_images_refs.append(player_box)
+            self.player_box_images_refs.append(player_box)  # Store the image reference
 
-            # Dice button for random name generation
-            dice_button = tk.Button(
-                canvas, image=self.random_name_button_image, bd=0, highlightthickness=0,
-                highlightbackground="#FBF8F5", bg="#FBF8F5", activebackground="#FBF8F5",
-                command=lambda idx=i: self.generate_random_name(canvas, idx)
-            )
+            # Add a die image next to each player box for random name generation
+            dice_x_position = x_position - 55  # Adjust position to the left of the player box
+            dice_y_position = y_position + 10  # Slightly aligned with the player box
+            dice_button = canvas.create_image(dice_x_position, dice_y_position, anchor="nw",
+                                              image=self.random_name_button_image)
+
+            # Creating the dice button
+            # Creat the dice button
+            dice_button = tk.Button(canvas, image=self.random_name_button_image, bd=0,  # No border
+                                    highlightthickness=0, highlightbackground="#FBF8F5", bg="#FBF8F5",
+                                    activebackground="#FBF8F5",
+                                    command=lambda idx=i: self.generate_random_name(canvas, idx))
+
+            # Place the button
             dice_button.place(x=x_position - 100, y=y_position + 9)
-            self.active_widgets.append(dice_button)  # Track dice button for removal
+            self.active_widgets.append(dice_button)  # Track the button for later removal
 
-            # Trash button for clearing names
-            trash_button = tk.Button(
-                canvas, image=self.trash_button_image, bd=0, highlightthickness=0,
-                highlightbackground="#FBF8F5", bg="#FBF8F5", activebackground="#FBF8F5",
-                command=lambda idx=i: self.delete_name(canvas, idx)
-            )
-            trash_button.place(x=x_position - 55, y=y_position + 9)
-            self.active_widgets.append(trash_button)  # Track trash button for removal
+            # Trash button to delete names
+            trash_button = tk.Button(canvas, image=self.trash_button_image, bd=0,
+                                     highlightthickness=0, highlightbackground="#FBF8F5", bg="#FBF8F5",
+                                     activebackground="#FBF8F5",
+                                     command=lambda idx=i: self.delete_name(canvas, idx))
 
-            # Set up clickable area for player box
+            # Place the trash button
+            trash_button.place(x=x_position - 55, y=y_position + 9)  # Position right of the name box
+            self.active_widgets.append(trash_button)  # Track the button for later removal
+
+            # Create a clickable rectangle that matches the player box image dimensions
             clickable_area = canvas.create_rectangle(
-                x_position, y_position, x_position + 1.2 * player_box_image.width(),
-                                        y_position + 1.2 * player_box_image.height(),
+                x_position, y_position, x_position + 1.2 * image_width, y_position + 1.2 * image_height,
                 outline="", fill=""
             )
+
+            # Bind click event to the player box area to open an entry for manual name input
             canvas.tag_bind(clickable_area, "<Button-1>",
                             lambda e, idx=i, x=x_position, y=y_position: self.show_insert_entry(canvas, idx, x, y))
 
@@ -510,14 +226,9 @@ class NewGameFrame(DisplayManager):
         # Bind actions for Edit Board and Play clickable areas
         canvas.tag_bind(edit_board_clickable_area, "<Button-1>",
                         lambda e: print("Edit board clicked"))  # Placeholder action
-        #canvas.tag_bind(play_button_clickable_area, "<Button-1>", lambda e: self.check_and_start_game(input_handler))
+        canvas.tag_bind(play_button_clickable_area, "<Button-1>", lambda e: self.check_and_start_game(input_handler))
 
-        return canvas, play_button_clickable_area
-
-    def clear_active_widgets(self):
-        for widget in self.active_widgets:
-            widget.place_forget()
-        self.active_widgets.clear()  # Reset active widgets list
+        return canvas
 
     def delete_name(self, canvas, idx):
         # Clear the player's name from the entry
@@ -534,9 +245,9 @@ class NewGameFrame(DisplayManager):
         self.clicked_boxes[idx] = False  # Reset the clicked state
 
     def generate_random_name(self, canvas, idx):
-        # Ensure that all previous player names (up to idx-1) have been entered
-        if any(not self.gui.input_handler.players_names[i] for i in range(idx)):
-            self.show_msg(canvas, idx, "* All previous player names must be entered first.", is_error=True)
+        # Check if the previous player name has been entered (except for the first player)
+        if idx > 0 and not self.gui.input_handler.players_names[idx - 1]:
+            self.show_msg(canvas, idx, "* Previous player name must be entered first.", is_error=True)
             return
 
         # Generate a random name
@@ -688,13 +399,16 @@ class NewGameFrame(DisplayManager):
             # Show error message below play button if fewer than 2 players
             self.show_msg(self.gui.frames["new_game"], 0, "* At least two players are required to start the game.",
                           is_error=True, x_position=self.gui.image_width - 550, y_position=722)
-            return False
+            return
+
         # If all checks pass, transition to the GameBoard frame
         print("Starting game with players:")
         for idx, name in enumerate(player_names, start=1):
             if name:
                 print(f"Player {idx}: {name}")
-        return True
+
+        # Show the GameBoard frame
+        self.gui.show_frame("gameplay")
 
     def confirm_exit_new_game(self, canvas):
         # Clear any previously saved positions
@@ -729,11 +443,6 @@ class NewGameFrame(DisplayManager):
         self.clear_all_player_data(canvas)
         self.cancel_exit_and_restore_widgets(canvas, exit_hint, yes_button, no_button)
         self.gui.show_frame("main_menu")
-
-        # Also clear all the hint messages shown in the new game frame before
-        for idx in range(6):
-            if self.error_labels[idx]:
-                self.error_labels[idx].destroy()
 
     def cancel_exit_and_restore_widgets(self, canvas, exit_hint, yes_button, no_button):
         # Clear the exit hint and buttons
@@ -774,10 +483,10 @@ class MainMenuFrame(DisplayManager):
         button_y_positions = [self.gui.image_height * 0.55, self.gui.image_height * 0.70, self.gui.image_height * 0.85]
 
         # Calculate dimensions for each button to set clickable areas
-        new_game_width, new_game_height = self.calc_button_dim(self.new_game_image)
-        load_game_width, load_game_height = self.calc_button_dim(self.load_game_image)
-        exit_width, exit_height = self.calc_button_dim(self.exit_image)
-        info_width, info_height = self.calc_button_dim(self.info_image)
+        new_game_width, new_game_height = self.new_game_image.width(), self.new_game_image.height()
+        load_game_width, load_game_height = self.load_game_image.width(), self.load_game_image.height()
+        exit_width, exit_height = self.exit_image.width(), self.exit_image.height()
+        info_width, info_height = self.info_image.width(), self.info_image.height()
 
         # "New Game" button and clickable area
         new_game_button = canvas.create_image(self.gui.image_width // 2, button_y_positions[0],
@@ -823,11 +532,6 @@ class MainMenuFrame(DisplayManager):
 class LoadGameFrame(DisplayManager):
     def __init__(self, gui):
         super().__init__(gui)
-
-        self.load_and_play_button_id = None
-        self.saved_game_slots = []
-        self.slot_item_ids = [] # Track item IDs for slots
-
         # Load Game frame images
         self.load_game_frame_background = tk.PhotoImage(
             file=os.path.join(assets_base_path, "load_game_frame/load_game_frame_background.png"))
@@ -845,241 +549,12 @@ class LoadGameFrame(DisplayManager):
             file=os.path.join(assets_base_path, "load_game_frame/selected_saved_game_slot.png"))
         self.load_and_play_button_image = tk.PhotoImage(
             file=os.path.join(assets_base_path, "load_game_frame/load_and_play_button.png"))
-        self.display_text = []
-        self.save_base_path = os.path.join(os.path.dirname(__file__), "../../saves/games")
 
     # ------------------------------------# Load Game Frame #------------------------------------#
 
     def setup_load_game_frame(self, frame):
-        canvas = self.clear_widgets_create_canvas_set_background(frame, self.load_game_frame_background)
+        pass
 
-        # Saved game slot selection image positions
-        self.saved_game_slot_positions = [
-            (self.gui.image_width // 2, 370),
-            (self.gui.image_width // 2, 452),
-            (self.gui.image_width // 2, 534),
-            (self.gui.image_width // 2, 616),
-            (self.gui.image_width // 2, 698)
-        ]
-
-        # Saved game slot images
-        self.saved_game_slots = [
-            self.saved_game_slot1_image,
-            self.saved_game_slot2_image,
-            self.saved_game_slot3_image,
-            self.saved_game_slot4_image,
-            self.saved_game_slot5_image
-        ]
-
-        # Display saved game slots
-        for i, slot_image in enumerate(self.saved_game_slots):
-            slot_x, slot_y = self.saved_game_slot_positions[i]  # Unpack coordinates
-            slot_id = canvas.create_image(slot_x, slot_y, image=slot_image)
-            self.slot_item_ids.append(slot_id)
-
-            # Create a clickable area for each slot
-            clickable_area = canvas.create_rectangle(
-                slot_x - (0.5 * slot_image.width()), slot_y - (0.5 * slot_image.height()),
-                slot_x + (0.5 * slot_image.width()), slot_y + (0.5 * slot_image.height()),
-                outline="", fill=""
-            )
-
-            # Bind click event to select the slot
-            canvas.tag_bind(clickable_area, "<Button-1>",
-                            lambda e, idx=i: self.select_saved_game_slot(canvas, idx))
-
-            # Display the back button to return to the main menu
-            back_button = canvas.create_image(50, 50, image=self.back_arrow_image)
-            canvas.tag_bind(back_button, "<Button-1>", lambda e: self.gui.show_frame("main_menu"))
-
-        self.show_save_file(canvas)
-
-        return canvas
-
-    def select_saved_game_slot(self, canvas, idx):
-        # Clear any previously selected slots by resetting all slots to their original images
-        for i, slot_id in enumerate(self.slot_item_ids):
-            canvas.itemconfig(slot_id, image=self.saved_game_slots[i])
-
-        # Update only the selected slot with the highlight image
-        canvas.itemconfig(self.slot_item_ids[idx], image=self.selected_saved_game_slot_image)
-        self.gui.selected_saved_game_slot = idx
-
-        # Display Load and Play button once a slot is selected
-        load_button_x, load_button_y = self.gui.image_width // 2, 835
-        self.load_and_play_button_id = canvas.create_image(load_button_x, load_button_y,
-                                                           image=self.load_and_play_button_image)
-        load_and_play_clickable_area = canvas.create_rectangle(
-            load_button_x - (0.5 * self.load_and_play_button_image.width()),
-            load_button_y - (0.5 * self.load_and_play_button_image.height()),
-            load_button_x + (0.5 * self.load_and_play_button_image.width()),
-            load_button_y + (0.5 * self.load_and_play_button_image.height()),
-            outline="", fill=""
-        )
-
-        canvas.tag_bind(load_and_play_clickable_area, "<Button-1>", lambda e: self.load_data(idx))
-
-        return canvas
-
-    def load_data(self,idx):
-        from src.Controller.GameController import GameController
-        g=GameController(self.gui)
-        if idx<len(self.display_text):
-            print(self.display_text[idx][2].split('.')[0])
-            g.load_game(self.display_text[idx][2].split('.')[0])
-            g.load_gameboard(self.display_text[idx][2].split('.')[0])
-            self.gui.show_frame("gameplay")
-
-    def show_save_file(self,canvas):
-        for obj in self.display_text:
-            for i in range(2):
-                canvas.delete(obj[i])
-        self.display_text=[]
-
-        file_info = []
-        for filename in os.listdir(self.save_base_path):
-            last_modified_time = os.path.getmtime(os.path.join(self.save_base_path, filename))
-            last_modified_time_str = time.ctime(last_modified_time)
-            file_info.append((filename, last_modified_time_str))
-
-        for i in range(5):
-            if i < len(file_info):
-                text1=canvas.create_text(self.gui.image_width // 3, self.saved_game_slot_positions[i][1], text=file_info[i][0], anchor="center",
-                                   font=("Comic Sans MS", 16), fill="#000000")
-                text2=canvas.create_text(self.gui.image_width * 19 // 30, self.saved_game_slot_positions[i][1], text=file_info[i][1], anchor="center",
-                                   font=("Comic Sans MS", 16), fill="#000000")
-                self.display_text.append([text1,text2,file_info[i][0]])
-                canvas.tag_bind(text1, "<Button-1>",
-                                lambda e, idx=i: self.select_saved_game_slot(canvas, idx))
-                canvas.tag_bind(text2, "<Button-1>",
-                                lambda e, idx=i: self.select_saved_game_slot(canvas, idx))
-
-class SaveGameFrame(DisplayManager):
-    def __init__(self, gui):
-        super().__init__(gui)
-
-        self.load_and_play_button_id = None
-        self.saved_game_slots = []
-        self.slot_item_ids = [] # Track item IDs for slots
-
-        # Load Game frame images
-        self.save_game_frame_background = tk.PhotoImage(
-            file=os.path.join(assets_base_path, "save_game_frame/save_game_frame_background.png"))
-        self.saved_game_image = tk.PhotoImage(
-            file=os.path.join(assets_base_path, "save_game_frame/saved_game.png"))
-        self.selected_saved_game_image = tk.PhotoImage(
-            file=os.path.join(assets_base_path, "save_game_frame/selected_saved_game.png"))
-        self.save_button_image = tk.PhotoImage(
-            file=os.path.join(assets_base_path, "save_game_frame/save.png"))
-        self.back_arrow_image = tk.PhotoImage(file=os.path.join(assets_base_path, "info_frame/back_arrow.png"))
-        self.save_base_path = os.path.join(os.path.dirname(__file__), "../../saves/games")
-        self.display_text=[]
-
-    # ------------------------------------# Load Game Frame #------------------------------------#
-
-    def setup_save_game_frame(self, frame):
-        canvas = self.clear_widgets_create_canvas_set_background(frame, self.save_game_frame_background)
-
-        # Saved game slot selection image positions
-        self.saved_game_slot_positions = [
-            (self.gui.image_width // 2, 370),
-            (self.gui.image_width // 2, 452),
-            (self.gui.image_width // 2, 534),
-            (self.gui.image_width // 2, 616),
-            (self.gui.image_width // 2, 698)
-        ]
-
-        # Saved game slot images
-        self.saved_game_slots = [
-            self.saved_game_image,
-            self.saved_game_image,
-            self.saved_game_image,
-            self.saved_game_image,
-            self.saved_game_image
-        ]
-
-        # Display saved game slots
-        for i, slot_image in enumerate(self.saved_game_slots):
-            slot_x, slot_y = self.saved_game_slot_positions[i]  # Unpack coordinates
-            slot_id = canvas.create_image(slot_x, slot_y, image=slot_image)
-            self.slot_item_ids.append(slot_id)
-
-            # Create a clickable area for each slot
-            clickable_area = canvas.create_rectangle(
-                slot_x - (0.5 * slot_image.width()), slot_y - (0.5 * slot_image.height()),
-                slot_x + (0.5 * slot_image.width()), slot_y + (0.5 * slot_image.height()),
-                outline="", fill=""
-            )
-
-            # Bind click event to select the slot
-            canvas.tag_bind(clickable_area, "<Button-1>",
-                            lambda e, idx=i: self.select_saved_game_slot(canvas, idx))
-            # Display the back button to return to the main menu
-            back_button = canvas.create_image(50, 50, image=self.back_arrow_image)
-            canvas.tag_bind(back_button, "<Button-1>", lambda e: self.gui.show_frame("gameplay"))
-
-        self.show_save_file(canvas)
-
-        return canvas
-
-    def select_saved_game_slot(self, canvas, idx):
-        # Clear any previously selected slots by resetting all slots to their original images
-        for i, slot_id in enumerate(self.slot_item_ids):
-            canvas.itemconfig(slot_id, image=self.saved_game_slots[i])
-
-        # Update only the selected slot with the highlight image
-        canvas.itemconfig(self.slot_item_ids[idx], image=self.selected_saved_game_image)
-        self.gui.selected_saved_game_slot = idx
-
-        # Display Load and Play button once a slot is selected
-        #if not hasattr(self, 'load_and_play_button_id'):
-        # Reuse this Load and Play button
-        load_button_x, load_button_y = self.gui.image_width // 2, 835
-        self.load_and_play_button_id = canvas.create_image(load_button_x, load_button_y,
-                                                           image=self.save_button_image)
-        load_and_play_clickable_area = canvas.create_rectangle(
-            load_button_x - (0.5 * self.save_button_image.width()),
-            load_button_y - (0.5 * self.save_button_image.height()),
-            load_button_x + (0.5 * self.save_button_image.width()),
-            load_button_y + (0.5 * self.save_button_image.height()),
-            outline="", fill=""
-        )
-
-        # TODO Once the button is clicked, pass the json file name to the controller to load the game board
-        canvas.tag_bind(load_and_play_clickable_area, "<Button-1>", lambda e: self.save_data(canvas))
-
-        return canvas
-
-    def save_data(self,canvas):
-        from src.Controller.GameController import GameController
-        g=GameController(self.gui)
-        g.save_game("Save"+str(len(self.display_text)//2))
-        g.save_gameboard("Save"+str(len(self.display_text)//2))
-        self.show_save_file(canvas)
-
-    def show_save_file(self,canvas):
-        for o in self.display_text:
-            canvas.delete(o)
-        self.display_text=[]
-
-        file_info = []
-        for filename in os.listdir(self.save_base_path):
-            last_modified_time = os.path.getmtime(os.path.join(self.save_base_path, filename))
-            last_modified_time_str = time.ctime(last_modified_time)
-            file_info.append((filename, last_modified_time_str))
-
-        for i in range(5):
-            if i < len(file_info):
-                text1=canvas.create_text(self.gui.image_width // 3, self.saved_game_slot_positions[i][1], text=file_info[i][0], anchor="center",
-                                   font=("Comic Sans MS", 16), fill="#000000")
-                text2=canvas.create_text(self.gui.image_width * 19 // 30, self.saved_game_slot_positions[i][1], text=file_info[i][1], anchor="center",
-                                   font=("Comic Sans MS", 16), fill="#000000")
-                self.display_text.append(text1)
-                self.display_text.append(text2)
-                canvas.tag_bind(text1, "<Button-1>",
-                                lambda e, idx=i: self.select_saved_game_slot(canvas, idx))
-                canvas.tag_bind(text2, "<Button-1>",
-                                lambda e, idx=i: self.select_saved_game_slot(canvas, idx))
 
 class InfoPageFrame(DisplayManager):
     def __init__(self, gui):
@@ -1117,3 +592,9 @@ class EditBoardFrame(DisplayManager):
     def __init__(self, gui):
         super().__init__(gui)
 
+        # Edit Board frame images
+
+#------------------------------------# Edit Board Frame #------------------------------------#
+
+    def setup_edit_board_frame(self, frame):
+        pass
