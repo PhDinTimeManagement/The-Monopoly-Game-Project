@@ -238,10 +238,10 @@
     <list>
       <item itemvalue="Python.GUI.py" />
       <item itemvalue="Python.play_game" />
+      <item itemvalue="Python tests.Python tests in tests" />
+      <item itemvalue="Python tests.Python tests for test_GameController.TestGameController.test_set_player_list" />
       <item itemvalue="Python tests.Python tests for test_GameLogic.TestGameLogic" />
       <item itemvalue="Python tests.Python tests for test_GameController.TestGameController" />
-      <item itemvalue="Python tests.Python tests for test_GameController.TestGameController.test_set_player_list" />
-      <item itemvalue="Python tests.Python tests in tests" />
     </list>
     <recent_temporary>
       <list>
