@@ -29,7 +29,7 @@ class TestGameController(TestCase):
         Player2.update_values("BROKE PLAYER", -1500, True, False, 6, 2, [])
         test_controller.set_player_list([Player1, Player3])
         test_controller.set_broke_player_list([Player2])
-        test_controller.board.tiles[15].player_landed(Player3, jailTile)
+        test_controller.board.tiles[15].player_landed(Player3)
 
         save_name = "SAVE_LOAD_TEST"
         test_controller.save_game(save_name)

@@ -186,6 +186,9 @@ class GoToJail(Tile):
         self.tile_type = "go_to_jail"
         self.jail_tile = None
 
+    def set_jail_tile(self, gameboard):
+        self.jail_tile = gameboard.get_jail_tile()
+
     def arrest_player(self, player):
         player.set_jail_status(True)
         player.set_in_jail_turns(3)     # sets max turns to spend in jail
@@ -271,7 +274,7 @@ class Gameboard:
                       Property("Tai O", 19, 600, 25, None, "yellow")
                       ]     # Stores different Tile Objects. Can be customized by the user
 
-        self.tiles[15].jail_tile = self.tiles[5]    #sets jailtile in go to jail
+        self.tiles[15].set_jail_tile() # sets jail tile in go to jail
 
     def get_jail_tile(self) -> Jail:
         for i in range (0,len(self.tiles)):
