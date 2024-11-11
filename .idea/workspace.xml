@@ -4,15 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e63f52e8-b5e2-4b82-8eb0-ddb8c465611b" name="Changes" comment="Gameboard updates info as game is played">
-      <change afterPath="$PROJECT_DIR$/assets/gameplay_frame/player_highlight.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Controller/GameController.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Controller/GameController.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Model/GameLogic.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Model/GameLogic.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/View/DisplayManager.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/View/DisplayManager.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/View/GUI.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/View/GUI.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_GameLogic.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_GameLogic.py" afterDir="false" />
-    </list>
+    <list default="true" id="e63f52e8-b5e2-4b82-8eb0-ddb8c465611b" name="Changes" comment="Gameboard visual updates" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -264,6 +256,9 @@
         <option value="bundled-python-sdk-5e1850174b45-399fe30bd8c1-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-242.23726.102" />
       </set>
     </attachedChunks>
+  </component>
+  <component name="ShelveChangesManager">
+    <option name="remove_strategy" value="true" />
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -542,7 +537,15 @@
       <option name="project" value="LOCAL" />
       <updated>1731298345147</updated>
     </task>
-    <option name="localTasksCounter" value="30" />
+    <task id="LOCAL-00030" summary="Gameboard visual updates">
+      <option name="closed" value="true" />
+      <created>1731316101583</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1731316101583</updated>
+    </task>
+    <option name="localTasksCounter" value="31" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -591,7 +594,9 @@
     <MESSAGE value="restored GameController" />
     <MESSAGE value="displayed info on board" />
     <MESSAGE value="Gameboard updates info as game is played" />
-    <option name="LAST_COMMIT_MESSAGE" value="Gameboard updates info as game is played" />
+    <MESSAGE value="Gameboard visual updates" />
+    <option name="LAST_COMMIT_MESSAGE" value="Gameboard visual updates" />
+    <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="true" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
