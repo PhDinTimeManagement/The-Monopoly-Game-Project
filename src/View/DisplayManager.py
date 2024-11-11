@@ -1157,6 +1157,7 @@ class SaveGameFrame(DisplayManager):
 
         return canvas
 
+    # TODO fix this stuff
     def save_data(self,canvas):
         from src.Controller.GameController import GameController
         g=GameController(self.gui)
