@@ -4,7 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e63f52e8-b5e2-4b82-8eb0-ddb8c465611b" name="Changes" comment="Gameboard visual updates" />
+    <list default="true" id="e63f52e8-b5e2-4b82-8eb0-ddb8c465611b" name="Changes" comment="Gameboard updates info as game is played">
+      <change afterPath="$PROJECT_DIR$/assets/gameplay_frame/player_highlight.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Controller/GameController.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Controller/GameController.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Model/GameLogic.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Model/GameLogic.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/View/DisplayManager.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/View/DisplayManager.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/View/GUI.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/View/GUI.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_GameLogic.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_GameLogic.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -20,7 +28,6 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-    <option name="UPDATE_TYPE" value="REBASE" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
   &quot;lastFilter&quot;: {
@@ -79,7 +86,7 @@
     &quot;TODO_SCOPE&quot;: &quot;All Places&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/Programming Projects/pythonProject&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/tommy/Documents/INGEGNERIA/3.1 () Software Engineering/Group Project/The-Monopoly-Game-Project/assets/gameplay_frame&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -94,6 +101,7 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\tommy\Documents\INGEGNERIA\3.1 () Software Engineering\Group Project\The-Monopoly-Game-Project\assets\gameplay_frame" />
       <recent name="C:\Users\Hp\Desktop\The-Monopoly-Game-Project\src" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
@@ -103,7 +111,7 @@
       <recent name="D:\PolyU\PolyU Year 3\COMP3211 Software Engineering\Project Github\src\Model" />
     </key>
   </component>
-  <component name="RunManager" selected="Python tests.Python tests in tests">
+  <component name="RunManager" selected="Python.play_game">
     <configuration name="GUI.py" type="PythonConfigurationType" factoryName="Python">
       <module name="Source Code" />
       <option name="ENV_FILES" value="" />
@@ -241,9 +249,9 @@
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.play_game" />
         <item itemvalue="Python tests.Python tests in tests" />
         <item itemvalue="Python tests.Python tests in test_Gameboard.py" />
-        <item itemvalue="Python.play_game" />
         <item itemvalue="Python tests.Python tests for test_GameController.TestGameController" />
         <item itemvalue="Python tests.Python tests for test_GameController.TestGameController.test_set_player_list" />
       </list>
@@ -307,7 +315,8 @@
       <workItem from="1731242001093" duration="3471000" />
       <workItem from="1731245527946" duration="3172000" />
       <workItem from="1731286034609" duration="572000" />
-      <workItem from="1731296715339" duration="470000" />
+      <workItem from="1731296715339" duration="1587000" />
+      <workItem from="1731299219928" duration="11297000" />
     </task>
     <task id="LOCAL-00001" summary="gameboard functions">
       <created>1729259402457</created>
@@ -525,13 +534,13 @@
       <option name="project" value="LOCAL" />
       <updated>1731250632548</updated>
     </task>
-    <task id="LOCAL-00029" summary="Gameboard visual updates">
+    <task id="LOCAL-00029" summary="Gameboard updates info as game is played">
       <option name="closed" value="true" />
-      <created>1731315321066</created>
+      <created>1731298345147</created>
       <option name="number" value="00029" />
       <option name="presentableId" value="LOCAL-00029" />
       <option name="project" value="LOCAL" />
-      <updated>1731315321066</updated>
+      <updated>1731298345147</updated>
     </task>
     <option name="localTasksCounter" value="30" />
     <servers />
@@ -582,8 +591,7 @@
     <MESSAGE value="restored GameController" />
     <MESSAGE value="displayed info on board" />
     <MESSAGE value="Gameboard updates info as game is played" />
-    <MESSAGE value="Gameboard visual updates" />
-    <option name="LAST_COMMIT_MESSAGE" value="Gameboard visual updates" />
+    <option name="LAST_COMMIT_MESSAGE" value="Gameboard updates info as game is played" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -598,8 +606,6 @@
     <watches-manager>
       <configuration name="PythonConfigurationType">
         <watch expression="self.tile_info" language="Python" />
-        <watch expression="i" language="Python" />
-        <watch expression="self.tile_info[i]" language="Python" />
       </configuration>
     </watches-manager>
   </component>

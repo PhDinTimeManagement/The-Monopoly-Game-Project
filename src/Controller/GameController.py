@@ -227,22 +227,20 @@ class GameController:
             self.gui.gameplay_frame.hide_pay_fine_image(self.gui.game_canvas)
             #bind the buttons
             self.gui.game_canvas.tag_bind(self.gui.game_frame_click_areas[0], "<Button-1>", lambda e: self.roll_dice(player_this_turn))
-            # TODO <display highlight player_this_turn ONLY.>
-
 
     def determine_next_round(self, player_this_turn):
         """ Action is an array that stores the state of the Model after calling the 'determine_next_round' function """
-        action = GameLogic.determine_next_round(self.game_logic, player_this_turn, self.player_list,self.broke_list)
+        action, winners_list = GameLogic.determine_next_round(self.game_logic, player_this_turn, self.player_list,self.broke_list)
 
         if action[0] == "game_ends":
             print(action[1])
-            # TODO <display the winner>
+            self.update_all_game_info()
+            self.gui.gameplay_frame.display_winners_on_canvas(self.gui.game_canvas, winners_list)
             # wait for click event
             return
 
-        # TODO <Display the player for next round>
+        self.gui.gameplay_frame.highlight_current_player(self.gui.game_canvas, self.game_logic.get_player_turn())
         if action[0] == "jail_roll":
-            # TODO <display jail_roll only>
             self.bind_in_jail_roll_button(action[1])
             print("\nNext round, click roll\n")  # TODO del later
             if action[2] == "fine_payed":
@@ -252,7 +250,6 @@ class GameController:
             else:
                 print(action[1].get_name(), "is in Jail, and have no money to pay fine") #TODO del
         elif action[0] == "pay_fine_and_jail_roll":
-            # TODO <display jail_roll and pay fine>
             self.bind_in_jail_roll_button(action[1])
             self.bind_pay_fine_button(action[1])
             print("\nNext round, click roll\n")  # TODO del later
@@ -269,18 +266,19 @@ class GameController:
         if tile_type == "property":
             if tile.get_owner() is None:
                 can_buy = tile.can_buy(player_this_turn)
-                # TODO show button buy or not buy
                 print("buy(Yes) or not buy(No)") #TODO del later
-                self.bind_yes_buy_button() #show and bind the yes(buy) button
                 self.bind_no_buy_button() #show and bind the no(buy) button
+                if can_buy:
+                    self.bind_yes_buy_button() #show and bind the yes(buy) button
+                else:
+                    self.gui.gameplay_frame.show_not_enough_money(self.gui.game_canvas)
                 self.gui.wait_variable(self.click_var)  # waits for the click_var to update before allowing execution
                 if self.click_var.get() == "buy":
                     if can_buy:
                         action = "buy"
                         print(player_this_turn.get_name()," is now buying") #TODO del later
                     else:
-                        #TODO display not enough money
-                        print("Not enough money") #del
+                        print("Not enough money")
                         action = "not_buy"
                 elif self.click_var.get() == "not_buy":
                     action = "not_buy"
@@ -297,10 +295,10 @@ class GameController:
             # TODO update view
             pass
         elif tile_type == "go_to_jail": ######### Problem here, fix later parameter's problem
-            tile.player_landed(player_this_turn)
+            tile.player_landed(player_this_turn, self.board.get_jail_tile())
             # TODO jail animation
         elif tile_type == "income_tax":
-            tile.player_landed()
+            tile.player_landed(player_this_turn)
             # TODO tax animation
             pass
         elif tile_type == "free_parking":
@@ -338,7 +336,6 @@ class GameController:
 
         action = GameLogic.in_jail_roll(self.game_logic, player_this_turn, self.board)
         if action[0] == "show_pay_fine":
-            # TODO <show the pay fine button>
             self.bind_pay_fine_button(player_this_turn) #bind and show the pay_fine button
             self.gui.wait_variable(self.click_var)  # wait for pay fine button to be clicked
             #TODO display fine paid
@@ -353,6 +350,7 @@ class GameController:
         elif action[0] == 'not_move':
             pass  # del
         self.determine_next_round(player_this_turn)
+        self.update_all_game_info()
 
     def pay_fine(self, player_this_turn):
         # pay_fine_logic

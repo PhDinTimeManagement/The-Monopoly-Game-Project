@@ -1,3 +1,4 @@
+import time
 import tkinter as tk
 import os
 
@@ -107,8 +108,13 @@ class GameplayFrame(DisplayManager):
 
         # players information
         self.player_info = []
+        self.move_speed = 5
+        self.player_image_id = [
+            tk.PhotoImage(file= os.path.join(assets_base_path, "gameplay_frame/player_highlight"))
+            ]
 
         # Buttons Coordinates
+        self.half_screen_y = self.gui.image_height / 2
         self.roll_dice_x_pos = self.gui.image_width * 2 / 7
         self.roll_dice_y_pos = self.gui.image_height * 2 / 5 - 50
         self.save_quit_x_pos = self.gui.image_width * 11 / 14
@@ -120,6 +126,14 @@ class GameplayFrame(DisplayManager):
         self.no_x_pos = self.gui.image_width * 3 / 14
         self.no_y_pos = self.gui.image_height * 4 / 5 - 20
 
+        # Player INFO Coordinates
+        self.starting_y_pos = 200
+        self.bottom_y_border = 860
+        self.right_x_border = 950
+        self.left_x_border = 1430
+        self.global_increment = 0
+        self.player_highlight_image = tk.PhotoImage(file= os.path.join(assets_base_path, "gameplay_frame/player_highlight.png"))
+        self.player_highlighter_ID = None
 
 # ------------------------------------# Game Play Frame #------------------------------------#
     @staticmethod
@@ -216,36 +230,106 @@ class GameplayFrame(DisplayManager):
         self.display_player_info(canvas)
         self.display_tile_info(canvas)
 
+    def create_player_highlighter(self, canvas):
+        image_id = canvas.create_image(self.right_x_border - 40, self.starting_y_pos, anchor="center",
+                                       image=self.player_highlight_image)
+        return canvas, image_id
+
+    def display_winners_on_canvas(self, canvas, winners_list):
+        winner_message = winners_list[0]
+        list_size = len(winners_list)
+        if list_size > 1:
+            for i in range(1, list_size):
+                winner_message = f"{winner_message}\n{winners_list[i]}"
+        winner_message = f"{winner_message}\n WON THE GAME"
+        canvas.create_text(self.roll_dice_x_pos, self.half_screen_y + 50 , anchor="center", text=winner_message,
+                           font= ("Comic Sans MS", 20, "bold"), fill="#000000", justify="center")
+
+    def highlight_current_player(self, canvas, curr_player):
+        y_pos = self.starting_y_pos + (curr_player * self.global_increment)
+        canvas.coords(self.player_highlighter_ID, self.right_x_border - 40 , y_pos)
+
+    def show_not_enough_money(self, canvas):
+        canvas.create_text(self.yes_x_pos, self.yes_y_pos, anchor="center", text="NOT ENOUGH\nMONEY",
+                           font= ("Comic Sans MS", 20, "bold"), fill="#000000", justify="center")
+
+    def player_move_horizontal(self, canvas, player, direction):
+        totalMovement = 135
+        placeholder_id = self.player_image_id[player]
+        placeholder_coords = canvas.coords(placeholder_id)
+        increment = self.move_speed
+        if direction == "left":
+            while increment <= totalMovement:
+                canvas.coords(placeholder_id, placeholder_coords[0] + increment, placeholder_coords[1])
+                increment += self.move_speed
+                time.sleep(38)
+        else:
+            while increment <= totalMovement:
+                canvas.coords(placeholder_id, placeholder_coords[0] - increment, placeholder_coords[1])
+                increment += self.move_speed
+                time.sleep(38)
+
+    def player_move_vertical(self, canvas, player, placeholder_id, placeholder_coords, direction):
+        totalMovement = 135
+        increment = self.move_speed
+        if direction == "up":
+            while increment <= totalMovement:
+                canvas.coords(placeholder_id, placeholder_coords[0], placeholder_coords[1] - increment)
+                increment += self.move_speed
+                time.sleep(38)
+        else:
+            while increment <= totalMovement:
+                canvas.coords(placeholder_id, placeholder_coords[0], placeholder_coords[1] + increment)
+                increment += self.move_speed
+                time.sleep(38)
+
+    # TODO player movement 2
+    def player_movement(self, canvas, player, starting_pos, final_pos):
+        placeholder_id = self.player_image_id[player]
+        placeholder_coords = canvas.coords(placeholder_id)
+        pass
+
+
     def display_player_info(self, canvas):
-        starting_pos = 200
-        bottom_border = 860
-        right_border = 950
-        left_border = 1430
+        starting_pos = self.starting_y_pos
         total_players = len(self.player_info)
+        increment = (self.bottom_y_border - starting_pos) / total_players
+        self.global_increment = increment
         name_size = 22
         info_size = 20
-        increment = (bottom_border - starting_pos) / total_players
         for i in range(0, total_players):
             player_name = self.player_info[i][0]
-            player_balance = f"Balance: {self.player_info[i][1]} HKD"
-            player_position = f" is in {self.player_info[i][2]}"
+            player_balance = self.player_info[i][1]
+            player_balance_text = f"Balance: {player_balance} HKD"
+            player_position = self.player_info[i][2]
+            player_position_text = f" is in {player_position}"
             player_jail_status = self.player_info[i][3]
-            player_jail_turns = {self.player_info[i][4]}
+            player_jail_turns = self.player_info[i][4]
             player_total_properties = f"Properties: {self.player_info[i][5]}"
 
-            name_id = canvas.create_text(right_border, starting_pos, text= player_name, anchor="w",
-                               font=("Comic Sans MS", name_size, "bold"), fill="#000000")
+            # filters appropriate message based on balance and jail status
+            if player_balance >= 0:
+                if player_position == "Jail":
+                    if not player_jail_status:
+                        player_position_text = f"{player_position_text}, just visiting"
+                    else:
+                        player_position_text = f"{player_position_text}, {player_jail_turns} remaining"
+            else:
+                player_position_text = "HAS LOST"
+
+            name_id = canvas.create_text(self.right_x_border, starting_pos, text= player_name, anchor="w",
+                                         font=("Comic Sans MS", name_size, "bold"), fill="#000000")
 
             # calculates dimensions of name box
             name_box = canvas.bbox(name_id)
             name_width = name_box[2] - name_box[0] + 5
 
-            pos_id = canvas.create_text(right_border + name_width, starting_pos, text= player_position, anchor="w",
-                               font=("Comic Sans MS", info_size), fill="#000000")
-            balance_id = canvas.create_text(right_border, starting_pos + 40, text= player_balance, anchor="w",
-                               font=("Comic Sans MS", info_size), fill="#000000")
-            tot_prop_id = canvas.create_text(left_border, starting_pos + 40, text= player_total_properties, anchor="e",
-                               font=("Comic Sans MS", info_size), fill="#000000")
+            pos_id = canvas.create_text(self.right_x_border + name_width, starting_pos, text= player_position_text, anchor="w",
+                                        font=("Comic Sans MS", info_size), fill="#000000")
+            balance_id = canvas.create_text(self.right_x_border, starting_pos + 40, text= player_balance_text, anchor="w",
+                                            font=("Comic Sans MS", info_size), fill="#000000")
+            tot_prop_id = canvas.create_text(self.left_x_border, starting_pos + 40, text= player_total_properties, anchor="e",
+                                             font=("Comic Sans MS", info_size), fill="#000000")
             starting_pos += increment
             self.player_info_ID.append(name_id)
             self.player_info_ID.append(pos_id)
@@ -384,23 +468,26 @@ class GameplayFrame(DisplayManager):
         # PLAYER INFORMATION
         self.display_player_info(canvas)
 
+        # PLAYER HIGHLIGHTER
+        canvas, self.player_highlighter_ID = self.create_player_highlighter(canvas)
+
         # ROLL DICE BUTTON
-        roll_dice_click_area, canvas,self.roll_dice_image_id = self.create_button(canvas, self.roll_dice_x_pos, self.roll_dice_y_pos, self.roll_dice_image)
+        roll_dice_click_area, canvas, self.roll_dice_image_id = self.create_button(canvas, self.roll_dice_x_pos, self.roll_dice_y_pos, self.roll_dice_image)
         #canvas.tag_bind(roll_dice_click_area, "<Button-1>", lambda e: self.roll_dice())
 
         # SAVE QUIT BUTTON
-        save_quit_click_area, canvas,self.save_quit_image_id = self.create_button(canvas, self.save_quit_x_pos, self.save_quit_y_pos, self.save_quit_image)
+        save_quit_click_area, canvas, self.save_quit_image_id = self.create_button(canvas, self.save_quit_x_pos, self.save_quit_y_pos, self.save_quit_image)
         canvas.tag_bind(save_quit_click_area, "<Button-1>", lambda e:self.save_quit())
 
 
         # OTHER BUTTONS JUST FOR TESTING POS WONT BE SHOWN ALL THE TIME
-        pay_fine_click_area,canvas,self.pay_fine_image_id = self.show_pay_fine_button(canvas)
+        pay_fine_click_area,canvas, self.pay_fine_image_id = self.show_pay_fine_button(canvas)
 
         #return the id so that image can be hidden and shown
-        yes_click_area,canvas,self.yes_image_id = self.show_yes_button(canvas)
-        no_click_area, canvas,self.no_image_id = self.show_no_button(canvas)
+        yes_click_area,canvas, self.yes_image_id = self.show_yes_button(canvas)
+        no_click_area, canvas, self.no_image_id = self.show_no_button(canvas)
 
-        click_area = [roll_dice_click_area,yes_click_area,no_click_area,pay_fine_click_area] #TODO place other click area for other buttons
+        click_area = [roll_dice_click_area, yes_click_area, no_click_area, pay_fine_click_area] #TODO place other click area for other buttons
         return canvas, click_area
 
     #------------------------#
