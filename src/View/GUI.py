@@ -31,9 +31,11 @@ class GUI(tk.Tk):
         self.info_page_frame = InfoPageFrame(self)
         self.new_game_frame = NewGameFrame(self)
         self.load_game_frame = LoadGameFrame(self)
+        self.save_game_frame= SaveGameFrame(self)
         #TODO <Remove the controller object from the GameplayFrame>
         self.gameplay_frame = GameplayFrame(self)
         self.input_handler = InputHandler()
+
 
         # Set up frames
         self.show_main_menu()
@@ -41,6 +43,7 @@ class GUI(tk.Tk):
         self.show_new_game_frame()
         self.show_edit_board_frame()
         self.show_load_game_frame()
+        self.show_save_game_frame()
 
         # Initially show the main menu
         self.show_frame("main_menu")
@@ -74,6 +77,11 @@ class GUI(tk.Tk):
         frame = tk.Frame(self)
         self.frames["load_game"] = frame
         self.load_game_frame = self.load_game_frame.setup_load_game_frame(frame)
+
+    def show_save_game_frame(self):
+        frame = tk.Frame(self)
+        self.frames["save_game"] = frame
+        self.save_game_frame = self.save_game_frame.setup_save_game_frame(frame)
 
     # Enter the main game board
     def show_game_play_frame(self):
