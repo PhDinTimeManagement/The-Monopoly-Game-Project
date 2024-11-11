@@ -110,7 +110,7 @@ class GameplayFrame(DisplayManager):
         self.player_info = []
         self.move_speed = 5
         self.player_image_id = [
-            tk.PhotoImage(file= os.path.join(assets_base_path, "gameplay_frame/player_highlight"))
+            tk.PhotoImage(file= os.path.join(assets_base_path, "gameplay_frame/player_highlight.png"))
             ]
 
         # Buttons Coordinates
