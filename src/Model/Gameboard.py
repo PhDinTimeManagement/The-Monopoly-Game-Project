@@ -146,7 +146,8 @@ class Jail(Tile):
         self.jailed_players = jailed_players.copy()
 
     def free_player(self, player):
-        self.jailed_players.remove(player.get_name())
+        #TODO uncomment this, append player when arrested
+        #self.jailed_players.remove(player.get_name())
         player.set_in_jail_turns(0)
         player.set_jail_status(False)
         player.set_fine_payed(False)
@@ -249,7 +250,7 @@ class FreeParking(Tile):
 
 class Gameboard:
     def __init__(self):
-        self.tiles = [Go(1500),
+        self.tiles = [Go(150),
                       Property("Central", 1, 800, 90, None, "cyan"),
                       Property("Wan Chai", 2, 700, 65, None, "cyan"),
                       IncomeTax(3, 10),

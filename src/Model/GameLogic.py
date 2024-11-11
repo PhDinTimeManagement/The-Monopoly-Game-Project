@@ -3,6 +3,7 @@ import random
 #from src.Controller.GameController import GameController
 #from tests.test_GameLogic import game_logic
 
+game_length = 100
 
 class GameLogic:
     """a private variable stating the amount of fine needed to be paid for getting out of jail"""
@@ -99,6 +100,7 @@ class GameLogic:
     @staticmethod
     def pay_fine(game_logic,player):
         player.remove_money(game_logic.get_fine())
+
         if player.get_jail_status():
             player.set_fine_payed(True)
 
@@ -119,27 +121,24 @@ class GameLogic:
 
     @staticmethod
     def game_ends(player_list,game_round):
-        return game_round == 100 or len(player_list) == 1
+        return (game_round == game_length) or (len(player_list) == 1)
 
     @staticmethod
-    def display_winner(game_logic,players_list):
-        if game_logic.get_current_round() == 100:
-            winner_list = []
-            message = "The winner is: "
-            value = -1
-            for player in players_list:
-                if player.get_current_money() >= value:
-                    winner_list.append(player)
-                    message += f"{player.get_name()}, "
-                    value = player.get_current_money()
-            message = f"{message}with {winner_list[0].get_current_money()} money."
-            return message
-        elif len(players_list) == 1:
-            message = f"The winner is: {players_list[0].get_name()}, with {players_list[0].get_current_money()} money."
-            return message
+    def display_winner(game_logic, players_list):
+        winners_list = []
+        greatestBalance = -1
+        for player in players_list:
+            if player.get_current_money() > greatestBalance:
+                winners_list.clear()
+                winners_list.append(player.get_name())
+                greatestBalance = player.get_current_money()
+            elif player.get_current_money() == greatestBalance:
+                winners_list.append(player.get_name())
+        return f"The winner is: {winners_list} with {greatestBalance} HKD", winners_list
 
     @staticmethod
     def determine_next_round(game_logic,player_this_turn,player_list,broke_list):
+        extra_info = None
 
         #After each round check whether if the player_this_turn is broke
         if GameLogic.player_broke(player_this_turn):
@@ -152,9 +151,9 @@ class GameLogic:
         #After each round check if the round ends
         if GameLogic.game_ends(player_list, game_logic.get_current_round()):
             # display the message showing the winner, pass the message as a parameter to display
-            message = GameLogic.display_winner(game_logic,player_list)
+            message, winners_list = GameLogic.display_winner(game_logic,player_list)
             action = ["game_ends",message]
-            return action
+            return action, winners_list
 
         #Set the player's turn for next around (a variable from 0 to len(player_list) -1
         game_logic.set_player_turn(player_list)
@@ -175,12 +174,12 @@ class GameLogic:
             else:
                 #in other cases, the player can either choose to pay fine or to roll the dice, therefore return "pay_fine_and_jail_roll"
                 action = ["pay_fine_and_jail_roll",player_next_turn]
-            return action
+            return action, extra_info
 
         #if the player is not in jail, shows the roll button
         else:
             action = ["roll",player_next_turn]
-            return action
+            return action, extra_info
 
 
     #TODO del later after all the message display has been moved to the GUI

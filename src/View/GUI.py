@@ -7,8 +7,8 @@ from src.Controller.InputHandler import InputHandler
 class GUI(tk.Tk):
     def __init__(self):
         super().__init__()
+        self.game_canvas = None
         imgpath = os.path.join(os.path.dirname(__file__), "../../assets/main_menu_frame/startup_frame_background.png")
-
         self.background_image = tk.PhotoImage(file=imgpath)
         self.image_width = self.background_image.width()
         self.image_height = self.background_image.height()

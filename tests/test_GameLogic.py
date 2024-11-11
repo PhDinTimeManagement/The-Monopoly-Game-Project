@@ -106,13 +106,14 @@ class TestGameLogic(TestCase):
         players_list.clear()
         players_list.append(player1)
         player1.set_current_money(1000)
-        self.assertEqual(GameLogic.display_winner(game_logic, players_list),
-                         f"The winner is: Den, with {players_list[0].get_current_money()} money.")
+        message, winners_list = GameLogic.display_winner(game_logic, players_list)
+        self.assertEqual(message, f"The winner is: ['Den'] with {1000} HKD")
         players_list.append(player2)
+        players_list.append(player3)
+        player3.set_current_money(600)
         player2.set_current_money(1000)
-        game_logic.set_current_round(100)
-        self.assertEqual(GameLogic.display_winner(game_logic, players_list),
-                         f"The winner is: Den, Ben, with {players_list[0].get_current_money()} money.")
+        message, winners_list = GameLogic.display_winner(game_logic, players_list)
+        self.assertEqual(message,f"The winner is: ['Den', 'Ben'] with {1000} HKD")
 
     def test_get_player_turn(self):
         players_list.clear()
