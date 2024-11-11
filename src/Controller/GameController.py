@@ -184,11 +184,10 @@ class GameController:
     def show_save_quit_image(self):
         self.gui.gameplay_frame.show_save_quit_image(self.gui.game_canvas)
 
-    def bind_roll_button(self, action):
+    def bind_roll_button(self, player_this_turn):
         self.show_roll_image()
         self.gui.game_canvas.tag_bind(self.gui.game_frame_click_areas[0], "<Button-1>",
-                                      lambda e: self.roll_dice(
-                                          action[1]))  # selection player next turn to roll the dice
+                                      lambda e: self.roll_dice(player_this_turn))  # selection player next turn to roll the dice
 
     def bind_yes_buy_button(self):
         self.show_yes_buy_image()
@@ -284,8 +283,7 @@ class GameController:
             print("\nNext round, click roll\n")  # TODO del later
             print(action[1].get_name(), "Not yet paid and in Jail") #TODO del
         elif action[0] == "roll":
-            self.gui.gameplay_frame.show_roll_image(self.gui.game_canvas)
-            self.gui.game_canvas.tag_bind(self.gui.game_frame_click_areas[0], "<Button-1>", lambda e: self.roll_dice(action[1])) #selection player next turn to roll the dice
+            self.bind_roll_button(action[1]) #selection player next turn to roll the dice
             print("Current Money: ",player_this_turn.get_current_money()) #TODO del later
             print("\nNext round,", action[1].get_name(),"'s turn. click roll\n") #TODO del later
 
@@ -295,10 +293,12 @@ class GameController:
         if tile_type == "property":
             if tile.get_owner() is None:
                 can_buy = tile.can_buy(player_this_turn)
-                # TODO show button buy or not buy
-                print("buy(Yes) or not buy(No)") #TODO del later
-                self.bind_yes_buy_button() #show and bind the yes(buy) button
+                print("buy(Yes) or not buy(No)")
                 self.bind_no_buy_button() #show and bind the no(buy) button
+                if can_buy:
+                    self.bind_yes_buy_button() #show and bind the yes(buy) button
+                else:
+                    self.gui.gameplay_frame.show_not_enough_money(self.gui.game_canvas)
                 self.gui.wait_variable(self.click_var)  # waits for the click_var to update before allowing execution
                 if self.click_var.get() == "buy":
                     if can_buy:
