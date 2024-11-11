@@ -208,11 +208,7 @@ class GameLogic:
                 action[1] = landed_tile
             return action
         else:
-            flag = False
-            if GameLogic.same_double(dice_roll1, dice_roll2) or (
-                    GameLogic.player_second_round(player_this_turn) and player_this_turn.get_fine_payed()):
-                flag = True
-            if flag:
+            if GameLogic.same_double(dice_roll1, dice_roll2) or player_this_turn.get_fine_payed():
                 board.tiles[player_this_turn.get_current_position()].free_player(player_this_turn)
                 landed_tile = GameLogic.player_move(dice_roll1 + dice_roll2, player_this_turn, board)
                 action = ["move", landed_tile]

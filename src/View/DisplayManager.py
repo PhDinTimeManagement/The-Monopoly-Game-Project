@@ -49,6 +49,7 @@ class GameplayFrame(DisplayManager):
         self.pay_fine_image = tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/pay_fine.png"))
         self.yes_image = tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/yes.png"))
         self.no_image = tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/no.png"))
+        self.player_info_ID = []
 
         # Gameboard tiles colors empty list, will get loaded in by the Controller
         self.tile_colors = []
@@ -107,8 +108,14 @@ class GameplayFrame(DisplayManager):
 
         # players information
         self.player_info = []
+        self.move_speed = 5
+        self.no_money_ID = None
+        self.player_image_id = [
+            tk.PhotoImage(file= os.path.join(assets_base_path, "gameplay_frame/player_highlight.png"))
+            ]
 
         # Buttons Coordinates
+        self.half_screen_y = self.gui.image_height / 2
         self.roll_dice_x_pos = self.gui.image_width * 2 / 7
         self.roll_dice_y_pos = self.gui.image_height * 2 / 5 - 50
         self.save_quit_x_pos = self.gui.image_width * 11 / 14
@@ -120,6 +127,14 @@ class GameplayFrame(DisplayManager):
         self.no_x_pos = self.gui.image_width * 3 / 14
         self.no_y_pos = self.gui.image_height * 4 / 5 - 20
 
+        # Player INFO Coordinates
+        self.starting_y_pos = 200
+        self.bottom_y_border = 860
+        self.right_x_border = 950
+        self.left_x_border = 1430
+        self.global_increment = 0
+        self.player_highlight_image = tk.PhotoImage(file= os.path.join(assets_base_path, "gameplay_frame/player_highlight.png"))
+        self.player_highlighter_ID = None
 
 # ------------------------------------# Game Play Frame #------------------------------------#
     @staticmethod
@@ -144,10 +159,11 @@ class GameplayFrame(DisplayManager):
         elif len(rent) > 10:
             rent_size -= 2
 
-        if len(owner) > 12:
-            owner_size -= 4
-        elif len(owner) > 10:
-            owner_size -= 2
+        if owner:
+            if len(owner) > 11:
+                owner_size -= 4
+            elif len(owner) >= 9:
+                owner_size -= 2
 
         return name_size, price_size, rent_size, owner_size
 
@@ -188,12 +204,10 @@ class GameplayFrame(DisplayManager):
 
     def show_pay_fine_button(self, canvas):
         pay_fine_click_area, canvas, pay_fine_image_id = self.create_button(canvas, self.pay_fine_x_pos, self.pay_fine_y_pos, self.pay_fine_image)
-        # TODO BIND FUNCTION canvas.tag_bind(pay_fine_click_area, "<Button-1>", lambda e: )
         return pay_fine_click_area, canvas, pay_fine_image_id
 
     def show_yes_button(self, canvas):
         yes_click_area, canvas, yes_button_image_id = self.create_button(canvas, self.yes_x_pos, self.yes_y_pos, self.yes_image)
-        # TODO BIND FUNCTION canvas.tag_bind(yes_click_area, "<Button-1>", lambda e: )
         return yes_click_area,canvas,yes_button_image_id
 
     def show_no_button(self, canvas):
@@ -201,37 +215,129 @@ class GameplayFrame(DisplayManager):
         # TODO BIND FUNCTION canvas.tag_bind(no_click_area, "<Button-1>", lambda e: )
         return no_click_area,canvas, no_button_image_id
 
+    def destroy_old_info(self, canvas):
+        # destroys old tile_info widgets
+        for i in [1, 2, 4, 6, 7, 9, 11, 13, 14, 16, 17, 19]:
+            for j in range(5, 9):
+                canvas.delete(self.tile_info[i][j])
+
+        # destroys player_info widgets
+        for i in range(0, len(self.player_info_ID)):
+            canvas.delete(self.player_info_ID[i])
+
+    def update_display_info(self, canvas):
+        self.destroy_old_info(canvas)
+        self.display_player_info(canvas)
+        self.display_tile_info(canvas)
+
+    def create_player_highlighter(self, canvas):
+        image_id = canvas.create_image(self.right_x_border - 40, self.starting_y_pos, anchor="center",
+                                       image=self.player_highlight_image)
+        return canvas, image_id
+
+    def display_winners_on_canvas(self, canvas, winners_list):
+        winner_message = winners_list[0]
+        list_size = len(winners_list)
+        if list_size > 1:
+            for i in range(1, list_size):
+                winner_message = f"{winner_message}\n{winners_list[i]}"
+        winner_message = f"{winner_message}\n WON THE GAME"
+        canvas.create_text(self.roll_dice_x_pos, self.half_screen_y + 50 , anchor="center", text=winner_message,
+                           font= ("Comic Sans MS", 20, "bold"), fill="#000000", justify="center")
+
+    def highlight_current_player(self, canvas, curr_player):
+        y_pos = self.starting_y_pos + (curr_player * self.global_increment)
+        canvas.coords(self.player_highlighter_ID, self.right_x_border - 40 , y_pos)
+
+    def show_not_enough_money(self, canvas):
+        self.no_money_ID = canvas.create_text(self.yes_x_pos, self.yes_y_pos, anchor="center", text="NOT ENOUGH\nMONEY",
+                           font= ("Comic Sans MS", 20, "bold"), fill="#000000", justify="center")
+
+    def delete_not_enough_money(self, canvas):
+        canvas.delete(self.no_money_ID)
+
+    def player_move_horizontal(self, canvas, player, direction):
+        totalMovement = 135
+        placeholder_id = self.player_image_id[player]
+        placeholder_coords = canvas.coords(placeholder_id)
+        increment = self.move_speed
+        if direction == "left":
+            while increment <= totalMovement:
+                canvas.coords(placeholder_id, placeholder_coords[0] + increment, placeholder_coords[1])
+                increment += self.move_speed
+                time.sleep(38)
+        else:
+            while increment <= totalMovement:
+                canvas.coords(placeholder_id, placeholder_coords[0] - increment, placeholder_coords[1])
+                increment += self.move_speed
+                time.sleep(38)
+
+    def player_move_vertical(self, canvas, player, placeholder_id, placeholder_coords, direction):
+        totalMovement = 135
+        increment = self.move_speed
+        if direction == "up":
+            while increment <= totalMovement:
+                canvas.coords(placeholder_id, placeholder_coords[0], placeholder_coords[1] - increment)
+                increment += self.move_speed
+                time.sleep(38)
+        else:
+            while increment <= totalMovement:
+                canvas.coords(placeholder_id, placeholder_coords[0], placeholder_coords[1] + increment)
+                increment += self.move_speed
+                time.sleep(38)
+
+    # TODO player movement 2
+    def player_movement(self, canvas, player, starting_pos, final_pos):
+        placeholder_id = self.player_image_id[player]
+        placeholder_coords = canvas.coords(placeholder_id)
+        pass
+
+
     def display_player_info(self, canvas):
-        starting_pos = 200
-        bottom_border = 860
-        right_border = 950
-        left_border = 1430
+        starting_pos = self.starting_y_pos
         total_players = len(self.player_info)
+        increment = (self.bottom_y_border - starting_pos) / total_players
+        self.global_increment = increment
         name_size = 22
         info_size = 20
-        increment = (bottom_border - starting_pos) / total_players
         for i in range(0, total_players):
             player_name = self.player_info[i][0]
-            player_balance = f"Balance: {self.player_info[i][1]} HKD"
-            player_position = f" is in {self.player_info[i][2]}"
+            player_balance = self.player_info[i][1]
+            player_balance_text = f"Balance: {player_balance} HKD"
+            player_position = self.player_info[i][2]
+            player_position_text = f" is in {player_position}"
             player_jail_status = self.player_info[i][3]
-            player_jail_turns = {self.player_info[i][4]}
+            player_jail_turns = self.player_info[i][4]
             player_total_properties = f"Properties: {self.player_info[i][5]}"
 
-            name_id = canvas.create_text(right_border, starting_pos, text= player_name, anchor="w",
-                               font=("Comic Sans MS", name_size, "bold"), fill="#000000")
+            # filters appropriate message based on balance and jail status
+            if player_balance >= 0:
+                if player_position == "Jail":
+                    if not player_jail_status:
+                        player_position_text = f"{player_position_text}, just visiting"
+                    else:
+                        player_position_text = f"{player_position_text}, {player_jail_turns} remaining"
+            else:
+                player_position_text = "HAS LOST"
+
+            name_id = canvas.create_text(self.right_x_border, starting_pos, text= player_name, anchor="w",
+                                         font=("Comic Sans MS", name_size, "bold"), fill="#000000")
 
             # calculates dimensions of name box
             name_box = canvas.bbox(name_id)
             name_width = name_box[2] - name_box[0] + 5
 
-            canvas.create_text(right_border + name_width, starting_pos, text= player_position, anchor="w",
-                               font=("Comic Sans MS", info_size), fill="#000000")
-            canvas.create_text(right_border, starting_pos + 40, text= player_balance, anchor="w",
-                               font=("Comic Sans MS", info_size), fill="#000000")
-            canvas.create_text(left_border, starting_pos + 40, text= player_total_properties, anchor="e",
-                               font=("Comic Sans MS", info_size), fill="#000000")
+            pos_id = canvas.create_text(self.right_x_border + name_width, starting_pos, text= player_position_text, anchor="w",
+                                        font=("Comic Sans MS", info_size), fill="#000000")
+            balance_id = canvas.create_text(self.right_x_border, starting_pos + 40, text= player_balance_text, anchor="w",
+                                            font=("Comic Sans MS", info_size), fill="#000000")
+            tot_prop_id = canvas.create_text(self.left_x_border, starting_pos + 40, text= player_total_properties, anchor="e",
+                                             font=("Comic Sans MS", info_size), fill="#000000")
             starting_pos += increment
+            self.player_info_ID.append(name_id)
+            self.player_info_ID.append(pos_id)
+            self.player_info_ID.append(balance_id)
+            self.player_info_ID.append(tot_prop_id)
 
     #----------Handles hiding the button IMAGE in the canvas----------#
     def hide_yes_image(self,canvas):
@@ -245,6 +351,9 @@ class GameplayFrame(DisplayManager):
 
     def hide_pay_fine_image(self,canvas):
         canvas.coords(self.pay_fine_image_id,-100,-100)
+
+    def hide_save_quit_image(self,canvas):
+        canvas.coords(self.save_quit_image_id,-100,-100)
 
     #------------------------------------------------------------------#
 
@@ -261,6 +370,9 @@ class GameplayFrame(DisplayManager):
 
     def show_pay_fine_image(self,canvas):
         canvas.coords(self.pay_fine_image_id, self.pay_fine_x_pos, self.pay_fine_y_pos)
+
+    def show_save_quit_image(self,canvas):
+        canvas.coords(self.save_quit_image_id,self.save_quit_x_pos, self.save_quit_y_pos)
 
     # ------------------------------------------------------------------#
 
@@ -301,9 +413,8 @@ class GameplayFrame(DisplayManager):
             owner_y_pos = self.__tile_info_coord[i][7]
 
             # gets owner name only when there is a player object
-            if tile_owner is None:
-                # tile_owner = tile_owner.get_name()
-                tile_owner = "test owner"
+            if tile_owner:
+                tile_owner = tile_owner.get_name()
 
             # calculates text sizes
             text_name_size, text_price_size, text_rent_size, text_owner_size = self.set_appropriate_text_dimension(
@@ -366,23 +477,26 @@ class GameplayFrame(DisplayManager):
         # PLAYER INFORMATION
         self.display_player_info(canvas)
 
+        # PLAYER HIGHLIGHTER
+        canvas, self.player_highlighter_ID = self.create_player_highlighter(canvas)
+
         # ROLL DICE BUTTON
-        roll_dice_click_area, canvas,self.roll_dice_image_id = self.create_button(canvas, self.roll_dice_x_pos, self.roll_dice_y_pos, self.roll_dice_image)
+        roll_dice_click_area, canvas, self.roll_dice_image_id = self.create_button(canvas, self.roll_dice_x_pos, self.roll_dice_y_pos, self.roll_dice_image)
         #canvas.tag_bind(roll_dice_click_area, "<Button-1>", lambda e: self.roll_dice())
 
         # SAVE QUIT BUTTON
-        save_quit_click_area, canvas,self.save_quit_image_id = self.create_button(canvas, self.save_quit_x_pos, self.save_quit_y_pos, self.save_quit_image)
-        canvas.tag_bind(save_quit_click_area, "<Button-1>", lambda e:self.save_quit())
+        save_quit_click_area, canvas, self.save_quit_image_id = self.create_button(canvas, self.save_quit_x_pos, self.save_quit_y_pos, self.save_quit_image)
+        #canvas.tag_bind(save_quit_click_area, "<Button-1>", lambda e:self.save_quit())
 
 
         # OTHER BUTTONS JUST FOR TESTING POS WONT BE SHOWN ALL THE TIME
-        pay_fine_click_area,canvas,self.pay_fine_image_id = self.show_pay_fine_button(canvas)
+        pay_fine_click_area,canvas, self.pay_fine_image_id = self.show_pay_fine_button(canvas)
 
         #return the id so that image can be hidden and shown
-        yes_click_area,canvas,self.yes_image_id = self.show_yes_button(canvas)
-        no_click_area, canvas,self.no_image_id = self.show_no_button(canvas)
+        yes_click_area,canvas, self.yes_image_id = self.show_yes_button(canvas)
+        no_click_area, canvas, self.no_image_id = self.show_no_button(canvas)
 
-        click_area = [roll_dice_click_area,yes_click_area,no_click_area,pay_fine_click_area] #TODO place other click area for other buttons
+        click_area = [roll_dice_click_area, yes_click_area, no_click_area, pay_fine_click_area, save_quit_click_area] #TODO place other click area for other buttons
         return canvas, click_area
 
     #------------------------#
@@ -896,10 +1010,13 @@ class LoadGameFrame(DisplayManager):
 
         return canvas
 
-    def select_saved_game_slot(self, canvas, idx):
-        # Clear any previously selected slots by resetting all slots to their original images
+    def clear_selected_slots(self,canvas):
         for i, slot_id in enumerate(self.slot_item_ids):
             canvas.itemconfig(slot_id, image=self.saved_game_slots[i])
+
+    def select_saved_game_slot(self, canvas, idx):
+        # Clear any previously selected slots by resetting all slots to their original images
+        self.clear_selected_slots(canvas)
 
         # Update only the selected slot with the highlight image
         canvas.itemconfig(self.slot_item_ids[idx], image=self.selected_saved_game_slot_image)
@@ -980,6 +1097,11 @@ class SaveGameFrame(DisplayManager):
         self.save_base_path = os.path.join(os.path.dirname(__file__), "../../saves/games")
         self.display_text=[]
 
+        # ----------- buttons position and initialization -----------#
+        self.delete_button_x, self.delete_button_y = self.gui.image_width // 3, 835
+        self.save_button_x, self.save_button_y = self.gui.image_width * 2 // 3, 835
+
+
     # ------------------------------------# Load Game Frame #------------------------------------#
 
     def setup_save_game_frame(self, frame):
@@ -1002,7 +1124,16 @@ class SaveGameFrame(DisplayManager):
             self.saved_game_image,
             self.saved_game_image
         ]
+        # create delete and save button and hide them from screen first
+        canvas, delete_click_area = self.create_delete_button(canvas)
+        canvas, save_click_area = self.create_save_button(canvas)
 
+        # hide them
+        self.hide_delete_button(canvas)
+        self.hide_save_button(canvas)
+
+        # save and delete clickable area, the first is the save button, second is the delete button
+        save_delete_click_area = [save_click_area, delete_click_area]
         # Display saved game slots
         for i, slot_image in enumerate(self.saved_game_slots):
             slot_x, slot_y = self.saved_game_slot_positions[i]  # Unpack coordinates
@@ -1019,79 +1150,122 @@ class SaveGameFrame(DisplayManager):
             # Bind click event to select the slot
             canvas.tag_bind(clickable_area, "<Button-1>",
                             lambda e, idx=i: self.select_saved_game_slot(canvas, idx))
+
         # Display the back button to return to the main menu
         back_button = canvas.create_image(50, 50, image=self.back_arrow_image)
-        canvas.tag_bind(back_button, "<Button-1>", lambda e: self.gui.show_frame("gameplay"))
+        canvas.tag_bind(back_button, "<Button-1>", lambda e: self.back_button(canvas))
 
         self.show_save_file(canvas)
 
-        return canvas
+        return canvas, save_delete_click_area  # return to GUI, and the Controller will do operations on it
 
-    def select_saved_game_slot(self, canvas, idx):
-        # Clear any previously selected slots by resetting all slots to their original images
+    # The functionality of a back button in game saving page
+    def back_button(self, canvas):
+
+        # Hide all delete and save button before going back to gameplay page
+        self.hide_delete_button(canvas)
+        self.hide_save_button(canvas)
+        self.clear_selected_slots(canvas)
+        self.gui.show_frame("gameplay")
+
+    # ------------------------------------ Functions for Creating Delete and Save Button------------------------------------#
+    def create_rectangle(self,canvas,x,y):
+
+        clickable_area = canvas.create_rectangle(
+            x - (0.5 * self.save_button_image.width()),
+            y - (0.5 * self.save_button_image.height()),
+            x + (0.5 * self.save_button_image.width()),
+            y + (0.5 * self.save_button_image.height()),
+            outline="", fill=""
+        )
+        return clickable_area
+
+    def create_delete_button(self,canvas):
+        # if self.delete_button_id is not None:
+        #     canvas.delete(self.delete_button_id)
+
+        self.delete_button_id = canvas.create_image(self.delete_button_x, self.delete_button_y,
+                                                           image=self.delete_button_image)
+        delete_clickable_area = self.create_rectangle(canvas,self.delete_button_x,self.delete_button_y)
+
+        # TODO Move this delete to controller later, handling delete file. There will be problem putting this bind here. Will fix later
+        canvas.tag_bind(delete_clickable_area, "<Button-1>", lambda e: self.delete_data(canvas))
+
+        return canvas,delete_clickable_area
+
+    def create_save_button(self,canvas):
+        # save button
+        # if self.save_button_id is not None:
+        #     canvas.delete(self.save_button_id)
+        self.save_button_id = canvas.create_image(self.save_button_x, self.save_button_y,
+                                                  image=self.save_button_image)
+        save_clickable_area = self.create_rectangle(canvas,self.save_button_x,self.save_button_y)
+
+        return canvas,save_clickable_area
+
+    # -----------------------------------------------------------------------------------------------------------------------#
+
+
+
+    # ------------------------------------ Functions for Showing Delete and Save Button--------------------------------------#
+    def show_delete_button(self,canvas):
+        canvas.coords(self.delete_button_id, self.delete_button_x, self.delete_button_y)
+
+    def show_save_button(self,canvas):
+        canvas.coords(self.save_button_id, self.save_button_x, self.save_button_y)
+
+    # -----------------------------------------------------------------------------------------------------------------------#
+
+
+
+    # ------------------------------------ Functions for Hiding Delete and Save Button---------------------------------------#
+    def hide_delete_button(self,canvas):
+        canvas.coords(self.delete_button_id, -100,-100)
+
+    def hide_save_button(self,canvas):
+        canvas.coords(self.save_button_id, -100,-100)
+    # -----------------------------------------------------------------------------------------------------------------------#
+
+
+    def clear_selected_slots(self,canvas):
         for i, slot_id in enumerate(self.slot_item_ids):
             canvas.itemconfig(slot_id, image=self.saved_game_slots[i])
+
+    def select_saved_game_slot(self, canvas, idx):
+
+        # Clear any previously selected slots by resetting all slots to their original images
+        self.clear_selected_slots(canvas)
 
         # Update only the selected slot with the highlight image
         canvas.itemconfig(self.slot_item_ids[idx], image=self.selected_saved_game_image)
         self.gui.selected_saved_game_slot = idx
 
-        #delete button
-        if self.delete_button_id is not None:
-            canvas.delete(self.delete_button_id)
-        delete_button_x, delete_button_y = self.gui.image_width // 3, 835
-        self.delete_button_id = canvas.create_image(delete_button_x, delete_button_y,
-                                                           image=self.delete_button_image)
-        delete_clickable_area = canvas.create_rectangle(
-            delete_button_x - (0.5 * self.save_button_image.width()),
-            delete_button_y - (0.5 * self.save_button_image.height()),
-            delete_button_x + (0.5 * self.save_button_image.width()),
-            delete_button_y + (0.5 * self.save_button_image.height()),
-            outline="", fill=""
-        )
+        #show delete button
+        self.show_delete_button(canvas)
 
-        # TODO Once the button is clicked, pass the json file name to the controller to load the game board
-        canvas.tag_bind(delete_clickable_area, "<Button-1>", lambda e: self.delete_data(canvas))
-        #delete button end
-
-        # save button
-        if self.save_button_id is not None:
-            canvas.delete(self.save_button_id)
-        save_button_x, save_button_y = self.gui.image_width*2 // 3, 835
-        self.save_button_id = canvas.create_image(save_button_x, save_button_y,
-                                                           image=self.save_button_image)
-        save_clickable_area = canvas.create_rectangle(
-            save_button_x - (0.5 * self.save_button_image.width()),
-            save_button_y - (0.5 * self.save_button_image.height()),
-            save_button_x + (0.5 * self.save_button_image.width()),
-            save_button_y + (0.5 * self.save_button_image.height()),
-            outline="", fill=""
-        )
-
-        # TODO Once the button is clicked, pass the json file name to the controller to load the game board
-        canvas.tag_bind(save_clickable_area, "<Button-1>", lambda e: self.save_data(canvas))
-        #save button end
+        # show save button
+        self.show_save_button(canvas)
 
         return canvas
 
-    def delete_data(self,canvas):
-        if self.gui.selected_saved_game_slot<len(self.display_text):
-            filepath=os.path.join(self.save_base_path,self.display_text[self.gui.selected_saved_game_slot][2])
+    def delete_data(self, canvas):
+        if self.gui.selected_saved_game_slot < len(self.display_text):
+            filepath = os.path.join(self.save_base_path, self.display_text[self.gui.selected_saved_game_slot][2])
             os.remove(filepath)
         self.show_save_file(canvas)
 
-    def save_data(self,canvas):
-        from src.Controller.GameController import GameController
-        g=GameController(self.gui)
-        g.save_game("Save"+str(len(self.display_text)))
-        g.save_gameboard("Save"+str(len(self.display_text)))
+    def save_data(self, canvas):
+        # from src.Controller.GameController import GameController
+        # g=GameController(self.gui)
+        # g.save_game("Save"+str(len(self.display_text)))
+        # g.save_gameboard("Save"+str(len(self.display_text)))
         self.show_save_file(canvas)
 
-    def show_save_file(self,canvas):
+    def show_save_file(self, canvas):
         for obj in self.display_text:
             for i in range(2):
                 canvas.delete(obj[i])
-        self.display_text=[]
+        self.display_text = []
 
         file_info = []
         for filename in os.listdir(self.save_base_path):
@@ -1101,15 +1275,18 @@ class SaveGameFrame(DisplayManager):
 
         for i in range(5):
             if i < len(file_info):
-                text1=canvas.create_text(self.gui.image_width // 3, self.saved_game_slot_positions[i][1], text=file_info[i][0], anchor="center",
-                                   font=("Comic Sans MS", 16), fill="#000000")
-                text2=canvas.create_text(self.gui.image_width * 19 // 30, self.saved_game_slot_positions[i][1], text=file_info[i][1], anchor="center",
-                                   font=("Comic Sans MS", 16), fill="#000000")
-                self.display_text.append([text1,text2,file_info[i][0]])
+                text1 = canvas.create_text(self.gui.image_width // 3, self.saved_game_slot_positions[i][1],
+                                           text=file_info[i][0], anchor="center",
+                                           font=("Comic Sans MS", 16), fill="#000000")
+                text2 = canvas.create_text(self.gui.image_width * 19 // 30, self.saved_game_slot_positions[i][1],
+                                           text=file_info[i][1], anchor="center",
+                                           font=("Comic Sans MS", 16), fill="#000000")
+                self.display_text.append([text1, text2, file_info[i][0]])
                 canvas.tag_bind(text1, "<Button-1>",
                                 lambda e, idx=i: self.select_saved_game_slot(canvas, idx))
                 canvas.tag_bind(text2, "<Button-1>",
                                 lambda e, idx=i: self.select_saved_game_slot(canvas, idx))
+
 
 class InfoPageFrame(DisplayManager):
     def __init__(self, gui):
