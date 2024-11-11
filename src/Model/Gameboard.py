@@ -146,7 +146,8 @@ class Jail(Tile):
         self.jailed_players = jailed_players.copy()
 
     def free_player(self, player):
-        self.jailed_players.remove(player.get_name())
+        #TODO uncomment this, append player when arrested
+        #self.jailed_players.remove(player.get_name())
         player.set_in_jail_turns(0)
         player.set_jail_status(False)
         player.set_fine_payed(False)

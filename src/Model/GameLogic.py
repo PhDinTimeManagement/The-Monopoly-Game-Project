@@ -100,6 +100,7 @@ class GameLogic:
     @staticmethod
     def pay_fine(game_logic,player):
         player.remove_money(game_logic.get_fine())
+
         if player.get_jail_status():
             player.set_fine_payed(True)
 

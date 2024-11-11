@@ -110,6 +110,7 @@ class GameplayFrame(DisplayManager):
         # players information
         self.player_info = []
         self.move_speed = 5
+        self.no_money_ID = None
         self.player_image_id = [
             tk.PhotoImage(file= os.path.join(assets_base_path, "gameplay_frame/player_highlight.png"))
             ]
@@ -252,8 +253,11 @@ class GameplayFrame(DisplayManager):
         canvas.coords(self.player_highlighter_ID, self.right_x_border - 40 , y_pos)
 
     def show_not_enough_money(self, canvas):
-        canvas.create_text(self.yes_x_pos, self.yes_y_pos, anchor="center", text="NOT ENOUGH\nMONEY",
+        self.no_money_ID = canvas.create_text(self.yes_x_pos, self.yes_y_pos, anchor="center", text="NOT ENOUGH\nMONEY",
                            font= ("Comic Sans MS", 20, "bold"), fill="#000000", justify="center")
+
+    def delete_not_enough_money(self, canvas):
+        canvas.delete(self.no_money_ID)
 
     def player_move_horizontal(self, canvas, player, direction):
         totalMovement = 135
