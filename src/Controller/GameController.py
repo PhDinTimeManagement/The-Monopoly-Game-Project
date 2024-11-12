@@ -339,19 +339,36 @@ class GameController:
 
     """This function is called after pressing the 'Roll' button in the game window."""
 
-    def roll_dice(self,player_this_turn):
-        self.unbind_roll_button() #unbind the roll button
-        dice_roll1, dice_roll2 = GameLogic.roll_dice()
-        tile = GameLogic.player_move(dice_roll1 + dice_roll2, player_this_turn, self.board)
-        #player_this_turn = self.get_player_list()[self.game_logic.get_player_turn()]
-        print(player_this_turn.get_name(), "is Rolling, and rolled: ", dice_roll1+dice_roll2)#TODO del this line later
-        print("Money: ",player_this_turn.get_current_money())#TODO del this line later
-        print("Square:",player_this_turn.get_current_position())#TODO del this line later
-        print(tile.get_tile_name()) #TODO del
-        # TODO<Call function to display the animation in the view>
-        self.update_all_game_info()
-        self.land_and_complete_round(tile, player_this_turn)
-        self.determine_next_round(player_this_turn)
+    # def roll_dice(self,player_this_turn):
+    #     self.unbind_roll_button() #unbind the roll button
+    #     dice_roll1, dice_roll2 = GameLogic.roll_dice()
+    #     tile = GameLogic.player_move(dice_roll1 + dice_roll2, player_this_turn, self.board)
+    #     #player_this_turn = self.get_player_list()[self.game_logic.get_player_turn()]
+    #     print(player_this_turn.get_name(), "is Rolling, and rolled: ", dice_roll1+dice_roll2)#TODO del this line later
+    #     print("Money: ",player_this_turn.get_current_money()) #TODO del this line later
+    #     print("Square:",player_this_turn.get_current_position()) #TODO del this line later
+    #     print(tile.get_tile_name()) #TODO del
+    #     # TODO<Call function to display the animation in the view>
+    #     self.update_all_game_info()
+    #     self.land_and_complete_round(tile, player_this_turn)
+    #     self.determine_next_round(player_this_turn)
+
+    def roll_dice(self, player_this_turn):
+        self.unbind_roll_button()  # Unbind the roll button
+
+        # Handle the result of the dice roll animation
+        def on_dice_roll(dice_result):
+            tile = GameLogic.player_move(dice_result, player_this_turn, self.board)
+
+            # Continue game logic after dice roll result
+            print(f"{player_this_turn.get_name()} rolled a {dice_result}")
+            self.update_all_game_info()
+            self.land_and_complete_round(tile, player_this_turn)
+            self.determine_next_round(player_this_turn)
+
+        # Start the dice animation and pass the result to the callback
+        self.gui.gameplay_frame.roll_dice_animation(self.gui.game_canvas, self.gui.image_width * 2 / 7,
+                                                    self.gui.image_height * 2 / 5 + 120, on_dice_roll)
 
     # Roll function for player in jail
     def in_jail_roll(self, player_this_turn):

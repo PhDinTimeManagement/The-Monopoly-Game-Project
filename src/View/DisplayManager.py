@@ -1,6 +1,7 @@
 import tkinter as tk
 import os
 import time
+from random import choice
 
 # Base path for assets
 assets_base_path = os.path.join(os.path.dirname(__file__), "../../assets")
@@ -50,6 +51,30 @@ class GameplayFrame(DisplayManager):
         self.yes_image = tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/yes.png"))
         self.no_image = tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/no.png"))
         self.player_info_ID = []
+
+        # Dice animation frames
+        self.dice_animation_frames = [
+            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/dice/animation/dice_animation_frame_1.png")),
+            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/dice/animation/dice_animation_frame_2.png")),
+            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/dice/animation/dice_animation_frame_3.png")),
+            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/dice/animation/dice_animation_frame_4.png")),
+            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/dice/animation/dice_animation_frame_5.png")),
+            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/dice/animation/dice_animation_frame_6.png")),
+            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/dice/animation/dice_animation_frame_7.png")),
+            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/dice/animation/dice_animation_frame_8.png"))
+        ]
+
+        # Dice result images
+        self.dice_result_images = [
+            (tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/dice/results/dice_side_view_result_1.png")), 1),
+            (tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/dice/results/dice_top_down_result_1.png")), 1),
+            (tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/dice/results/dice_side_view_result_2.png")), 2),
+            (tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/dice/results/dice_top_down_result_2.png")), 2),
+            (tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/dice/results/dice_side_view_result_3.png")), 3),
+            (tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/dice/results/dice_top_down_result_3.png")), 3),
+            (tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/dice/results/dice_side_view_result_4.png")), 4),
+            (tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/dice/results/dice_top_down_result_4.png")), 4)
+        ]
 
         # Gameboard tiles colors empty list, will get loaded in by the Controller
         self.tile_colors = []
@@ -183,9 +208,22 @@ class GameplayFrame(DisplayManager):
     def get_color_coord(self, pos):
         return self.__tile_color_coord[pos]
 
-    #for testing
-    def roll_dice(self):
-        print("Rolling dice...")
+    def roll_dice_animation(self, canvas, roll_dice_x_pos, roll_dice_y_pos, callback):
+        # Show each frame of the dice animation
+        def show_frame(frame_index):
+            if frame_index < len(self.dice_animation_frames):
+                canvas.delete("dice_animation")
+                canvas.create_image(roll_dice_x_pos, roll_dice_y_pos, image=self.dice_animation_frames[frame_index], anchor="center", tags="dice_animation")
+                self.gui.after(100, show_frame, frame_index + 1)  # Show next frame after 100 ms
+            else:
+                # After the animation, display a random dice result
+                result_image, dice_result = choice(self.dice_result_images)
+                canvas.delete("dice_animation")
+                canvas.create_image(roll_dice_x_pos, roll_dice_y_pos, image=result_image, anchor="center", tags="dice_animation")
+                callback(dice_result)  # Pass the dice result to the callback function
+
+        # Start the animation with the first frame
+        show_frame(0)
 
     #for testing
     def save_quit(self):
