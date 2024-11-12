@@ -1,6 +1,5 @@
 import random
 
-
 class Tile:
     """Parent class for all tiles"""
 
@@ -110,21 +109,27 @@ class Property(Tile):
             result = False
         return result, message
 
-    def pay_rent(self, player):
+    @staticmethod
+    def get_owner_obj(player_list, owner):
+        for player in player_list:
+            if player.get_name() == owner:
+                return player
+
+    def pay_rent(self, player, owner):
         rent_amount = self.get_rent()   # gets rent value
         if player.get_current_money() < rent_amount:    # checks if player has enough money to pay
             rent_amount = player.get_current_money()  # if not gets all the player can give
         player.remove_money(self.get_rent())    # removes from the player total what is owed
-        self.owner.add_money(rent_amount)  # all money available is added to the owner
-        message = f"{player.get_name()} payed {rent_amount} HKD to {self.owner.get_name()}"
+        owner.add_money(rent_amount)  # all money available is added to the owner
+        message = f"{player.get_name()} payed {rent_amount} HKD to {owner.get_name()}"
         return player.get_current_money(), message   # current player amount is returned (only for testing)
 
     # noinspection PyMethodOverriding
-    def player_landed(self, player, action):
+    def player_landed(self, player, action, owner):
         if action == "buy":
             self.buy(player)
         elif action == "rent":
-            self.pay_rent(player)
+            self.pay_rent(player, owner)
         else:
             return None
 

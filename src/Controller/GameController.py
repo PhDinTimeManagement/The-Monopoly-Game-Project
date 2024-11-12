@@ -290,6 +290,7 @@ class GameController:
     def land_and_complete_round(self, tile, player_this_turn):
         tile_type = tile.get_tile_type()
         action = None
+        # TODO self.gui.gameplay_frame.player_movement(self.gui.game_canvas, player_this_turn, tile_type, player_this_turn.get_current_position(), tile.get_tile_position())
         if tile_type == "property":
             if tile.get_owner() is None:
                 can_buy = tile.can_buy(player_this_turn)
@@ -314,7 +315,7 @@ class GameController:
             else:
                 # TODO update view for rent
                 action = "rent"
-            tile.player_landed(player_this_turn, action)
+            tile.player_landed(player_this_turn, action, Property.get_owner_obj(self.player_list, tile.get_owner()))
             self.unbind_yes_buy_button() #unbind and hide the yes_buy_button
             self.unbind_no_buy_button() #unbind and the hide the no_buy_button
         elif tile_type == "jail":
@@ -344,11 +345,10 @@ class GameController:
     #     dice_roll1, dice_roll2 = GameLogic.roll_dice()
     #     tile = GameLogic.player_move(dice_roll1 + dice_roll2, player_this_turn, self.board)
     #     #player_this_turn = self.get_player_list()[self.game_logic.get_player_turn()]
-    #     print(player_this_turn.get_name(), "is Rolling, and rolled: ", dice_roll1+dice_roll2)#TODO del this line later
-    #     print("Money: ",player_this_turn.get_current_money()) #TODO del this line later
-    #     print("Square:",player_this_turn.get_current_position()) #TODO del this line later
-    #     print(tile.get_tile_name()) #TODO del
-    #     # TODO<Call function to display the animation in the view>
+    #     print(player_this_turn.get_name(), "is Rolling, and rolled: ", dice_roll1+dice_roll2)
+    #     print("Money: ",player_this_turn.get_current_money())
+    #     print("Square:",player_this_turn.get_current_position())
+    #     print(tile.get_tile_name())
     #     self.update_all_game_info()
     #     self.land_and_complete_round(tile, player_this_turn)
     #     self.determine_next_round(player_this_turn)
