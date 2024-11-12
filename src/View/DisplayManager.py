@@ -208,19 +208,60 @@ class GameplayFrame(DisplayManager):
     def get_color_coord(self, pos):
         return self.__tile_color_coord[pos]
 
-    def roll_dice_animation(self, canvas, roll_dice_x_pos, roll_dice_y_pos, callback):
+    def roll_dice_animation(self, canvas, roll_dice_x_pos, roll_dice_y_pos, dice_counter, callback, total_dice=None):
         # Show each frame of the dice animation
         def show_frame(frame_index):
             if frame_index < len(self.dice_animation_frames):
                 canvas.delete("dice_animation")
-                canvas.create_image(roll_dice_x_pos, roll_dice_y_pos, image=self.dice_animation_frames[frame_index], anchor="center", tags="dice_animation")
+                canvas.create_image(
+                    roll_dice_x_pos, roll_dice_y_pos,
+                    image=self.dice_animation_frames[frame_index],
+                    anchor="center", tags="dice_animation"
+                )
                 self.gui.after(100, show_frame, frame_index + 1)  # Show next frame after 100 ms
             else:
-                # After the animation, display a random dice result
-                result_image, dice_result = choice(self.dice_result_images)
-                canvas.delete("dice_animation")
-                canvas.create_image(roll_dice_x_pos, roll_dice_y_pos, image=result_image, anchor="center", tags="dice_animation")
-                callback(dice_result)  # Pass the dice result to the callback function
+                if dice_counter <= 2:
+                    # After the animation, display a random dice result
+                    result_image, dice_result = choice(self.dice_result_images)
+                    canvas.delete("dice_animation")
+                    canvas.create_image(
+                        roll_dice_x_pos, roll_dice_y_pos,
+                        image=result_image, anchor="center", tags="dice_animation"
+                    )
+
+                    # Display the dice result on the canvas as text
+                    x_offset = - 160 if dice_counter == 1 else 160
+                    canvas.create_text(
+                        roll_dice_x_pos + x_offset, roll_dice_y_pos - 90,
+                        text=f"Dice {dice_counter} Result: {dice_result}",
+                        font=("Comic Sans MS", 22, "bold"),
+                        fill="#000000",
+                        tags=f"dice_result_text_{dice_counter}"
+                    )
+
+                    # Pass the dice result to the callback function
+                    callback(dice_result)
+                else:
+                    # After a 1s delay, display again
+                    self.gui.after(1000,
+                                   lambda: clear_dice_display(canvas, roll_dice_x_pos, roll_dice_y_pos, total_dice))
+
+        def clear_dice_display(canvas, roll_dice_x_pos, roll_dice_y_pos, total_dice):
+            # Hide the dice image and individual roll texts
+            canvas.delete("dice_animation", "dice_result_text_1", "dice_result_text_2")
+
+            # Display the total dice result on the canvas
+            canvas.create_text(
+                roll_dice_x_pos - 70, roll_dice_y_pos + 30,
+                text=f"Total Dice is {total_dice}, Move {total_dice} forward.",
+                font=("Comic Sans MS", 22, "bold"),
+                fill="#000000",
+                tags="total_dice_result_text"
+            )
+
+        # Clear any previous result text before starting a new roll
+        if dice_counter == 1:
+            canvas.delete("total_dice_result_text")
 
         # Start the animation with the first frame
         show_frame(0)
