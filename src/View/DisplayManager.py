@@ -412,10 +412,6 @@ class GameplayFrame(DisplayManager):
             owner_x_pos = self.__tile_info_coord[i][6]
             owner_y_pos = self.__tile_info_coord[i][7]
 
-            # gets owner name only when there is a player object
-            if tile_owner:
-                tile_owner = tile_owner.get_name()
-
             # calculates text sizes
             text_name_size, text_price_size, text_rent_size, text_owner_size = self.set_appropriate_text_dimension(
                 tile_name, tile_rent, tile_price, tile_owner)
@@ -1047,6 +1043,7 @@ class LoadGameFrame(DisplayManager):
             print(self.display_text[idx][2].split('.')[0])
             g.load_game(self.display_text[idx][2].split('.')[0])
             g.load_gameboard(self.display_text[idx][2].split('.')[0])
+            self.gui.show_game_play_frame()
             self.gui.show_frame("gameplay")
 
     def show_save_file(self,canvas):

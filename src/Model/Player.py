@@ -62,8 +62,8 @@ class Player:
     def set_current_square(self, position):
         self._current_square = position
 
-    def add_properties(self, property_name):
-        self._properties.append(property_name)
+    def add_properties(self, property_tile):
+        self._properties.append(property_tile.get_property_name())
 
     def add_all_properties(self, properties_list):
         self._properties = properties_list.copy()

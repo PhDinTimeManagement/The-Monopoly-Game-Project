@@ -102,7 +102,7 @@ class Property(Tile):
         if player.get_current_money() >= self.price:
             player.remove_money(self.price)
             player.add_properties(self)
-            self.set_owner(player)
+            self.set_owner(player.get_name())
             message = f"{player.get_name()} bought {self.name} for {self.get_price()} HKD"
             result = True
         else:
@@ -147,7 +147,7 @@ class Jail(Tile):
 
     def free_player(self, player):
         #TODO uncomment this, append player when arrested
-        #self.jailed_players.remove(player.get_name())
+        self.jailed_players.remove(player.get_name())
         player.set_in_jail_turns(0)
         player.set_jail_status(False)
         player.set_fine_payed(False)
