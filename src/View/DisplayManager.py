@@ -230,9 +230,9 @@ class GameplayFrame(DisplayManager):
                     )
 
                     # Display the dice result on the canvas as text
-                    x_offset = - 160 if dice_counter == 1 else 160
+                    x_offset = - 135 if dice_counter == 1 else 135
                     canvas.create_text(
-                        roll_dice_x_pos + x_offset, roll_dice_y_pos - 90,
+                        0.28440 * self.gui.image_width + x_offset, 0.65274 * self.gui.image_height,
                         text=f"Dice {dice_counter} Result: {dice_result}",
                         font=("Comic Sans MS", 22, "bold"),
                         fill="#000000",
@@ -252,11 +252,11 @@ class GameplayFrame(DisplayManager):
 
             # Display the total dice result on the canvas
             canvas.create_text(
-                roll_dice_x_pos - 70, roll_dice_y_pos + 30,
+                0.28458 * self.gui.image_width, roll_dice_y_pos + 30,
                 text=f"Total Dice is {total_dice}, Move {total_dice} forward.",
                 font=("Comic Sans MS", 22, "bold"),
                 fill="#000000",
-                tags="total_dice_result_text"
+                tags="total_dice_result_text",
             )
 
         # Clear any previous result text before starting a new roll
