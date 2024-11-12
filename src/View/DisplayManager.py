@@ -1197,6 +1197,7 @@ class SaveGameFrame(DisplayManager):
         self.delete_button_image = tk.PhotoImage(
             file=os.path.join(assets_base_path, "save_game_frame/delete.png"))
         self.back_arrow_image = tk.PhotoImage(file=os.path.join(assets_base_path, "info_frame/back_arrow.png"))
+        self.home_icon_image=tk.PhotoImage(file=os.path.join(assets_base_path, "save_game_frame/home_button.png"))
         self.save_base_path = os.path.join(os.path.dirname(__file__), "../../saves/games")
         self.display_text=[]
 
@@ -1237,6 +1238,11 @@ class SaveGameFrame(DisplayManager):
 
         # save and delete clickable area, the first is the save button, second is the delete button
         save_delete_click_area = [save_click_area, delete_click_area]
+        # Display the back button to return to the main menu
+        back_button = canvas.create_image(50, 50, image=self.back_arrow_image)
+        # canvas.tag_bind(back_button, "<Button-1>", lambda e: self.back_button(canvas))
+        save_delete_click_area.append(back_button)
+
         # Display saved game slots
         for i, slot_image in enumerate(self.saved_game_slots):
             slot_x, slot_y = self.saved_game_slot_positions[i]  # Unpack coordinates
@@ -1249,14 +1255,10 @@ class SaveGameFrame(DisplayManager):
                 slot_x + (0.5 * slot_image.width()), slot_y + (0.5 * slot_image.height()),
                 outline="", fill=""
             )
+            save_delete_click_area.append(clickable_area)
 
-            # Bind click event to select the slot
-            canvas.tag_bind(clickable_area, "<Button-1>",
-                            lambda e, idx=i: self.select_saved_game_slot(canvas, idx))
-
-        # Display the back button to return to the main menu
-        back_button = canvas.create_image(50, 50, image=self.back_arrow_image)
-        canvas.tag_bind(back_button, "<Button-1>", lambda e: self.back_button(canvas))
+        home_button = canvas.create_image(self.gui.image_width-50, 50, image=self.home_icon_image)
+        canvas.tag_bind(home_button, "<Button-1>", lambda e: self.gui.show_frame("main_menu"))
 
         self.show_save_file(canvas)
 
@@ -1290,9 +1292,6 @@ class SaveGameFrame(DisplayManager):
         self.delete_button_id = canvas.create_image(self.delete_button_x, self.delete_button_y,
                                                            image=self.delete_button_image)
         delete_clickable_area = self.create_rectangle(canvas,self.delete_button_x,self.delete_button_y)
-
-        # TODO Move this delete to controller later, handling delete file. There will be problem putting this bind here. Will fix later
-        canvas.tag_bind(delete_clickable_area, "<Button-1>", lambda e: self.delete_data(canvas))
 
         return canvas,delete_clickable_area
 
@@ -1351,17 +1350,14 @@ class SaveGameFrame(DisplayManager):
 
         return canvas
 
+    def save_data(self, canvas):
+        self.gui.show_frame("save_game")
+        self.show_save_file(canvas)
+
     def delete_data(self, canvas):
         if self.gui.selected_saved_game_slot < len(self.display_text):
             filepath = os.path.join(self.save_base_path, self.display_text[self.gui.selected_saved_game_slot][2])
             os.remove(filepath)
-        self.show_save_file(canvas)
-
-    def save_data(self, canvas):
-        # from src.Controller.GameController import GameController
-        # g=GameController(self.gui)
-        # g.save_game("Save"+str(len(self.display_text)))
-        # g.save_gameboard("Save"+str(len(self.display_text)))
         self.show_save_file(canvas)
 
     def show_save_file(self, canvas):
@@ -1390,6 +1386,109 @@ class SaveGameFrame(DisplayManager):
                 canvas.tag_bind(text2, "<Button-1>",
                                 lambda e, idx=i: self.select_saved_game_slot(canvas, idx))
 
+class EnterNameFrame(SaveGameFrame):
+    def __init__(self, gui):
+        super().__init__(gui)
+        self.enter_name_background = tk.PhotoImage(
+            file=os.path.join(assets_base_path, "save_game_frame/enter_name.png"))
+        self.save_photo = tk.PhotoImage(
+            file=os.path.join(assets_base_path, "save_game_frame/color_save.png"))
+        self.back_photo = tk.PhotoImage(
+            file=os.path.join(assets_base_path, "save_game_frame/back.png"))
+        self.name_entry=None
+        self.error_label=None
+
+
+    def setup_enter_name_frame(self, frame):
+        canvas = self.clear_widgets_create_canvas_set_background(frame, self.save_game_frame_background)
+        # Saved game slot selection image positions
+        self.saved_game_slot_positions = [
+            (self.gui.image_width // 2, 370),
+            (self.gui.image_width // 2, 452),
+            (self.gui.image_width // 2, 534),
+            (self.gui.image_width // 2, 616),
+            (self.gui.image_width // 2, 698)
+        ]
+
+        # Saved game slot images
+        self.saved_game_slots = [
+            self.saved_game_image,
+            self.saved_game_image,
+            self.saved_game_image,
+            self.saved_game_image,
+            self.saved_game_image
+        ]
+        # create delete and save button and hide them from screen first
+        canvas, delete_click_area = self.create_delete_button(canvas)
+        canvas, save_click_area = self.create_save_button(canvas)
+
+        # hide them
+        self.hide_delete_button(canvas)
+        self.hide_save_button(canvas)
+
+        # save and delete clickable area, the first is the save button, second is the delete button
+        save_delete_click_area = [save_click_area, delete_click_area]
+        # Display saved game slots
+        for i, slot_image in enumerate(self.saved_game_slots):
+            slot_x, slot_y = self.saved_game_slot_positions[i]  # Unpack coordinates
+            slot_id = canvas.create_image(slot_x, slot_y, image=slot_image)
+            self.slot_item_ids.append(slot_id)
+
+        # Display the back button to return to the main menu
+        back_button = canvas.create_image(50, 50, image=self.back_arrow_image)
+
+        home_button = canvas.create_image(self.gui.image_width-50, 50, image=self.home_icon_image)
+
+        enter_name_background=canvas.create_image(self.gui.image_width // 2,self.gui.image_height // 2,image=self.enter_name_background,anchor="center")
+
+        if self.name_entry!=None:
+            canvas.delete(self.name_entry)
+        self.name_entry = tk.Entry(frame, width=self.enter_name_background.width()*2//3, font=("Comic Sans MS", 40))
+        self.name_entry.place(x=self.gui.image_width // 2, y=self.gui.image_height // 2-self.enter_name_background.height()/10, width=self.enter_name_background.width()*2//3, height=80,anchor="center")
+
+        self.color_save_button=canvas.create_image(self.gui.image_width // 2,self.gui.image_height // 2+self.enter_name_background.height()/6,image=self.save_photo,anchor="center")
+        self.enter_back_button=canvas.create_image(self.gui.image_width // 2,self.gui.image_height // 2+self.enter_name_background.height()/3,image=self.back_photo,anchor="center")
+
+
+
+        #canvas.tag_bind(self.color_save_button, "<Button-1>",
+        #               lambda e, idx=i: self.gui.show_frame("save_game"))
+
+        canvas.tag_bind(self.enter_back_button, "<Button-1>",
+                        lambda e, idx=i: self.back_to_save_game_frame())
+
+
+        return canvas # return to GUI, and the Controller will do operations on
+
+    def back_to_save_game_frame(self):
+        self.clear_all_info()
+        self.gui.show_frame("save_game")
+
+    def wrong_save_name(self,frame):
+        self.name_entry.delete(0, tk.END)
+        self.show_msg(frame)
+
+    def clear_all_info(self):
+        self.name_entry.delete(0, tk.END)
+        if self.error_label:
+            self.error_label.place_forget()
+
+    def show_msg(self, frame):
+        x_position = 600
+        y_position = 480
+        #
+        if self.error_label:
+            self.error_label.destroy()
+            self.error_label=None
+
+        self.error_label = tk.Label(
+            frame,
+            text="Invalid Name. Please Enter Again",
+            font=("Comic Sans MS", 16),
+            fg="red",
+            bg="#FBF8F5"
+        )
+        self.error_label.place(x=x_position, y=y_position)
 
 class InfoPageFrame(DisplayManager):
     def __init__(self, gui):

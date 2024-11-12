@@ -2,9 +2,17 @@
 class InputHandler:
     def __init__(self):
         self.players_names = [None] * 6  # Support up to 6 players
+        self.current_game_name = None #used in the save game frame
 
     def set_num_players(self, num_players):
         self.players_names = [None] * num_players
+
+    @staticmethod
+    def valid_current_game_name(user_input):
+        if (user_input is not None) and (user_input != "") and (len(user_input) <=20):
+            return True #Name is valid
+        else:
+            return False #Name is invalid
 
     def validate_and_store_name(self, idx, player_name):
         if 0 <= idx < len(self.players_names):
@@ -16,6 +24,9 @@ class InputHandler:
 
     def get_all_player_names(self):
         return [name for name in self.players_names if name]
+
+    def get_current_game_name(self):
+        return self.current_game_name
 
     @staticmethod
     # Player can roll the dice to generate a random name

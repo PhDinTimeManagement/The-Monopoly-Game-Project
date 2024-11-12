@@ -34,6 +34,14 @@ class GameController:
         self.pass_color_information_for_display()
         self.pass_tile_information_for_display()
 
+    #To clear all the data when loading ot starting a new game
+    def clear_all_data(self):
+        self.player_list.clear()
+        self.broke_list.clear()
+        self.all_players.clear()
+        self.click_var = tk.StringVar()
+        self.gui.gameplay_frame.player_info.clear()
+
     def get_player_list(self):
         return self.player_list
 
@@ -166,6 +174,12 @@ class GameController:
         self.hide_save_quit_image()
         self.gui.game_canvas.tag_unbind(self.gui.game_frame_click_areas[4], "<Button-1>")
 
+    def unbind_save_button(self):
+        self.gui.save_game_canvas.tag_unbind(self.gui.save_delete_click_areas[0], "<Button-1>")
+
+    def unbind_delete_button(self):
+        self.gui.save_game_canvas.tag_unbind(self.gui.save_delete_click_areas[1], "<Button-1>")
+
     # ----------------------------------------------#
 
     # ----------Showing logic in controller---------#
@@ -215,21 +229,57 @@ class GameController:
                                           lambda e: self.save_quit_button())
 
     def bind_save_button(self,save_game_name="Testing"):
-          self.gui.save_game_canvas.tag_bind(self.gui.save_delete_click_areas[0], "<Button-1>",
-                                             lambda e: self.show_save_game(save_game_name))
+        #self.gui.save_game_canvas.tag_bind(self.gui.save_delete_click_areas[0], "<Button-1>",
+                                             #lambda e: self.show_save_game(save_game_name))
+
+        self.gui.save_game_canvas.tag_bind(self.gui.save_delete_click_areas[0], "<Button-1>",
+                                           lambda e: self.open_enter_name_file_frame())
+
+    def bind_enter_name_save_button(self):
+        self.gui.enter_name_canvas.tag_bind(self.gui.enter_file_name_frame.color_save_button,"<Button-1>",
+                                            lambda e: self.show_save_game())
+    def bind_delete_button(self):
+        self.gui.save_game_canvas.tag_bind(self.gui.save_delete_click_areas[1], "<Button-1>",
+                                          lambda e: self.gui.save_game_frame.delete_data(self.gui.save_game_canvas))
+    def bind_back_button(self):
+        self.gui.save_game_canvas.tag_bind(self.gui.save_delete_click_areas[2], "<Button-1>",
+                                           lambda e: self. back_to_game_play_frame())
 
     # ----------------------------------------------#
 
+    def back_to_game_play_frame(self):
+        self.gui.save_game_frame.back_button(self.gui.save_game_canvas)
+        self.unbind_delete_button()
+        self.unbind_save_button()
+
+    #bind a single the slots clicks with save and delete button
+    def select_saved_game_slot(self,canvas,idx):
+        self.gui.save_game_frame.select_saved_game_slot(canvas,idx)
+        self.bind_delete_button()
+        self.bind_save_button()
+
     #logic handling when the save_quit_button is clicked
     def save_quit_button(self):
-        self.bind_save_button() #TODO bind with the slot selection instead later, now just testing
+        #bind all slots
+        for i,slots in enumerate(self.gui.save_delete_click_areas[3:]):
+            self.gui.save_game_canvas.tag_bind(slots, "<Button-1>",
+                            lambda e, idx=i: self.select_saved_game_slot(self.gui.save_game_canvas, idx))
+
+        #bind the back button
+        self.bind_back_button()
+
         self.gui.gameplay_frame.save_quit() #show the save game frame
+
+    #logic from binding and showing the buttons in enter name file
+    def open_enter_name_file_frame(self):
+        self.bind_enter_name_save_button()
+        self.gui.show_frame("enter_name")
 
     """ This function is called after the 'Play' button is clicked in the game """
 
     def button_play(self):
         if self.new_name_frame.check_and_start_game(self.input_handler):
-
+            self.clear_all_data() #clear all the data
             print("In the Game!!!",len(self.input_handler.players_names))#TODO del this line later
             for player_name in self.input_handler.players_names:
                 if player_name is not None:
@@ -468,9 +518,14 @@ class GameController:
             message = "Game saved successfully.\n"
         return f"{message1}\n{message}"
 
-    def show_save_game(self, save_name): #TODO del the initializer line later
-        self.save_game(save_name)
-        self.gui.save_game_frame.save_data(self.gui.save_game_canvas)
+    def show_save_game(self): #TODO del the initializer line later
+        user_input = self.gui.enter_file_name_frame.name_entry.get().strip() #get the entry in the text box
+        if self.input_handler.valid_current_game_name(user_input): #if the name is valid
+            self.save_game(user_input) #save it to the folder
+            self.gui.enter_file_name_frame.clear_all_info()
+            self.gui.save_game_frame.save_data(self.gui.save_game_canvas) #go back to save game frame and show the name
+        else:
+            self.gui.enter_file_name_frame.wrong_save_name(self.gui.enter_name_canvas)
 
     # noinspection PyTypeChecker
     def save_game(self, save_name):
