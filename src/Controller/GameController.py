@@ -290,7 +290,6 @@ class GameController:
     def land_and_complete_round(self, tile, player_this_turn):
         tile_type = tile.get_tile_type()
         action = None
-        # TODO self.gui.gameplay_frame.player_movement(self.gui.game_canvas, player_this_turn, tile_type, player_this_turn.get_current_position(), tile.get_tile_position())
         if tile_type == "property":
             if tile.get_owner() is None:
                 can_buy = tile.can_buy(player_this_turn)
@@ -369,9 +368,9 @@ class GameController:
             if len(self.dice_results) < 2:
                 # Wait for 1 second before starting the second roll
                 self.gui.after(1000, lambda: self.gui.gameplay_frame.roll_dice_animation(
-                    self.gui.game_canvas, self.gui.image_width * 2 / 7, self.gui.image_height * 2 / 5 + 120,
-                                          roll_number + 1, on_dice_roll
-                ))
+                            self.gui.game_canvas, self.gui.image_width * 2 / 7, self.gui.image_height * 2 / 5 + 120,
+                                          roll_number + 1, on_dice_roll)
+                            )
             else:
                 # Both dice rolls are complete
                 total_dice = sum(self.dice_results)
@@ -382,8 +381,13 @@ class GameController:
                     3, on_dice_roll, total_dice
                 )
 
-                # Continue game logic with the total dice result after displaying it
+                startingPosition = player_this_turn.get_current_position()
+                # Continue game logic with the total dice result after displaying it, updates position
                 tile = GameLogic.player_move(total_dice, player_this_turn, self.board)
+                # Shows player movement
+                self.gui.gameplay_frame.player_movement(self.gui.game_canvas, self.player_list.index(player_this_turn),
+                                                        startingPosition,
+                                                        tile)
                 self.update_all_game_info()
                 self.land_and_complete_round(tile, player_this_turn)
                 self.determine_next_round(player_this_turn)
@@ -438,7 +442,6 @@ class GameController:
         self.click_var.set("no_buy")
         print("Not Buying")
         # TODO <Show did not buy property>
-
 
     def end_game(self):
         # Need to modify the logic in GameLogic endgame

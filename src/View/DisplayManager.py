@@ -135,7 +135,7 @@ class GameplayFrame(DisplayManager):
 
         # players information
         self.player_info = []
-        self.move_speed = 5
+        self.totalMovement = 135
         self.no_money_ID = None
         self.player_image_ID = []
         self.player_image = [
@@ -146,6 +146,14 @@ class GameplayFrame(DisplayManager):
             tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/player5.png")),
             tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/player6.png"))
             ]
+        self.placeholder_coords = [
+            [730, 865],
+            [810, 915],
+            [810, 865],
+            [730, 915],
+            [770, 865],
+            [770, 915]
+        ]
 
         # Buttons Coordinates
         self.half_screen_y = self.gui.image_height / 2
@@ -226,7 +234,7 @@ class GameplayFrame(DisplayManager):
                     image=self.dice_animation_frames[frame_index],
                     anchor="center", tags="dice_animation"
                 )
-                self.gui.after(100, show_frame, frame_index + 1)  # Show next frame after 100 ms
+                self.gui.after(50, show_frame, frame_index + 1)  # Show next frame after 100 ms
             else:
                 if dice_counter <= 2:
                     # After the animation, display a random dice result
@@ -251,7 +259,7 @@ class GameplayFrame(DisplayManager):
                     callback(dice_result)
                 else:
                     # After a 1s delay, display again
-                    self.gui.after(1000,
+                    self.gui.after(500,
                                    lambda: clear_dice_display(canvas, roll_dice_x_pos, roll_dice_y_pos, total_dice))
 
         def clear_dice_display(canvas, roll_dice_x_pos, roll_dice_y_pos, total_dice):
@@ -277,7 +285,6 @@ class GameplayFrame(DisplayManager):
     #for testing
     def save_quit(self):
         self.gui.show_frame("save_game")
-
 
     def create_button(self, canvas, x_pos, y_pos, button_image):
         button_width, button_height = self.calc_button_dim(button_image)
@@ -343,51 +350,50 @@ class GameplayFrame(DisplayManager):
     def delete_not_enough_money(self, canvas):
         canvas.delete(self.no_money_ID)
 
+    def create_player_placeholders(self, canvas):
+        for i in range(0, len(self.player_info)):
+            placeholder_id = canvas.create_image(self.placeholder_coords[i][0], self.placeholder_coords[i][1], image= self.player_image[i])
+            self.player_image_ID.append(placeholder_id)
+        return canvas
+
     # moves the player horizontally, returns new position
-    def player_move_horizontal(self, canvas, placeholder_id, placeholder_coords, direction):
-        totalMovement = 135
-        increment = self.move_speed
+    def player_move_horizontal(self, canvas, placeholder_id, direction):
         if direction == "left":
-            while increment <= totalMovement:
-                canvas.coords(placeholder_id, placeholder_coords[0] + increment, placeholder_coords[1])
-                increment += self.move_speed
-                time.sleep(38)
+            canvas.move(placeholder_id, -self.totalMovement, 0)
         else:
-            while increment <= totalMovement:
-                canvas.coords(placeholder_id, placeholder_coords[0] - increment, placeholder_coords[1])
-                increment += self.move_speed
-                time.sleep(38)
+            canvas.move(placeholder_id, self.totalMovement, 0)
         return canvas.coords(placeholder_id)
 
     # moves the player vertically, returns new position
-    def player_move_vertical(self, canvas, placeholder_id, placeholder_coords, direction):
-        totalMovement = 135
-        increment = self.move_speed
+    def player_move_vertical(self, canvas, placeholder_id, direction):
         if direction == "up":
-            while increment <= totalMovement:
-                canvas.coords(placeholder_id, placeholder_coords[0], placeholder_coords[1] - increment)
-                increment += self.move_speed
-                time.sleep(38)
+            canvas.move(placeholder_id, 0, -self.totalMovement)
         else:
-            while increment <= totalMovement:
-                canvas.coords(placeholder_id, placeholder_coords[0], placeholder_coords[1] + increment)
-                increment += self.move_speed
-                time.sleep(38)
-        return canvas.coords(placeholder_id)
+            canvas.move(placeholder_id, 0, self.totalMovement)
 
     # TODO player movement 2
-    def player_movement(self, canvas, player, starting_pos, final_pos):
-        placeholder_id = self.player_image_id[player]
-        placeholder_coords = canvas.coords(placeholder_id)
+    def player_movement(self, canvas, player, starting_pos, final_tile):
+        final_pos = final_tile.get_tile_position()
+        final_tile_type = final_tile.get_tile_type()
+        placeholder_id = self.player_image_ID[player]
+        if final_pos < starting_pos:
+            final_pos += 20
         for curr_pos in range(starting_pos, final_pos):
+            if final_pos > 19:
+                curr_pos -= 20
             if 0 <= curr_pos < 5:
-                placeholder_coords = self.player_move_horizontal(canvas, placeholder_id, placeholder_coords, "left")
+                self.player_move_horizontal(canvas, placeholder_id, "left")
             elif 5 <= curr_pos < 10:
-                placeholder_coords = self.player_move_vertical(canvas, placeholder_id, placeholder_coords, "up")
+                self.player_move_vertical(canvas, placeholder_id, "up")
             elif 10 <= curr_pos < 15:
-                placeholder_coords = self.player_move_horizontal(canvas, placeholder_id, placeholder_coords, "right")
+                self.player_move_horizontal(canvas, placeholder_id, "right")
             else:
-                placeholder_coords = self.player_move_vertical(canvas, placeholder_id, placeholder_coords, "down")
+                self.player_move_vertical(canvas, placeholder_id, "down")
+
+
+        if final_tile_type == "go_to_jail":
+            self.gui.after(2000, canvas.move(placeholder_id, -675, 675))
+        #placeholder_id.lift()
 
     def display_player_info(self, canvas):
         starting_pos = self.starting_y_pos
@@ -556,11 +562,6 @@ class GameplayFrame(DisplayManager):
                 self.tile_info[i][7] = canvas.create_text(price_x_pos, price_y_pos, text=tile_price,
                                                           font=("Comic Sans MS", 16), fill="#000000")
 
-    def create_player_placeholders(self, canvas):
-        for i in range(0, len(self.player_info)):
-            placeholder_id = canvas.create_image(self.placeholder_coord[i][0], self.placeholder_coord[i][1], image= self.player_image[i])
-            self.player_image_ID.append(placeholder_id)
-
     # called to set up the entire gameplay_frame
     def setup_new_gameplay_frame(self, frame):
         canvas = self.clear_widgets_create_canvas_set_background(frame, self.new_gameplay_frame_background)
@@ -578,7 +579,7 @@ class GameplayFrame(DisplayManager):
         canvas, self.player_highlighter_ID = self.create_player_highlighter(canvas)
 
         # PLAYER POSITION ON BOARD
-        #canvas, self.player_image_ID = self.create_player_placeholders(canvas)
+        canvas = self.create_player_placeholders(canvas)
 
         # ROLL DICE BUTTON
         roll_dice_click_area, canvas, self.roll_dice_image_id = self.create_button(canvas, self.roll_dice_x_pos, self.roll_dice_y_pos, self.roll_dice_image)
@@ -1173,6 +1174,7 @@ class LoadGameFrame(DisplayManager):
                                 lambda e, idx=i: self.select_saved_game_slot(canvas, idx))
                 canvas.tag_bind(text2, "<Button-1>",
                                 lambda e, idx=i: self.select_saved_game_slot(canvas, idx))
+
 
 class SaveGameFrame(DisplayManager):
     def __init__(self, gui):
