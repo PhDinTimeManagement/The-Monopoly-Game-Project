@@ -36,7 +36,6 @@ class DisplayManager:
     def calc_button_dim(button_image):
         return button_image.width(), button_image.height()
 
-
 # noinspection DuplicatedCode
 class GameplayFrame(DisplayManager):
     def __init__(self, gui):
@@ -310,7 +309,7 @@ class GameplayFrame(DisplayManager):
         self.display_tile_info(canvas)
 
     def create_player_highlighter(self, canvas):
-        image_id = canvas.create_image(self.right_x_border - 30, self.starting_y_pos + 5, anchor="center",
+        image_id = canvas.create_image(self.right_x_border - 40, self.starting_y_pos + 5, anchor="center",
                                        image=self.player_highlight_image)
         return canvas, image_id
 
@@ -326,7 +325,7 @@ class GameplayFrame(DisplayManager):
 
     def highlight_current_player(self, canvas, curr_player):
         y_pos = self.starting_y_pos + (curr_player * self.global_increment)
-        canvas.coords(self.player_highlighter_ID, self.right_x_border - 30 , y_pos + 5)
+        canvas.coords(self.player_highlighter_ID, self.right_x_border - 40, y_pos + 5)
 
     def show_not_enough_money(self, canvas):
         self.no_money_ID = canvas.create_text(self.yes_x_pos, self.yes_y_pos, anchor="center", text="NOT ENOUGH\nMONEY",
