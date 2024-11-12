@@ -2,6 +2,7 @@ import tkinter as tk
 import os
 import time
 from random import choice
+from typing import final
 
 from tests.test_GameLogic import players_list
 
@@ -122,10 +123,10 @@ class GameplayFrame(DisplayManager):
             [95, 510, None, None, None, None, None, None], # chance
             [100, 347, 75, 347, 50, 347, 142, 347], # prop6
             [95 , 210, None, None, None, None, None, None], # free parking
-            [635, 165, 635, 190, 635, 215, 635, 258],  # prop7
+            [230, 165, 230, 190, 230, 215, 230, 258],  # prop7
             [365, 240, 365, 190, None, None, None, None],  # chance
             [500, 165, 500, 190, 500, 215, 500, 258],  # prop8
-            [230, 165, 230, 190, 230, 215, 230, 258],  # prop9
+            [635, 165, 635, 190, 635, 215, 635, 258],  # prop9
             [None, None, None, None, None, None, None, None],  # go to jail
             [765, 347, 790, 347, 815, 347, 722, 347],  # prop10
             [765, 482, 790, 482, 815, 482, 722, 482],  # prop11
@@ -371,28 +372,32 @@ class GameplayFrame(DisplayManager):
         else:
             canvas.move(placeholder_id, 0, self.totalMovement)
 
-    # TODO player movement 2
+    # noinspection PyUnusedLocal
     def player_movement(self, canvas, player, starting_pos, final_tile):
         final_pos = final_tile.get_tile_position()
         final_tile_type = final_tile.get_tile_type()
         placeholder_id = self.player_image_ID[player]
         if final_pos < starting_pos:
             final_pos += 20
-        for curr_pos in range(starting_pos, final_pos):
-            if final_pos > 19:
-                curr_pos -= 20
+        curr_pos = starting_pos
+        while curr_pos < final_pos:
             if 0 <= curr_pos < 5:
                 self.player_move_horizontal(canvas, placeholder_id, "left")
             elif 5 <= curr_pos < 10:
                 self.player_move_vertical(canvas, placeholder_id, "up")
             elif 10 <= curr_pos < 15:
                 self.player_move_horizontal(canvas, placeholder_id, "right")
-            else:
+            elif 15 <= curr_pos < 19:
                 self.player_move_vertical(canvas, placeholder_id, "down")
-
+            else:
+                index = self.player_image_ID.index(placeholder_id)
+                canvas.coords(placeholder_id, self.placeholder_coords[index][0], self.placeholder_coords[index][1])
+                curr_pos = 0
+                final_pos -= 19
+            curr_pos += 1
 
         if final_tile_type == "go_to_jail":
-            self.gui.after(2000, canvas.move(placeholder_id, -675, 675))
+            canvas.move(placeholder_id, -675, 675)
         #placeholder_id.lift()
 
     def display_player_info(self, canvas):

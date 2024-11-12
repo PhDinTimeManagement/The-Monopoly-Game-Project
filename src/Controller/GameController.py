@@ -457,6 +457,8 @@ class GameController:
         print("Money: ", player_this_turn.get_current_money())  # TODO del this line later
         print("Square:", player_this_turn.get_current_position())  # TODO del this line later
 
+
+
         action = GameLogic.in_jail_roll(self.game_logic, player_this_turn, self.board)
         if action[0] == "show_pay_fine":
             self.bind_pay_fine_button(player_this_turn) #bind and show the pay_fine button
@@ -469,6 +471,7 @@ class GameController:
         elif action[0] == "move":
             # TODO <show animation for player moving>
             print("Out of Jail, Move on")
+            self.gui.gameplay_frame.player_movement(self.gui.game_canvas, self.player_list.index(player_this_turn), 5, action[1])
             self.land_and_complete_round(action[1], player_this_turn)
         elif action[0] == 'not_move':
             pass  # del
