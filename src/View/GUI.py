@@ -42,7 +42,7 @@ class GUI(tk.Tk):
         self.show_info_frame()
         self.show_new_game_frame()
         self.show_edit_board_frame()
-        #self.show_load_game_frame()
+        self.show_load_game_frame()
         self.show_save_game_frame()
 
         # Initially show the main menu

@@ -356,42 +356,19 @@ class GameController:
     def roll_dice(self, player_this_turn):
         self.unbind_roll_button()  # Unbind the roll button
 
-        # Save the dice results
-        self.dice_results = []
-
-        # Handle the result of each dice roll animation
+        # Handle the result of the dice roll animation
         def on_dice_roll(dice_result):
-            self.dice_results.append(dice_result)
+            tile = GameLogic.player_move(dice_result, player_this_turn, self.board)
 
-            # Display each roll result
-            roll_number = len(self.dice_results)
+            # Continue game logic after dice roll result
+            print(f"{player_this_turn.get_name()} rolled a {dice_result}")
+            self.update_all_game_info()
+            self.land_and_complete_round(tile, player_this_turn)
+            self.determine_next_round(player_this_turn)
 
-            if len(self.dice_results) < 2:
-                # Wait for 1 second before starting the second roll
-                self.gui.after(1000, lambda: self.gui.gameplay_frame.roll_dice_animation(
-                    self.gui.game_canvas, self.gui.image_width * 2 / 7, self.gui.image_height * 2 / 5 + 120,
-                                          roll_number + 1, on_dice_roll
-                ))
-            else:
-                # Both dice rolls are complete
-                total_dice = sum(self.dice_results)
-
-                # Pass total_dice to roll_dice_animation to display final result and hide dice
-                self.gui.gameplay_frame.roll_dice_animation(
-                    self.gui.game_canvas, self.gui.image_width * 2 / 7, self.gui.image_height * 2 / 5 + 120,
-                    3, on_dice_roll, total_dice
-                )
-
-                # Continue game logic with the total dice result after displaying it
-                tile = GameLogic.player_move(total_dice, player_this_turn, self.board)
-                self.update_all_game_info()
-                self.land_and_complete_round(tile, player_this_turn)
-                self.determine_next_round(player_this_turn)
-
-        # Start the dice animation for the first roll
-        self.gui.gameplay_frame.roll_dice_animation(
-            self.gui.game_canvas, self.gui.image_width * 2 / 7, self.gui.image_height * 2 / 5 + 120, 1, on_dice_roll
-        )
+        # Start the dice animation and pass the result to the callback
+        self.gui.gameplay_frame.roll_dice_animation(self.gui.game_canvas, self.gui.image_width * 2 / 7,
+                                                    self.gui.image_height * 2 / 5 + 120, on_dice_roll)
 
     # Roll function for player in jail
     def in_jail_roll(self, player_this_turn):
