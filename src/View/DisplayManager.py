@@ -138,12 +138,12 @@ class GameplayFrame(DisplayManager):
         self.no_money_ID = None
         self.player_image_ID = []
         self.player_image = [
-            tk.PhotoImage(file= os.path.join(assets_base_path, "gameplay_frame/player_highlight.png")),
-            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/player_highlight.png")),
-            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/player_highlight.png")),
-            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/player_highlight.png")),
-            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/player_highlight.png")),
-            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/player_highlight.png"))
+            tk.PhotoImage(file= os.path.join(assets_base_path, "gameplay_frame/player1.png")),
+            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/player2.png")),
+            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/player3.png")),
+            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/player4.png")),
+            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/player5.png")),
+            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/player6.png"))
             ]
 
         # Buttons Coordinates
@@ -168,7 +168,7 @@ class GameplayFrame(DisplayManager):
         self.player_highlight_image = tk.PhotoImage(file= os.path.join(assets_base_path, "gameplay_frame/player_highlight.png"))
         self.player_highlighter_ID = None
 
-# ------------------------------------# Game Play Frame #------------------------------------#
+#------------------------------------# Game Play Frame #------------------------------------#
     @staticmethod
     def set_appropriate_text_dimension(name, price, rent, owner):
         name_size = 16
@@ -214,6 +214,8 @@ class GameplayFrame(DisplayManager):
 
     def get_color_coord(self, pos):
         return self.__tile_color_coord[pos]
+
+#------------------------------------# Dice Animation #------------------------------------#
 
     def roll_dice_animation(self, canvas, roll_dice_x_pos, roll_dice_y_pos, dice_counter, callback, total_dice=None):
         # Show each frame of the dice animation
@@ -273,20 +275,7 @@ class GameplayFrame(DisplayManager):
         # Start the animation with the first frame
         show_frame(0)
 
-    #for testing
-    def save_quit(self):
-        self.gui.show_frame("save_game")
-
-
-    def create_button(self, canvas, x_pos, y_pos, button_image):
-        button_width, button_height = self.calc_button_dim(button_image)
-        image_id = canvas.create_image(x_pos, y_pos, anchor="center", image=button_image)
-        button_click_area = canvas.create_rectangle(
-            (x_pos - button_width // 2), (y_pos - button_height // 2),
-            (x_pos + button_width // 2), (y_pos + button_height // 2),
-            outline="", fill=""
-        )
-        return button_click_area, canvas, image_id
+# ------------------------------------# Buttons #------------------------------------#
 
     def show_pay_fine_button(self, canvas):
         pay_fine_click_area, canvas, pay_fine_image_id = self.create_button(canvas, self.pay_fine_x_pos, self.pay_fine_y_pos, self.pay_fine_image)
@@ -341,6 +330,8 @@ class GameplayFrame(DisplayManager):
 
     def delete_not_enough_money(self, canvas):
         canvas.delete(self.no_money_ID)
+
+# ------------------------------------# Dice Animation #------------------------------------#
 
     # moves the player horizontally, returns new position
     def player_move_horizontal(self, canvas, placeholder_id, placeholder_coords, direction):
@@ -435,6 +426,7 @@ class GameplayFrame(DisplayManager):
             self.player_info_ID.append(tot_prop_id)
 
     #----------Handles hiding the button IMAGE in the canvas----------#
+
     def hide_yes_image(self,canvas):
         canvas.coords(self.yes_image_id,-100,-100)
 
@@ -450,10 +442,8 @@ class GameplayFrame(DisplayManager):
     def hide_save_quit_image(self,canvas):
         canvas.coords(self.save_quit_image_id,-100,-100)
 
-    #------------------------------------------------------------------#
-
-
     #----------Handles showing the button image in the canvas----------#
+
     def show_yes_image(self,canvas):
         canvas.coords(self.yes_image_id,self.yes_x_pos, self.yes_y_pos)
 
@@ -1172,6 +1162,7 @@ class LoadGameFrame(DisplayManager):
                                 lambda e, idx=i: self.select_saved_game_slot(canvas, idx))
                 canvas.tag_bind(text2, "<Button-1>",
                                 lambda e, idx=i: self.select_saved_game_slot(canvas, idx))
+
 
 class SaveGameFrame(DisplayManager):
     def __init__(self, gui):
