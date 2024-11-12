@@ -729,8 +729,7 @@ class NewGameFrame(DisplayManager):
 
         # Bind actions for Edit Board and Play clickable areas
         canvas.tag_bind(edit_board_clickable_area, "<Button-1>",
-                        lambda e: print("Edit board clicked"))  # Placeholder action
-        #canvas.tag_bind(play_button_clickable_area, "<Button-1>", lambda e: self.check_and_start_game(input_handler))
+                        lambda e: self.gui.show_frame("edit_board"))  # Placeholder action
 
         return canvas, play_button_clickable_area
 
@@ -1527,7 +1526,40 @@ class InfoPageFrame(DisplayManager):
         return canvas
 
 
-class EditBoardFrame(DisplayManager):
+
+
+class EditBoardFrame(GameplayFrame):
     def __init__(self, gui):
         super().__init__(gui)
+        self.edit_board_background = tk.PhotoImage(
+            file=os.path.join(assets_base_path, "edit_gameboard_frame/editboard_frame_background.png"))
+        self.confirm_photo=tk.PhotoImage(
+            file=os.path.join(assets_base_path, "edit_gameboard_frame/confirm.png"))
+        self.cancel_photo=tk.PhotoImage(
+            file=os.path.join(assets_base_path, "edit_gameboard_frame/cancel.png"))
+        self.back_arrow_photo=tk.PhotoImage(
+            file=os.path.join(assets_base_path, "edit_gameboard_frame/back_arrow.png"))
+
+    def setup_edit_board_frame(self, frame):
+        canvas = self.clear_widgets_create_canvas_set_background(frame, self.edit_board_background)
+        cancel_click_area, canvas, cancel_id=self.create_button(canvas,1051,897,self.cancel_photo)
+        confirm_click_area, canvas, confirm_id=self.create_button(canvas,1318,897,self.confirm_photo)
+        back_click_area, canvas, back_id=self.create_button(canvas,50,50,self.back_arrow_photo)
+        canvas.tag_bind(back_click_area, "<Button-1>",lambda e: self.gui.show_frame("new_game"))
+        #not working
+        #self.display_tile_info(canvas)
+
+        self.name_entry = tk.Entry(frame, width=400, font=("Comic Sans MS", 40))
+        self.price_entry = tk.Entry(frame, width=400, font=("Comic Sans MS", 40))
+        self.rent_entry = tk.Entry(frame, width=400, font=("Comic Sans MS", 40))
+        self.name_entry.place(x=1188, y=390, width=400, height=80,anchor="center")
+        self.price_entry.place(x=1188, y=570, width=400, height=80,anchor="center")
+        self.rent_entry.place(x=1188, y=760, width=400, height=80,anchor="center")
+
+
+
+
+
+
+
 
