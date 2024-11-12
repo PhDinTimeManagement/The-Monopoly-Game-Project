@@ -139,12 +139,12 @@ class GameplayFrame(DisplayManager):
         self.no_money_ID = None
         self.player_image_ID = []
         self.player_image = [
-            tk.PhotoImage(file= os.path.join(assets_base_path, "gameplay_frame/player_highlight.png")),
-            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/player_highlight.png")),
-            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/player_highlight.png")),
-            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/player_highlight.png")),
-            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/player_highlight.png")),
-            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/player_highlight.png"))
+            tk.PhotoImage(file= os.path.join(assets_base_path, "gameplay_frame/player1.png")),
+            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/player2.png")),
+            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/player3.png")),
+            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/player4.png")),
+            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/player5.png")),
+            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/player6.png"))
             ]
 
         # Buttons Coordinates
