@@ -1540,6 +1540,28 @@ class EditBoardFrame(GameplayFrame):
             file=os.path.join(assets_base_path, "edit_gameboard_frame/cancel.png"))
         self.back_arrow_photo=tk.PhotoImage(
             file=os.path.join(assets_base_path, "edit_gameboard_frame/back_arrow.png"))
+        self.__tile_info_coord = [
+            [None, None, 770, 860, None, None, None, None], # go
+            [635, 880, 635, 905, 635, 930, 635, 840], # prop1
+            [500, 880, 500, 905, 500, 930, 500, 840], # prop2
+            [365, 870, 365, 930, None, None, None, None],   # income tax
+            [230, 880, 230, 905, 230, 930, 230, 840], # prop3
+            [None, None, None, None, None, None, None, None], # jail
+            [100, 752, 75, 752, 50, 752, 142, 752], # prop4
+            [100, 617, 75, 617, 50, 617, 142, 617], # prop5
+            [95, 510, None, None, None, None, None, None], # chance
+            [100, 347, 75, 347, 50, 347, 142, 347], # prop6
+            [95 , 210, None, None, None, None, None, None], # free parking
+            [230, 165, 230, 190, 230, 215, 230, 258],  # prop7
+            [365, 240, 365, 190, None, None, None, None],  # chance
+            [500, 165, 500, 190, 500, 215, 500, 258],  # prop8
+            [635, 165, 635, 190, 635, 215, 635, 258],  # prop9
+            [None, None, None, None, None, None, None, None],  # go to jail
+            [765, 347, 790, 347, 815, 347, 722, 347],  # prop10
+            [765, 482, 790, 482, 815, 482, 722, 482],  # prop11
+            [770, 645, None, None, None, None, None, None],  # chance
+            [765, 752, 790, 752, 815, 752, 722, 752]  # prop12
+        ]
         self.grid_coordinates=[[567,820,700,953,1],[431,819,568,951,2],[164,817,296,953,4],[27,684,160,816,6],[28,549,161,684,7],
                                [28,278,160,413,9],[161,147,297,278,11],[433,144,567,279,13],[568,144,700,278,14],[700,278,833,413,16],[704,415,837,547,17],[701,685,835,817,19]]
         self.property_data= {
@@ -1561,10 +1583,13 @@ class EditBoardFrame(GameplayFrame):
         self.rent_entry=None
         self.current_frame=None
         self.grid_index=-1
+        self.clear=[]
+        self.canvas=None
 
     def setup_edit_board_frame(self, frame):
         canvas = self.clear_widgets_create_canvas_set_background(frame, self.edit_board_background)
         self.current_frame=frame
+        self.canvas=canvas
         cancel_click_area, canvas, cancel_id = self.create_button(canvas, 1051, 897, self.cancel_photo)
         confirm_click_area, canvas, confirm_id = self.create_button(canvas, 1318, 897, self.confirm_photo)
         back_click_area, canvas, back_id = self.create_button(canvas, 50, 50, self.back_arrow_photo)
@@ -1575,12 +1600,13 @@ class EditBoardFrame(GameplayFrame):
 
         game_board_area = canvas.create_rectangle(27, 144, 836, 954, outline="", fill="", tags="game_board")
         canvas.tag_bind("game_board", '<Button-1>', self.on_game_board_click)
+        self.display_tile_info(canvas)
 
     def on_game_board_click(self, event):
         self.remove_entries()
-        x = event.x  # 獲取相對於畫布的 X 坐標
-        y = event.y  # 獲取相對於畫布的 Y 坐標
-        print(f"Coordinates: ({x}, {y})")  # 在控制台打印坐標
+        x = event.x
+        y = event.y
+        print(f"Coordinates: ({x}, {y})")
         self.grid_index=self.check_click_grid(x,y)
         if self.grid_index!=-1:
             print(self.property_data[self.grid_index])
@@ -1623,6 +1649,49 @@ class EditBoardFrame(GameplayFrame):
         #check valid and if valid
         self.property_data[self.grid_index]={"name":name,"price":int(price),"rent":int(rent)}
         self.remove_entries()
+        self.remove_game_board_text(self.canvas)
+        self.display_tile_info(self.canvas)
         print(self.property_data)
 
+    # from the info in the gameboard, displays it on the gameboard
+    def display_tile_info(self, canvas):
+        for index in self.property_data:
+            # gets all information necessary to display
+            tile_name = self.property_data[index]["name"]
+            tile_price = str(self.property_data[index]["price"])
+            tile_rent = f"{self.property_data[index]["rent"]} HDK"
+            name_x_pos = self.__tile_info_coord[index][0]
+            name_y_pos = self.__tile_info_coord[index][1]
+            price_x_pos = self.__tile_info_coord[index][2]
+            price_y_pos = self.__tile_info_coord[index][3]
+            rent_x_pos = self.__tile_info_coord[index][4]
+            rent_y_pos = self.__tile_info_coord[index][5]
 
+            # calculates text sizes
+            text_name_size, text_price_size, text_rent_size, text_owner_size = self.set_appropriate_text_dimension(
+                tile_name, tile_rent, tile_price, None)
+
+            # calculates text rotation
+            text_rotate = self.rotate_text(index)
+
+            # displays text based on tile type
+            name_text = canvas.create_text(name_x_pos, name_y_pos, text=tile_name,
+                                                      font=("Comic Sans MS", text_name_size, "bold"),
+                                                      fill="#000000", angle=text_rotate)
+            tile_price = f"{tile_price} HKD"
+            price_text = canvas.create_text(price_x_pos, price_y_pos, text=tile_price,
+                                                      font=("Comic Sans MS", text_price_size), fill="#000000",
+                                                      angle=text_rotate)
+            rent_text = canvas.create_text(rent_x_pos, rent_y_pos, text=tile_rent,
+                                                      font=("Comic Sans MS", text_rent_size), fill="#000000",
+                                                      angle=text_rotate)
+            canvas.tag_bind(name_text, '<Button-1>', self.on_game_board_click)
+            canvas.tag_bind(price_text, '<Button-1>', self.on_game_board_click)
+            canvas.tag_bind(rent_text, '<Button-1>', self.on_game_board_click)
+
+            self.clear.extend([name_text,price_text,rent_text])
+
+    def remove_game_board_text(self,canvas):
+        for text in self.clear:
+            canvas.delete(text)
+        self.clear=[]
