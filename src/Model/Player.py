@@ -87,5 +87,5 @@ class Player:
 
     def delete_all_properties(self):
         for key in self._properties:
-            key.set_owner(None)
+            key.set_owner(None) #TODO _properties is now a string, and it does not have the set_owner() function
         self._properties.clear()

@@ -55,7 +55,7 @@ class GUI(tk.Tk):
     def show_main_menu(self):
         frame = tk.Frame(self)
         self.frames["main_menu"] = frame
-        self.canvas = self.main_menu_frame.setup_main_menu_frame(frame)
+        self.canvas, self.load_game_click_area = self.main_menu_frame.setup_main_menu_frame(frame)
 
     # Show the game information
     def show_info_frame(self):
@@ -79,7 +79,7 @@ class GUI(tk.Tk):
     def show_load_game_frame(self):
         frame = tk.Frame(self)
         self.frames["load_game"] = frame
-        self.load_game_canvas = self.load_game_frame.setup_load_game_frame(frame)
+        self.load_game_canvas, self.load_game_click_areas = self.load_game_frame.setup_load_game_frame(frame)
 
     def show_save_game_frame(self):
         frame = tk.Frame(self)

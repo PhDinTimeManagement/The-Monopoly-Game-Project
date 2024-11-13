@@ -28,11 +28,14 @@ class GameController:
         self.function_array = [self.roll_dice,self.buy_button,self.no_buy_button]
 
         #binding the buttons
-        self.gui.new_game_canvas.tag_bind(self.gui.play_button_clickable_area, "<Button-1>", lambda e: self.button_play())
+        self.gui.new_game_canvas.tag_bind(self.gui.play_button_clickable_area, "<Button-1>", lambda e: self.button_play(False))
 
         # TODO same function is also called in play_button IS NECESSARY?
         self.pass_gameboard_info_to_view()
         self.gui.show_edit_board_frame()
+
+        #bind the load game button here
+        self.bind_load_game()
 
     #To clear all the data when loading ot starting a new game
     def clear_all_data(self):
@@ -142,6 +145,9 @@ class GameController:
         self.pass_tile_information_for_display()
 
     # ----------Hiding logic in controller----------#
+    def hide_load_and_save_image(self):
+        self.gui.load_game_frame.hide_load_play_image(self.gui.load_game_canvas)
+
     def hide_roll_image(self):
         self.gui.gameplay_frame.hide_roll_image(self.gui.game_canvas)
 
@@ -157,6 +163,10 @@ class GameController:
 
     def hide_save_quit_image(self):
         self.gui.gameplay_frame.hide_save_quit_image(self.gui.game_canvas)
+
+    def unbind_load_and_save_button(self):
+        self.hide_load_and_save_image()
+        self.gui.load_game_cvanvas.tag_unbind(self.gui.load_game_click_area[0],"<Button-1>") #position 0 is the click area of load_save button
 
     def unbind_roll_button(self):
         self.hide_roll_image()
@@ -191,6 +201,10 @@ class GameController:
     # ----------------------------------------------#
 
     # ----------Showing logic in controller---------#
+
+    def show_load_and_save_image(self):
+        self.gui.load_game_frame.show_load_play_image(self.gui.load_game_canvas)
+
     def show_roll_image(self):
         self.gui.gameplay_frame.show_roll_image(self.gui.game_canvas)
 
@@ -205,6 +219,15 @@ class GameController:
 
     def show_save_quit_image(self):
         self.gui.gameplay_frame.show_save_quit_image(self.gui.game_canvas)
+
+    def bind_load_and_save_button(self, idx):
+        self.show_load_and_save_image()
+        self.gui.load_game_canvas.tag_bind(self.gui.load_game_click_areas[0], "<Button-1>",
+                                 lambda e: self.load_and_start_game_button(idx) )
+
+    def bind_load_game(self):
+        self.gui.canvas.tag_bind(self.gui.load_game_click_area, "<Button-1>",
+                                 lambda e: self.load_button() )
 
     def bind_roll_button(self, player_this_turn):
         self.show_roll_image()
@@ -236,10 +259,10 @@ class GameController:
         self.gui.game_canvas.tag_bind(self.gui.game_frame_click_areas[4], "<Button-1>",
                                           lambda e: self.save_quit_button())
 
-    def bind_save_button(self,save_game_name="Testing"):
+    def bind_save_button(self):
         #self.gui.save_game_canvas.tag_bind(self.gui.save_delete_click_areas[0], "<Button-1>",
                                              #lambda e: self.show_save_game(save_game_name))
-
+        self.show_save_quit_image()
         self.gui.save_game_canvas.tag_bind(self.gui.save_delete_click_areas[0], "<Button-1>",
                                            lambda e: self.open_enter_name_file_frame())
 
@@ -253,7 +276,39 @@ class GameController:
         self.gui.save_game_canvas.tag_bind(self.gui.save_delete_click_areas[2], "<Button-1>",
                                            lambda e: self. back_to_game_play_frame())
 
-    # ----------------------------------------------#
+    def bind_home_button(self):
+        self.gui.save_game_canvas.tag_bind(self.gui.save_delete_click_areas[3], "<Button-1>",
+                                           lambda e: self.home_button())
+
+    # ---------------------------------------------------#
+
+    #------------ Button func in Main Page --------------#
+    def load_button(self):
+        self.gui.load_game_frame.show_save_file(self.gui.load_game_canvas)
+        self.gui.show_frame("load_game")
+        #bind all the slots in the load page
+        for i,slots in enumerate(self.gui.load_game_click_areas[1:]):
+            self.gui.load_game_canvas.tag_bind(slots, "<Button-1>", lambda e, idx=i: self.select_slot(idx))
+
+    # ---------------------------------------------------#
+
+    #----------- Button func in Load Game Page ----------#
+    def select_slot(self, idx):
+        self.gui.load_game_frame.select_saved_game_slot(self.gui.load_game_canvas,idx)
+        self.bind_load_and_save_button(idx)
+
+    def load_and_start_game_button(self,idx):
+        save_name = self.gui.load_game_frame.load_data(idx)
+        self.load_game(save_name)
+        self.button_play(True)
+
+    #----------------------------------------------------#
+
+    #------------ Save Game Frame Button ----------------#
+
+    def home_button(self):
+        self.clear_all_data()
+        self.gui.show_frame("main_menu")
 
     def back_to_game_play_frame(self):
         self.gui.save_game_frame.back_button(self.gui.save_game_canvas)
@@ -268,8 +323,8 @@ class GameController:
 
     #logic handling when the save_quit_button is clicked
     def save_quit_button(self):
-        #bind all slots
-        for i,slots in enumerate(self.gui.save_delete_click_areas[3:]):
+        #bind all slots in the save_name frame
+        for i,slots in enumerate(self.gui.save_delete_click_areas[4:]):
             self.gui.save_game_canvas.tag_bind(slots, "<Button-1>",
                             lambda e, idx=i: self.select_saved_game_slot(self.gui.save_game_canvas, idx))
 
@@ -277,6 +332,7 @@ class GameController:
         self.bind_back_button()
 
         self.gui.gameplay_frame.save_quit() #show the save game frame
+        self.bind_home_button()
 
     #logic from binding and showing the buttons in enter name file
     def open_enter_name_file_frame(self):
@@ -285,9 +341,10 @@ class GameController:
 
     """ This function is called after the 'Play' button is clicked in the game """
 
-    def button_play(self):
-        if self.new_name_frame.check_and_start_game(self.input_handler):
-            self.clear_all_data() #clear all the data
+    def button_play(self,from_load):
+        if self.new_name_frame.check_and_start_game(self.input_handler) or from_load:
+            # if not from_load: #TODO bind the clear_all_data() to the home button in save game page later
+            #     self.clear_all_data() #clear all the data
             print("In the Game!!!",len(self.input_handler.players_names))#TODO del this line later
             for player_name in self.input_handler.players_names:
                 if player_name is not None:
@@ -350,6 +407,7 @@ class GameController:
             self.bind_roll_button(action[1]) #selection player next turn to roll the dice
             print("Current Money: ",player_this_turn.get_current_money()) #TODO del later
             print("\nNext round,", action[1].get_name(),"'s turn. click roll\n") #TODO del later
+        self.bind_save_button()
 
     def land_and_complete_round(self, tile, player_this_turn):
         tile_type = tile.get_tile_type()
@@ -408,7 +466,6 @@ class GameController:
     #     dice_roll1, dice_roll2 = GameLogic.roll_dice()
     #     tile = GameLogic.player_move(dice_roll1 + dice_roll2, player_this_turn, self.board)
     #     #player_this_turn = self.get_player_list()[self.game_logic.get_player_turn()]
-    #     print(player_this_turn.get_name(), "is Rolling, and rolled: ", dice_roll1+dice_roll2)
     #     print("Money: ",player_this_turn.get_current_money())
     #     print("Square:",player_this_turn.get_current_position())
     #     print(tile.get_tile_name())
@@ -418,6 +475,11 @@ class GameController:
 
     def roll_dice(self, player_this_turn):
         self.unbind_roll_button()  # Unbind the roll button
+        self.unbind_save_quit_button()
+        dice_roll1, dice_roll2 = GameLogic.roll_dice()
+        dice_select_image_position1 = (2*dice_roll1-1) - random.randint(0,1) #for choosing image of dice1
+        dice_select_image_position2 = (2*dice_roll2-1) - random.randint(0,1) #for choosing image of dice2
+        print(player_this_turn.get_name(), "is Rolling, and rolled: ", dice_roll1 ,dice_roll2, dice_select_image_position1, dice_select_image_position2)
 
         # Save the dice results
         self.dice_results = []
@@ -430,19 +492,19 @@ class GameController:
             roll_number = len(self.dice_results)
 
             if len(self.dice_results) < 2:
-                # Wait for 1 second before starting the second roll
+                #Wait for 1 second before starting the second roll
                 self.gui.after(1000, lambda: self.gui.gameplay_frame.roll_dice_animation(
                             self.gui.game_canvas, self.gui.image_width * 2 / 7, self.gui.image_height * 2 / 5 + 120,
-                                          roll_number + 1, on_dice_roll)
+                                          roll_number + 1, on_dice_roll, dice_select_image_position2)
                             )
+
             else:
                 # Both dice rolls are complete
                 total_dice = sum(self.dice_results)
-
                 # Pass total_dice to roll_dice_animation to display final result and hide dice
                 self.gui.gameplay_frame.roll_dice_animation(
                     self.gui.game_canvas, self.gui.image_width * 2 / 7, self.gui.image_height * 2 / 5 + 120,
-                    3, on_dice_roll, total_dice
+                    3, on_dice_roll,None, total_dice
                 )
 
                 startingPosition = player_this_turn.get_current_position()
@@ -457,7 +519,8 @@ class GameController:
 
         # Start the dice animation for the first roll
         self.gui.gameplay_frame.roll_dice_animation(
-            self.gui.game_canvas, self.gui.image_width * 2 / 7, self.gui.image_height * 2 / 5 + 120, 1, on_dice_roll
+            self.gui.game_canvas, self.gui.image_width * 2 / 7, self.gui.image_height * 2 / 5 + 120, 1, on_dice_roll,
+            dice_select_image_position1
         )
 
     # Roll function for player in jail
@@ -465,6 +528,7 @@ class GameController:
         #unbind the in_jail_roll button and pay_fine button
         self.unbind_roll_button()
         self.unbind_pay_fine_button(player_this_turn)
+        self.unbind_save_quit_button()
 
         print(player_this_turn.get_name(), "is Rolling IN JAIL.") # TODO del this line later
         print("Money: ", player_this_turn.get_current_money())  # TODO del this line later
