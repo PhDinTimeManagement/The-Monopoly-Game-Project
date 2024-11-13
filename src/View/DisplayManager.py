@@ -43,6 +43,8 @@ class DisplayManager:
 # noinspection DuplicatedCode
 class GameplayFrame(DisplayManager):
 
+    # Gameboard tiles 9-tuple will get loaded in by the Controller
+    #  [type, name, price, rent, owner, nameObj, priceObj, rentObj, ownerObj]
     tile_info = []
 
     def __init__(self, gui):
@@ -108,9 +110,6 @@ class GameplayFrame(DisplayManager):
             None,
             [700, 683]
         ]
-
-        # Gameboard tiles 9-tuple will get loaded in by the Controller
-        #  [type, name, price, rent, owner, nameObj, priceObj, rentObj, ownerObj]
 
         # Tile info coordinates, 6-tuple
         self.__tile_info_coord = [
@@ -1637,11 +1636,14 @@ class EditBoardFrame(GameplayFrame):
         GameplayFrame.tile_info[self.grid_index][2] = price
         GameplayFrame.tile_info[self.grid_index][3] = rent
         self.remove_entries()
-        self.remove_game_board_text(self.canvas)
+        self.canvas = self.remove_game_board_text(self.canvas)
         self.display_tile_info(self.canvas)
+        self.canvas.update()
         print(GameplayFrame.tile_info)
 
     def remove_game_board_text(self,canvas):
-        for text in self.clear:
-            canvas.delete(text)
-        self.clear=[]
+        for j in range(0, 20):
+            for i in range(5, 8):
+                canvas.delete(GameplayFrame.tile_info[self.grid_index][i])
+                GameplayFrame.tile_info[self.grid_index][i] = None
+        return canvas
