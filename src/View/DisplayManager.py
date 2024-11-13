@@ -1637,10 +1637,12 @@ class EditBoardFrame(GameplayFrame):
         GameplayFrame.tile_info[self.grid_index][3] = rent
         self.remove_entries()
         self.canvas = self.remove_game_board_text(self.canvas)
+        self.canvas.update()
         self.display_tile_info(self.canvas)
         self.canvas.update()
         print(GameplayFrame.tile_info)
 
+    # deletes all info from gameboard
     def remove_game_board_text(self,canvas):
         for j in range(0, 20):
             for i in range(5, 8):
