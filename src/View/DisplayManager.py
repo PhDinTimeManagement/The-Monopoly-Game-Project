@@ -42,6 +42,9 @@ class DisplayManager:
 
 # noinspection DuplicatedCode
 class GameplayFrame(DisplayManager):
+
+    tile_info = []
+
     def __init__(self, gui):
         super().__init__(gui)
 
@@ -108,7 +111,6 @@ class GameplayFrame(DisplayManager):
 
         # Gameboard tiles 9-tuple will get loaded in by the Controller
         #  [type, name, price, rent, owner, nameObj, priceObj, rentObj, ownerObj]
-        self.tile_info = []
 
         # Tile info coordinates, 6-tuple
         self.__tile_info_coord = [
@@ -312,10 +314,10 @@ class GameplayFrame(DisplayManager):
         return no_click_area,canvas, no_button_image_id
 
     def destroy_old_info(self, canvas):
-        # destroys old tile_info widgets
+        # destroys old GameplayFrame.tile_info widgets
         for i in [1, 2, 4, 6, 7, 9, 11, 13, 14, 16, 17, 19]:
             for j in range(5, 9):
-                canvas.delete(self.tile_info[i][j])
+                canvas.delete(GameplayFrame.tile_info[i][j])
 
         # destroys player_info widgets
         for i in range(0, len(self.player_info_ID)):
@@ -335,12 +337,25 @@ class GameplayFrame(DisplayManager):
             self.player_highlighter_ID.append(image_id)
         return canvas
 
-    def initialize_player_highlighter(self, canvas, player):
-        pass
+    def display_appropriate_player_highlighter_on_initialization(self, canvas):
+        if self.player_turn == -1:
+            self.player_turn += 1
+        for i in range(0, len(self.player_info)):
+            if i != self.player_turn:   # if it's the player's current turn then it doesn't move
+                canvas.move(self.player_highlighter_ID[i], 1000, 0) # moves out of screen
+        return canvas
+
+    def hide_all_player_highlighter(self, canvas):
+        for i in range(0, len(self.player_info)):
+            coords = canvas.coords(self.player_highlighter_ID[i])
+            if coords[0] == (self.right_x_border - 40):
+                canvas.move(self.player_highlighter_ID[i], 1000, 0)
+        return canvas
+
     # hides previous player and moves into view the current one
-    def highlight_current_player(self, canvas, curr_player):
-        y_pos = self.starting_y_pos + (curr_player * self.global_increment)
-        canvas.coords(self.player_highlighter_ID, self.right_x_border - 40 , y_pos)
+    def highlight_current_player(self, canvas, curr_player_idx):
+        canvas = self.hide_all_player_highlighter(canvas)
+        canvas.move(self.player_highlighter_ID[curr_player_idx], -1000, 0)
 
     def display_winners_on_canvas(self, canvas, winners_list):
         winner_message = winners_list[0]
@@ -510,13 +525,13 @@ class GameplayFrame(DisplayManager):
 
     # from the info in the gameboard, displays it on the gameboard
     def display_tile_info(self, canvas):
-        for i in range(0, len(self.__tile_info_coord)):
+        for i in range(0, 20):
             # gets all information necessary to display
-            tile_type = self.tile_info[i][0]
-            tile_name = self.tile_info[i][1]
-            tile_price = str(self.tile_info[i][2])
-            tile_rent = f"{self.tile_info[i][3]} HDK"
-            tile_owner = self.tile_info[i][4]
+            tile_type = GameplayFrame.tile_info[i][0]
+            tile_name = GameplayFrame.tile_info[i][1]
+            tile_price = str(GameplayFrame.tile_info[i][2])
+            tile_rent = f"{GameplayFrame.tile_info[i][3]} HDK"
+            tile_owner = GameplayFrame.tile_info[i][4]
             name_x_pos = self.__tile_info_coord[i][0]
             name_y_pos = self.__tile_info_coord[i][1]
             price_x_pos = self.__tile_info_coord[i][2]
@@ -535,43 +550,43 @@ class GameplayFrame(DisplayManager):
 
             # displays text based on tile type
             if tile_type == "property":
-                self.tile_info[i][5] = canvas.create_text(name_x_pos, name_y_pos, text=tile_name,
+                GameplayFrame.tile_info[i][5] = canvas.create_text(name_x_pos, name_y_pos, text=tile_name,
                                                           font=("Comic Sans MS", text_name_size, "bold"),
                                                           fill="#000000", angle=text_rotate)
                 tile_price = f"{tile_price} HKD"
-                self.tile_info[i][6] = canvas.create_text(price_x_pos, price_y_pos, text=tile_price,
+                GameplayFrame.tile_info[i][6] = canvas.create_text(price_x_pos, price_y_pos, text=tile_price,
                                                           font=("Comic Sans MS", text_price_size), fill="#000000",
                                                           angle=text_rotate)
-                self.tile_info[i][7] = canvas.create_text(rent_x_pos, rent_y_pos, text=tile_rent,
+                GameplayFrame.tile_info[i][7] = canvas.create_text(rent_x_pos, rent_y_pos, text=tile_rent,
                                                           font=("Comic Sans MS", text_rent_size), fill="#000000",
                                                           angle=text_rotate)
-                self.tile_info[i][8] = canvas.create_text(owner_x_pos, owner_y_pos, text=tile_owner,
+                GameplayFrame.tile_info[i][8] = canvas.create_text(owner_x_pos, owner_y_pos, text=tile_owner,
                                                           font=("Comic Sans MS", text_owner_size), fill="#000000",
                                                           angle=text_rotate)
 
             elif tile_type == "go":
                 tile_price = f"Collect\n{tile_price} HKD"
-                self.tile_info[i][6] = canvas.create_text(price_x_pos, price_y_pos, text=tile_price,
+                GameplayFrame.tile_info[i][6] = canvas.create_text(price_x_pos, price_y_pos, text=tile_price,
                                                           font=("Comic Sans MS", 18, "bold"), fill="#000000",
                                                           justify="center")
 
             elif tile_type == "free_parking":
                 tile_name = tile_name.replace(" ", "\n")
-                self.tile_info[i][6] = canvas.create_text(name_x_pos, name_y_pos, text=tile_name,
+                GameplayFrame.tile_info[i][6] = canvas.create_text(name_x_pos, name_y_pos, text=tile_name,
                                                           font=("Comic Sans MS", 20, "bold"), fill="#000000",
                                                           justify="center")
 
             elif tile_type == "chance":
-                self.tile_info[i][6] = canvas.create_text(name_x_pos, name_y_pos, text=tile_name,
+                GameplayFrame.tile_info[i][6] = canvas.create_text(name_x_pos, name_y_pos, text=tile_name,
                                                           font=("Comic Sans MS", 20, "bold"), fill="#000000")
 
             elif tile_type == "income_tax":
                 tile_name = tile_name.replace(" ", "\n")
-                self.tile_info[i][6] = canvas.create_text(name_x_pos, name_y_pos, text=tile_name,
+                GameplayFrame.tile_info[i][6] = canvas.create_text(name_x_pos, name_y_pos, text=tile_name,
                                                           font=("Comic Sans MS", 20, "bold"), fill="#000000",
                                                           justify="center")
                 tile_price = f"{tile_price} %"
-                self.tile_info[i][7] = canvas.create_text(price_x_pos, price_y_pos, text=tile_price,
+                GameplayFrame.tile_info[i][7] = canvas.create_text(price_x_pos, price_y_pos, text=tile_price,
                                                           font=("Comic Sans MS", 16), fill="#000000")
 
     # called to set up the entire gameplay_frame
@@ -589,6 +604,7 @@ class GameplayFrame(DisplayManager):
 
         # PLAYER HIGHLIGHTER
         canvas = self.create_player_highlighter(canvas)
+        canvas = self.display_appropriate_player_highlighter_on_initialization(canvas)
 
         # PLAYER POSITION ON BOARD and MOVES TO CORRECT TILE IN CASE OF LOADING GAME
         canvas = self.create_player_placeholders(canvas)
@@ -1319,10 +1335,6 @@ class SaveGameFrame(DisplayManager):
 
         return canvas,save_clickable_area
 
-    # -----------------------------------------------------------------------------------------------------------------------#
-
-
-
     # ------------------------------------ Functions for Showing Delete and Save Button--------------------------------------#
     def show_delete_button(self,canvas):
         canvas.coords(self.delete_button_id, self.delete_button_x, self.delete_button_y)
@@ -1341,7 +1353,6 @@ class SaveGameFrame(DisplayManager):
     def hide_save_button(self,canvas):
         canvas.coords(self.save_button_id, -100,-100)
     # -----------------------------------------------------------------------------------------------------------------------#
-
 
     def clear_selected_slots(self,canvas):
         for i, slot_id in enumerate(self.slot_item_ids):
@@ -1549,44 +1560,10 @@ class EditBoardFrame(GameplayFrame):
             file=os.path.join(assets_base_path, "edit_gameboard_frame/cancel.png"))
         self.back_arrow_photo=tk.PhotoImage(
             file=os.path.join(assets_base_path, "edit_gameboard_frame/back_arrow.png"))
-        self.__tile_info_coord = [
-            [None, None, 770, 860, None, None, None, None], # go
-            [635, 880, 635, 905, 635, 930, 635, 840], # prop1
-            [500, 880, 500, 905, 500, 930, 500, 840], # prop2
-            [365, 870, 365, 930, None, None, None, None],   # income tax
-            [230, 880, 230, 905, 230, 930, 230, 840], # prop3
-            [None, None, None, None, None, None, None, None], # jail
-            [100, 752, 75, 752, 50, 752, 142, 752], # prop4
-            [100, 617, 75, 617, 50, 617, 142, 617], # prop5
-            [95, 510, None, None, None, None, None, None], # chance
-            [100, 347, 75, 347, 50, 347, 142, 347], # prop6
-            [95 , 210, None, None, None, None, None, None], # free parking
-            [230, 165, 230, 190, 230, 215, 230, 258],  # prop7
-            [365, 240, 365, 190, None, None, None, None],  # chance
-            [500, 165, 500, 190, 500, 215, 500, 258],  # prop8
-            [635, 165, 635, 190, 635, 215, 635, 258],  # prop9
-            [None, None, None, None, None, None, None, None],  # go to jail
-            [765, 347, 790, 347, 815, 347, 722, 347],  # prop10
-            [765, 482, 790, 482, 815, 482, 722, 482],  # prop11
-            [770, 645, None, None, None, None, None, None],  # chance
-            [765, 752, 790, 752, 815, 752, 722, 752]  # prop12
-        ]
-        self.grid_coordinates=[[567,820,700,953,1],[431,819,568,951,2],[164,817,296,953,4],[27,684,160,816,6],[28,549,161,684,7],
-                               [28,278,160,413,9],[161,147,297,278,11],[433,144,567,279,13],[568,144,700,278,14],[700,278,833,413,16],[704,415,837,547,17],[701,685,835,817,19]]
-        self.property_data= {
-            1: {"name": "Central", "price": 800, "rent": 90},
-            2: {"name": "Wan Chai", "price": 700, "rent": 65},
-            4: {"name": "Stanley", "price": 600, "rent": 60},
-            6: {"name": "Shek-O", "price": 400, "rent": 10},
-            7: {"name": "Mong Kok Li", "price": 500, "rent": 40},
-            9: {"name": "Tsing Yi", "price": 400, "rent": 15},
-            11: {"name": "Shatin", "price": 700, "rent": 75},
-            13: {"name": "Tuen Mun", "price": 400, "rent": 20},
-            14: {"name": "Tai Po", "price": 500, "rent": 25},
-            16: {"name": "Sai Kung", "price": 400, "rent": 10},
-            17: {"name": "Yuen Long", "price": 400, "rent": 25},
-            19: {"name": "Tai O", "price": 600, "rent": 25},
-        }
+
+        self.property_coordinates=[[567, 820, 700, 953, 1], [431, 819, 568, 951, 2], [164, 817, 296, 953, 4], [27, 684, 160, 816, 6], [28, 549, 161, 684, 7],
+                                   [28,278,160,413,9], [161,147,297,278,11], [433,144,567,279,13], [568,144,700,278,14], [700,278,833,413,16], [704,415,837,547,17], [701,685,835,817,19]]
+
         self.name_entry=None
         self.price_entry=None
         self.rent_entry=None
@@ -1618,12 +1595,12 @@ class EditBoardFrame(GameplayFrame):
         print(f"Coordinates: ({x}, {y})")
         self.grid_index=self.check_click_grid(x,y)
         if self.grid_index!=-1:
-            print(self.property_data[self.grid_index])
+            print(GameplayFrame.tile_info[self.grid_index])
             self.create_input_entries(self.current_frame)
 
     def check_click_grid(self,x,y):
         grid_index=-1
-        for top_left_x,top_left_y,bottom_right_x,bottom_right_y,index in self.grid_coordinates:
+        for top_left_x,top_left_y,bottom_right_x,bottom_right_y,index in self.property_coordinates:
             if self.check_inside_grid(x,y,top_left_x,top_left_y,bottom_right_x,bottom_right_y):
                 grid_index=index
                 break
@@ -1639,66 +1616,30 @@ class EditBoardFrame(GameplayFrame):
         self.name_entry.place(x=1188, y=390, width=400, height=80,anchor="center")
         self.price_entry.place(x=1188, y=570, width=400, height=80,anchor="center")
         self.rent_entry.place(x=1188, y=760, width=400, height=80,anchor="center")
-        self.name_entry.insert(0,self.property_data[self.grid_index]["name"])
-        self.price_entry.insert(0,self.property_data[self.grid_index]["price"])
-        self.rent_entry.insert(0,self.property_data[self.grid_index]["rent"])
+        self.name_entry.insert(0, GameplayFrame.tile_info[self.grid_index][1]) # 1 is "name"
+        self.price_entry.insert(0, GameplayFrame.tile_info[self.grid_index][2]) # 2 is "price"
+        self.rent_entry.insert(0, GameplayFrame.tile_info[self.grid_index][3]) # 3 is "rent"
 
     def remove_entries(self):
-        if self.name_entry!=None:
+        if self.name_entry is not None:
             self.name_entry.destroy()
-        if self.price_entry!=None:
+        if self.price_entry is not None:
             self.price_entry.destroy()
-        if self.rent_entry != None:
+        if self.rent_entry is not None:
             self.rent_entry.destroy()
 
     def process_user_input(self):
-        name=self.name_entry.get()
-        price=self.price_entry.get()
-        rent=self.rent_entry.get()
+        name= self.name_entry.get()
+        price= self.price_entry.get()
+        rent= self.rent_entry.get()
         #check valid and if valid
-        self.property_data[self.grid_index]={"name":name,"price":int(price),"rent":int(rent)}
+        GameplayFrame.tile_info[self.grid_index][1] = name
+        GameplayFrame.tile_info[self.grid_index][2] = price
+        GameplayFrame.tile_info[self.grid_index][3] = rent
         self.remove_entries()
         self.remove_game_board_text(self.canvas)
         self.display_tile_info(self.canvas)
-        print(self.property_data)
-
-    # from the info in the gameboard, displays it on the gameboard
-    def display_tile_info(self, canvas):
-        for index in self.property_data:
-            # gets all information necessary to display
-            tile_name = self.property_data[index]["name"]
-            tile_price = str(self.property_data[index]["price"])
-            tile_rent = f"{self.property_data[index]["rent"]} HDK"
-            name_x_pos = self.__tile_info_coord[index][0]
-            name_y_pos = self.__tile_info_coord[index][1]
-            price_x_pos = self.__tile_info_coord[index][2]
-            price_y_pos = self.__tile_info_coord[index][3]
-            rent_x_pos = self.__tile_info_coord[index][4]
-            rent_y_pos = self.__tile_info_coord[index][5]
-
-            # calculates text sizes
-            text_name_size, text_price_size, text_rent_size, text_owner_size = self.set_appropriate_text_dimension(
-                tile_name, tile_rent, tile_price, None)
-
-            # calculates text rotation
-            text_rotate = self.rotate_text(index)
-
-            # displays text based on tile type
-            name_text = canvas.create_text(name_x_pos, name_y_pos, text=tile_name,
-                                                      font=("Comic Sans MS", text_name_size, "bold"),
-                                                      fill="#000000", angle=text_rotate)
-            tile_price = f"{tile_price} HKD"
-            price_text = canvas.create_text(price_x_pos, price_y_pos, text=tile_price,
-                                                      font=("Comic Sans MS", text_price_size), fill="#000000",
-                                                      angle=text_rotate)
-            rent_text = canvas.create_text(rent_x_pos, rent_y_pos, text=tile_rent,
-                                                      font=("Comic Sans MS", text_rent_size), fill="#000000",
-                                                      angle=text_rotate)
-            canvas.tag_bind(name_text, '<Button-1>', self.on_game_board_click)
-            canvas.tag_bind(price_text, '<Button-1>', self.on_game_board_click)
-            canvas.tag_bind(rent_text, '<Button-1>', self.on_game_board_click)
-
-            self.clear.extend([name_text,price_text,rent_text])
+        print(GameplayFrame.tile_info)
 
     def remove_game_board_text(self,canvas):
         for text in self.clear:

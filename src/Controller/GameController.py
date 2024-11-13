@@ -30,6 +30,10 @@ class GameController:
         #binding the buttons
         self.gui.new_game_canvas.tag_bind(self.gui.play_button_clickable_area, "<Button-1>", lambda e: self.button_play())
 
+        # TODO same function is also called in play_button IS NECESSARY?
+        self.pass_gameboard_info_to_view()
+        self.gui.show_edit_board_frame()
+
     #To clear all the data when loading ot starting a new game
     def clear_all_data(self):
         self.player_list.clear()
@@ -70,6 +74,7 @@ class GameController:
 
     def pass_tile_information_for_display(self):
         for i in range(0, 20):
+            # type, name, price, rent, owner,
             empty_9tuple = [None, None, None, None, None, None, None, None, None]
             # creates new empty row
             self.gui.gameplay_frame.tile_info.append(empty_9tuple)
@@ -113,7 +118,7 @@ class GameController:
             self.gui.gameplay_frame.player_info[i][5] = len(self.all_players[i].get_properties_list())
             self.gui.gameplay_frame.player_info[i][6] = curr_pos
 
-    def pass_player_information_for_display(self):
+    def pass_player_information_to_view(self):
         self.gui.gameplay_frame.player_turn = self.game_logic.get_player_turn()
         for i in range(0, len(self.all_players)):
             # info passed: [name, balance, positionName, isJailed, inJailTurns, #propOwned, positionInt]
@@ -121,7 +126,6 @@ class GameController:
             self.gui.gameplay_frame.player_info.append(player_tuple)    #adds new 6-tuple
             self.gui.gameplay_frame.player_info[i][0] = self.all_players[i].get_name()
         self.pass_updated_players_info()
-
 
     def pass_color_information_for_display(self):
         for i in range(0, 20):
@@ -132,11 +136,10 @@ class GameController:
                 color = self.board.tiles[i].get_color()
                 self.gui.gameplay_frame.set_color(i, color)
 
-    # passes necessary \information to the gui and creates missing frames
-    def pass_all_info_to_view(self):
+    # passes necessary information to the gui and creates missing frames
+    def pass_gameboard_info_to_view(self):
         self.pass_color_information_for_display()
         self.pass_tile_information_for_display()
-        self.pass_player_information_for_display()
 
     # ----------Hiding logic in controller----------#
     def hide_roll_image(self):
@@ -294,9 +297,11 @@ class GameController:
             self.all_players = self.player_list.copy()  # maintains a record copy of all players obj to keep updating the view even after they are broke
 
             # passes all info to view to build the board
-            self.pass_all_info_to_view()
+            self.pass_gameboard_info_to_view()
+            self.pass_player_information_to_view()
 
             self.gui.show_game_play_frame()     # builds gameplay frame when it has all necessary information
+
             self.game_logic.set_player_turn(self.get_player_list())
             player_this_turn = self.get_player_list()[self.game_logic.get_player_turn()]
 
