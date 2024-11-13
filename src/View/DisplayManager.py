@@ -1675,7 +1675,6 @@ class EditBoardFrame(GameplayFrame):
         self.remove_game_board_text()
         self.canvas.update()
         self.display_tile_info(self.canvas)
-        self.canvas.update()
         print(GameplayFrame.tile_info)
 
     # TODO fix overlap of names
@@ -1683,5 +1682,5 @@ class EditBoardFrame(GameplayFrame):
     def remove_game_board_text(self):
         for j in range(0, 20):
             for i in range(5, 8):
-                self.canvas.delete(GameplayFrame.tile_info[self.grid_index][i])
-                GameplayFrame.tile_info[self.grid_index][i] = None
+                self.canvas.delete(GameplayFrame.tile_info[j][i])
+                GameplayFrame.tile_info[j][i] = None
