@@ -174,9 +174,10 @@ class GameplayFrame(DisplayManager):
         self.bottom_y_border = 860
         self.right_x_border = 950
         self.left_x_border = 1430
+        self.player_positional_increment = 0
         self.global_increment = 0
-        self.player_highlight_image = tk.PhotoImage(file= os.path.join(assets_base_path, "gameplay_frame/player_highlight.png"))
-        self.player_highlighter_ID = None
+        self.player_turn = 0
+        self.player_highlighter_ID = []
 
 # ------------------------------------# Game Play Frame #------------------------------------#
     @staticmethod
@@ -326,9 +327,20 @@ class GameplayFrame(DisplayManager):
         self.display_tile_info(canvas)
 
     def create_player_highlighter(self, canvas):
-        image_id = canvas.create_image(self.right_x_border - 40, self.starting_y_pos, anchor="center",
-                                       image=self.player_highlight_image)
-        return canvas, image_id
+        y_pos = self.starting_y_pos
+        for i in range(0, len(self.player_info)):
+            image_id = canvas.create_image(self.right_x_border - 40, y_pos, anchor="center",
+                                            image=self.player_image[i])
+            y_pos += self.player_positional_increment
+            self.player_highlighter_ID.append(image_id)
+        return canvas
+
+    def initialize_player_highlighter(self, canvas, player):
+        pass
+    # hides previous player and moves into view the current one
+    def highlight_current_player(self, canvas, curr_player):
+        y_pos = self.starting_y_pos + (curr_player * self.global_increment)
+        canvas.coords(self.player_highlighter_ID, self.right_x_border - 40 , y_pos)
 
     def display_winners_on_canvas(self, canvas, winners_list):
         winner_message = winners_list[0]
@@ -339,10 +351,6 @@ class GameplayFrame(DisplayManager):
         winner_message = f"{winner_message}\n WON THE GAME"
         canvas.create_text(self.roll_dice_x_pos, self.half_screen_y + 50 , anchor="center", text=winner_message,
                            font= ("Comic Sans MS", 20, "bold"), fill="#000000", justify="center")
-
-    def highlight_current_player(self, canvas, curr_player):
-        y_pos = self.starting_y_pos + (curr_player * self.global_increment)
-        canvas.coords(self.player_highlighter_ID, self.right_x_border - 40 , y_pos)
 
     def show_not_enough_money(self, canvas):
         self.no_money_ID = canvas.create_text(self.yes_x_pos, self.yes_y_pos, anchor="center", text="NOT ENOUGH\nMONEY",
@@ -402,6 +410,7 @@ class GameplayFrame(DisplayManager):
         starting_pos = self.starting_y_pos
         total_players = len(self.player_info)
         increment = (self.bottom_y_border - starting_pos) / total_players
+        self.player_positional_increment = increment
         self.global_increment = increment
         name_size = 22
         info_size = 20
@@ -579,7 +588,7 @@ class GameplayFrame(DisplayManager):
         self.display_player_info(canvas)
 
         # PLAYER HIGHLIGHTER
-        canvas, self.player_highlighter_ID = self.create_player_highlighter(canvas)
+        canvas = self.create_player_highlighter(canvas)
 
         # PLAYER POSITION ON BOARD and MOVES TO CORRECT TILE IN CASE OF LOADING GAME
         canvas = self.create_player_placeholders(canvas)
