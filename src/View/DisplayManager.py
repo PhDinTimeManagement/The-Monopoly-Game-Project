@@ -225,7 +225,7 @@ class GameplayFrame(DisplayManager):
     def get_color_coord(self, pos):
         return self.__tile_color_coord[pos]
 
-    def roll_dice_animation(self, canvas, roll_dice_x_pos, roll_dice_y_pos, dice_counter, callback, total_dice=None):
+    def roll_dice_animation(self, canvas, roll_dice_x_pos, roll_dice_y_pos, dice_counter, callback, dice_image_position,total_dice=None):
         # Show each frame of the dice animation
         def show_frame(frame_index):
             if frame_index < len(self.dice_animation_frames):
@@ -239,8 +239,9 @@ class GameplayFrame(DisplayManager):
             else:
                 if dice_counter <= 2:
                     # After the animation, display a random dice result
-                    result_image, dice_result = choice(self.dice_result_images)
+                    result_image, dice_result = self.dice_result_images[dice_image_position]
                     canvas.delete("dice_animation")
+                    print("Displaying Image")
                     canvas.create_image(
                         roll_dice_x_pos, roll_dice_y_pos,
                         image=result_image, anchor="center", tags="dice_animation"
@@ -280,8 +281,10 @@ class GameplayFrame(DisplayManager):
         if dice_counter == 1:
             canvas.delete("total_dice_result_text")
 
-        # Start the animation with the first frame
-        show_frame(0)
+        if total_dice is None:# Start the animation with the first frame
+            show_frame(0)
+        else:
+            show_frame(len(self.dice_animation_frames))
 
     #for testing
     def save_quit(self):
@@ -1018,7 +1021,7 @@ class MainMenuFrame(DisplayManager):
             (self.gui.image_width // 2) + (0.6 * load_game_width), button_y_positions[1] + (0.6 * load_game_height),
             outline="", fill=""
         )
-        canvas.tag_bind(load_game_clickable_area, "<Button-1>", lambda e: self.gui.show_frame("load_game"))
+        #canvas.tag_bind(load_game_clickable_area, "<Button-1>", lambda e: self.gui.show_frame("load_game"))
 
         # "Exit" button and clickable area
         exit_button = canvas.create_image(self.gui.image_width // 2, button_y_positions[2], image=self.exit_image)
@@ -1038,7 +1041,7 @@ class MainMenuFrame(DisplayManager):
         )
         canvas.tag_bind(info_clickable_area, "<Button-1>", lambda e: self.gui.show_frame("info"))
 
-        return canvas
+        return canvas,load_game_clickable_area #return the clickable area for load game
 
 
 class LoadGameFrame(DisplayManager):
@@ -1048,7 +1051,7 @@ class LoadGameFrame(DisplayManager):
         self.load_and_play_button_id = None
         self.saved_game_slots = []
         self.slot_item_ids = [] # Track item IDs for slots
-
+        self.load_button_x, self.load_button_y = self.gui.image_width // 2, 835
         # Load Game frame images
         self.load_game_frame_background = tk.PhotoImage(
             file=os.path.join(assets_base_path, "load_game_frame/load_game_frame_background.png"))
@@ -1092,6 +1095,25 @@ class LoadGameFrame(DisplayManager):
             self.saved_game_slot5_image
         ]
 
+        self.load_and_play_button_id = canvas.create_image(self.load_button_x, self.load_button_y,
+                                                           image=self.load_and_play_button_image)
+
+        #hide the load_play image
+        self.hide_load_play_image(canvas)
+
+        #create clickable area for load_play
+        load_and_play_clickable_area = canvas.create_rectangle(
+            self.load_button_x - (0.5 * self.load_and_play_button_image.width()),
+            self.load_button_y - (0.5 * self.load_and_play_button_image.height()),
+            self.load_button_x + (0.5 * self.load_and_play_button_image.width()),
+            self.load_button_y + (0.5 * self.load_and_play_button_image.height()),
+            outline="", fill=""
+        )
+
+        #An array to store all the clickable area in an array
+        load_game_clickable_area = []
+        load_game_clickable_area.append(load_and_play_clickable_area)
+
         # Display saved game slots
         for i, slot_image in enumerate(self.saved_game_slots):
             slot_x, slot_y = self.saved_game_slot_positions[i]  # Unpack coordinates
@@ -1105,21 +1127,31 @@ class LoadGameFrame(DisplayManager):
                 outline="", fill=""
             )
 
+            load_game_clickable_area.append(clickable_area)
             # Bind click event to select the slot
             canvas.tag_bind(clickable_area, "<Button-1>",
-                            lambda e, idx=i: self.select_saved_game_slot(canvas, idx))
+                            lambda e, idx=i: self.select_saved_game_slot(canvas, idx)) #TODO del later
 
         # Display the back button to return to the main menu
         back_button = canvas.create_image(50, 50, image=self.back_arrow_image)
-        canvas.tag_bind(back_button, "<Button-1>", lambda e: self.gui.show_frame("main_menu"))
+        canvas.tag_bind(back_button, "<Button-1>", lambda e: self.gui.show_frame("main_menu")) #TODO link with delete selection area
 
         self.show_save_file(canvas)
 
-        return canvas
+        return canvas, load_game_clickable_area
 
     def clear_selected_slots(self,canvas):
         for i, slot_id in enumerate(self.slot_item_ids):
             canvas.itemconfig(slot_id, image=self.saved_game_slots[i])
+
+    #---------- Show and Hide of the load and play button ----------#
+    def show_load_play_image(self,canvas):
+        canvas.coords(self.load_and_play_button_id,self.load_button_x,self.load_button_y)
+
+    def hide_load_play_image(self,canvas):
+        canvas.coords(self.load_and_play_button_id,-100,-100)
+
+    #---------------------------------------------------------------#
 
     def select_saved_game_slot(self, canvas, idx):
         # Clear any previously selected slots by resetting all slots to their original images
@@ -1129,32 +1161,34 @@ class LoadGameFrame(DisplayManager):
         canvas.itemconfig(self.slot_item_ids[idx], image=self.selected_saved_game_slot_image)
         self.gui.selected_saved_game_slot = idx
 
-        # Display Load and Play button once a slot is selected
-        if self.load_and_play_button_id is not None:
-            canvas.delete(self.load_and_play_button_id)
-        load_button_x, load_button_y = self.gui.image_width // 2, 835
-        self.load_and_play_button_id = canvas.create_image(load_button_x, load_button_y,
-                                                           image=self.load_and_play_button_image)
-        load_and_play_clickable_area = canvas.create_rectangle(
-            load_button_x - (0.5 * self.load_and_play_button_image.width()),
-            load_button_y - (0.5 * self.load_and_play_button_image.height()),
-            load_button_x + (0.5 * self.load_and_play_button_image.width()),
-            load_button_y + (0.5 * self.load_and_play_button_image.height()),
-            outline="", fill=""
-        )
-
-        canvas.tag_bind(load_and_play_clickable_area, "<Button-1>", lambda e: self.load_data(idx))
+        # # Display Load and Play button once a slot is selected
+        # if self.load_and_play_button_id is not None:
+        #     canvas.delete(self.load_and_play_button_id)
+        # load_button_x, load_button_y = self.gui.image_width // 2, 835
+        # self.load_and_play_button_id = canvas.create_image(load_button_x, load_button_y,
+        #                                                    image=self.load_and_play_button_image)
+        # load_and_play_clickable_area = canvas.create_rectangle(
+        #     load_button_x - (0.5 * self.load_and_play_button_image.width()),
+        #     load_button_y - (0.5 * self.load_and_play_button_image.height()),
+        #     load_button_x + (0.5 * self.load_and_play_button_image.width()),
+        #     load_button_y + (0.5 * self.load_and_play_button_image.height()),
+        #     outline="", fill=""
+        # )
+        #
+        # canvas.tag_bind(load_and_play_clickable_area, "<Button-1>", lambda e: self.load_data(idx))
 
         return canvas
 
     def load_data(self,idx):
-        from src.Controller.GameController import GameController
-        g=GameController(self.gui)
+        # from src.Controller.GameController import GameController
+        # g=GameController(self.gui)
+        # if idx<len(self.display_text):
+        #     print(self.display_text[idx][2].split('.')[0])
+        #     g.load_game(self.display_text[idx][2].split('.')[0])
+        #     self.gui.show_game_play_frame()
+        #     self.gui.show_frame("gameplay")
         if idx<len(self.display_text):
-            print(self.display_text[idx][2].split('.')[0])
-            g.load_game(self.display_text[idx][2].split('.')[0])
-            self.gui.show_game_play_frame()
-            self.gui.show_frame("gameplay")
+            return self.display_text[idx][2].split('.')[0]
 
     def show_save_file(self,canvas):
         for obj in self.display_text:
@@ -1248,6 +1282,11 @@ class SaveGameFrame(DisplayManager):
         # canvas.tag_bind(back_button, "<Button-1>", lambda e: self.back_button(canvas))
         save_delete_click_area.append(back_button)
 
+        home_button = canvas.create_image(self.gui.image_width - 50, 50, image=self.home_icon_image)
+        save_delete_click_area.append(home_button)
+
+        #canvas.tag_bind(home_button, "<Button-1>", lambda e: self.gui.show_frame("main_menu"))
+
         # Display saved game slots
         for i, slot_image in enumerate(self.saved_game_slots):
             slot_x, slot_y = self.saved_game_slot_positions[i]  # Unpack coordinates
@@ -1261,9 +1300,6 @@ class SaveGameFrame(DisplayManager):
                 outline="", fill=""
             )
             save_delete_click_area.append(clickable_area)
-
-        home_button = canvas.create_image(self.gui.image_width-50, 50, image=self.home_icon_image)
-        canvas.tag_bind(home_button, "<Button-1>", lambda e: self.gui.show_frame("main_menu"))
 
         self.show_save_file(canvas)
 
