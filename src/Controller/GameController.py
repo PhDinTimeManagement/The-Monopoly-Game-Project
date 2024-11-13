@@ -115,11 +115,13 @@ class GameController:
             self.gui.gameplay_frame.player_info[i][3] = self.all_players[i].get_jail_status()
             self.gui.gameplay_frame.player_info[i][4] = self.all_players[i].get_in_jail_turns()
             self.gui.gameplay_frame.player_info[i][5] = len(self.all_players[i].get_properties_list())
+            self.gui.gameplay_frame.player_info[i][6] = curr_pos
+
 
     def pass_player_information_for_display(self):
         for i in range(0, len(self.all_players)):
-            # info passed: [name, balance, position, isJailed, inJailTurns, #propOwned]
-            player_tuple = [None, None, None, None, None, None]
+            # info passed: [name, balance, positionName, isJailed, inJailTurns, #propOwned, positionInt]
+            player_tuple = [None, None, None, None, None, None, None]
             self.gui.gameplay_frame.player_info.append(player_tuple)    #adds new 6-tuple
             self.gui.gameplay_frame.player_info[i][0] = self.all_players[i].get_name()
         self.pass_updated_players_info()
@@ -436,8 +438,7 @@ class GameController:
                 tile = GameLogic.player_move(total_dice, player_this_turn, self.board)
                 # Shows player movement
                 self.gui.gameplay_frame.player_movement(self.gui.game_canvas, self.player_list.index(player_this_turn),
-                                                        startingPosition,
-                                                        tile)
+                                                        startingPosition, tile.get_tile_position())
                 self.update_all_game_info()
                 self.land_and_complete_round(tile, player_this_turn)
                 self.determine_next_round(player_this_turn)
@@ -471,7 +472,7 @@ class GameController:
         elif action[0] == "move":
             # TODO <show animation for player moving>
             print("Out of Jail, Move on")
-            self.gui.gameplay_frame.player_movement(self.gui.game_canvas, self.player_list.index(player_this_turn), 5, action[1])
+            self.gui.gameplay_frame.player_movement(self.gui.game_canvas, self.player_list.index(player_this_turn), 5, action[1].get_tile_position())
             self.land_and_complete_round(action[1], player_this_turn)
         elif action[0] == 'not_move':
             pass  # del

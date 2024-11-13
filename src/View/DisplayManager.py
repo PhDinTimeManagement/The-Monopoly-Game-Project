@@ -235,7 +235,7 @@ class GameplayFrame(DisplayManager):
                     image=self.dice_animation_frames[frame_index],
                     anchor="center", tags="dice_animation"
                 )
-                self.gui.after(50, show_frame, frame_index + 1)  # Show next frame after 100 ms
+                self.gui.after(50, show_frame, frame_index + 1)  # Show next frame after 50 ms
             else:
                 if dice_counter <= 2:
                     # After the animation, display a random dice result
@@ -259,7 +259,7 @@ class GameplayFrame(DisplayManager):
                     # Pass the dice result to the callback function
                     callback(dice_result)
                 else:
-                    # After a 1s delay, display again
+                    # After a 0.5s delay, display again
                     self.gui.after(500,
                                    lambda: clear_dice_display(canvas, roll_dice_x_pos, roll_dice_y_pos, total_dice))
 
@@ -373,9 +373,7 @@ class GameplayFrame(DisplayManager):
             canvas.move(placeholder_id, 0, self.totalMovement)
 
     # noinspection PyUnusedLocal
-    def player_movement(self, canvas, player, starting_pos, final_tile):
-        final_pos = final_tile.get_tile_position()
-        final_tile_type = final_tile.get_tile_type()
+    def player_movement(self, canvas, player, starting_pos, final_pos):
         placeholder_id = self.player_image_ID[player]
         if final_pos < starting_pos:
             final_pos += 20
@@ -396,7 +394,7 @@ class GameplayFrame(DisplayManager):
                 final_pos -= 19
             curr_pos += 1
 
-        if final_tile_type == "go_to_jail":
+        if final_pos == 15: #go to jail tile, moves player to jail
             canvas.move(placeholder_id, -675, 675)
         #placeholder_id.lift()
 
@@ -583,8 +581,12 @@ class GameplayFrame(DisplayManager):
         # PLAYER HIGHLIGHTER
         canvas, self.player_highlighter_ID = self.create_player_highlighter(canvas)
 
-        # PLAYER POSITION ON BOARD
+        # PLAYER POSITION ON BOARD and MOVES TO CORRECT TILE IN CASE OF LOADING GAME
         canvas = self.create_player_placeholders(canvas)
+        player_index = 0
+        for player in self.player_info:
+            self.player_movement(canvas, player_index, 0, player[6]) #player[6] players_info position information
+            player_index += 1
 
         # ROLL DICE BUTTON
         roll_dice_click_area, canvas, self.roll_dice_image_id = self.create_button(canvas, self.roll_dice_x_pos, self.roll_dice_y_pos, self.roll_dice_image)
@@ -1151,7 +1153,6 @@ class LoadGameFrame(DisplayManager):
         if idx<len(self.display_text):
             print(self.display_text[idx][2].split('.')[0])
             g.load_game(self.display_text[idx][2].split('.')[0])
-            g.load_gameboard(self.display_text[idx][2].split('.')[0])
             self.gui.show_game_play_frame()
             self.gui.show_frame("gameplay")
 
