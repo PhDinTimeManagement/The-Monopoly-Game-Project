@@ -1672,16 +1672,16 @@ class EditBoardFrame(GameplayFrame):
         GameplayFrame.tile_info[self.grid_index][2] = price
         GameplayFrame.tile_info[self.grid_index][3] = rent
         self.remove_entries()
-        self.canvas = self.remove_game_board_text(self.canvas)
+        self.remove_game_board_text()
         self.canvas.update()
         self.display_tile_info(self.canvas)
         self.canvas.update()
         print(GameplayFrame.tile_info)
 
+    # TODO fix overlap of names
     # deletes all info from gameboard
-    def remove_game_board_text(self,canvas):
+    def remove_game_board_text(self):
         for j in range(0, 20):
             for i in range(5, 8):
-                canvas.delete(GameplayFrame.tile_info[self.grid_index][i])
+                self.canvas.delete(GameplayFrame.tile_info[self.grid_index][i])
                 GameplayFrame.tile_info[self.grid_index][i] = None
-        return canvas
