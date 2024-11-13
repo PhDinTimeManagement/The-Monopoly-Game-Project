@@ -1540,27 +1540,89 @@ class EditBoardFrame(GameplayFrame):
             file=os.path.join(assets_base_path, "edit_gameboard_frame/cancel.png"))
         self.back_arrow_photo=tk.PhotoImage(
             file=os.path.join(assets_base_path, "edit_gameboard_frame/back_arrow.png"))
+        self.grid_coordinates=[[567,820,700,953,1],[431,819,568,951,2],[164,817,296,953,4],[27,684,160,816,6],[28,549,161,684,7],
+                               [28,278,160,413,9],[161,147,297,278,11],[433,144,567,279,13],[568,144,700,278,14],[700,278,833,413,16],[704,415,837,547,17],[701,685,835,817,19]]
+        self.property_data= {
+            1: {"name": "Central", "price": 800, "rent": 90},
+            2: {"name": "Wan Chai", "price": 700, "rent": 65},
+            4: {"name": "Stanley", "price": 600, "rent": 60},
+            6: {"name": "Shek-O", "price": 400, "rent": 10},
+            7: {"name": "Mong Kok Li", "price": 500, "rent": 40},
+            9: {"name": "Tsing Yi", "price": 400, "rent": 15},
+            11: {"name": "Shatin", "price": 700, "rent": 75},
+            13: {"name": "Tuen Mun", "price": 400, "rent": 20},
+            14: {"name": "Tai Po", "price": 500, "rent": 25},
+            16: {"name": "Sai Kung", "price": 400, "rent": 10},
+            17: {"name": "Yuen Long", "price": 400, "rent": 25},
+            19: {"name": "Tai O", "price": 600, "rent": 25},
+        }
+        self.name_entry=None
+        self.price_entry=None
+        self.rent_entry=None
+        self.current_frame=None
+        self.grid_index=-1
 
     def setup_edit_board_frame(self, frame):
         canvas = self.clear_widgets_create_canvas_set_background(frame, self.edit_board_background)
-        cancel_click_area, canvas, cancel_id=self.create_button(canvas,1051,897,self.cancel_photo)
-        confirm_click_area, canvas, confirm_id=self.create_button(canvas,1318,897,self.confirm_photo)
-        back_click_area, canvas, back_id=self.create_button(canvas,50,50,self.back_arrow_photo)
-        canvas.tag_bind(back_click_area, "<Button-1>",lambda e: self.gui.show_frame("new_game"))
-        #not working
-        #self.display_tile_info(canvas)
+        self.current_frame=frame
+        cancel_click_area, canvas, cancel_id = self.create_button(canvas, 1051, 897, self.cancel_photo)
+        confirm_click_area, canvas, confirm_id = self.create_button(canvas, 1318, 897, self.confirm_photo)
+        back_click_area, canvas, back_id = self.create_button(canvas, 50, 50, self.back_arrow_photo)
 
+        canvas.tag_bind(back_click_area, "<Button-1>", lambda e: self.gui.show_frame("new_game"))
+        canvas.tag_bind(cancel_click_area, "<Button-1>", lambda e: self.remove_entries())
+        canvas.tag_bind(confirm_click_area, "<Button-1>", lambda e: self.process_user_input())
+
+        game_board_area = canvas.create_rectangle(27, 144, 836, 954, outline="", fill="", tags="game_board")
+        canvas.tag_bind("game_board", '<Button-1>', self.on_game_board_click)
+
+    def on_game_board_click(self, event):
+        self.remove_entries()
+        x = event.x  # 獲取相對於畫布的 X 坐標
+        y = event.y  # 獲取相對於畫布的 Y 坐標
+        print(f"Coordinates: ({x}, {y})")  # 在控制台打印坐標
+        self.grid_index=self.check_click_grid(x,y)
+        if self.grid_index!=-1:
+            print(self.property_data[self.grid_index])
+            self.create_input_entries(self.current_frame)
+
+    def check_click_grid(self,x,y):
+        grid_index=-1
+        for top_left_x,top_left_y,bottom_right_x,bottom_right_y,index in self.grid_coordinates:
+            if self.check_inside_grid(x,y,top_left_x,top_left_y,bottom_right_x,bottom_right_y):
+                grid_index=index
+                break
+        return grid_index
+
+    def check_inside_grid(self,x,y,top_left_x,top_left_y,bottom_right_x,bottom_right_y):
+        return top_left_x<=x<=bottom_right_x and top_left_y<=y<=bottom_right_y
+
+    def create_input_entries(self,frame):
         self.name_entry = tk.Entry(frame, width=400, font=("Comic Sans MS", 40))
         self.price_entry = tk.Entry(frame, width=400, font=("Comic Sans MS", 40))
         self.rent_entry = tk.Entry(frame, width=400, font=("Comic Sans MS", 40))
         self.name_entry.place(x=1188, y=390, width=400, height=80,anchor="center")
         self.price_entry.place(x=1188, y=570, width=400, height=80,anchor="center")
         self.rent_entry.place(x=1188, y=760, width=400, height=80,anchor="center")
+        self.name_entry.insert(0,self.property_data[self.grid_index]["name"])
+        self.price_entry.insert(0,self.property_data[self.grid_index]["price"])
+        self.rent_entry.insert(0,self.property_data[self.grid_index]["rent"])
 
+    def remove_entries(self):
+        if self.name_entry!=None:
+            self.name_entry.destroy()
+        if self.price_entry!=None:
+            self.price_entry.destroy()
+        if self.rent_entry != None:
+            self.rent_entry.destroy()
 
-
-
-
-
+    def process_user_input(self):
+        name=self.name_entry.get()
+        price=self.price_entry.get()
+        rent=self.rent_entry.get()
+        #check valid and if valid
+        self.property_data[self.grid_index]={"name":name,"price":int(price),"rent":int(rent)}
+        self.remove_entries()
+        print(self.property_data)
 
 
