@@ -407,7 +407,7 @@ class GameController:
             self.bind_roll_button(action[1]) #selection player next turn to roll the dice
             print("Current Money: ",player_this_turn.get_current_money()) #TODO del later
             print("\nNext round,", action[1].get_name(),"'s turn. click roll\n") #TODO del later
-        self.bind_save_button()
+        self.bind_save_quit_button()
 
     def land_and_complete_round(self, tile, player_this_turn):
         tile_type = tile.get_tile_type()
