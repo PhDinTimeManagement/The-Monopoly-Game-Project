@@ -226,6 +226,65 @@ class GameplayFrame(DisplayManager):
 
     def get_color_coord(self, pos):
         return self.__tile_color_coord[pos]
+                                                                        #an array
+    def jail_roll_animation(self,canvas,roll_dice_x_pos, roll_dice_y_pos,dice_image_position):
+
+        def during_roll(j):
+            if j < len(self.dice_animation_frames):
+                canvas.delete("dice_animation")
+                canvas.create_image(
+                    roll_dice_x_pos, roll_dice_y_pos,
+                    image=self.dice_animation_frames[j],
+                    anchor="center", tags="dice_animation"
+                )
+                self.gui.after(50, lambda: during_roll(j+1))#wait 50 ms before another picture shows up
+            else:
+                self.gui.after(10, canvas.delete("dice_animation"))
+
+        def show_dice_result(i):
+            result_image, dice_result = self.dice_result_images[dice_image_position[i]]
+            canvas.create_image(
+                roll_dice_x_pos, roll_dice_y_pos,
+                image=result_image, anchor="center", tags="dice_animation"
+            )
+
+            # Display the dice result on the canvas as text
+            x_offset = - 135 if i == 0 else 135
+            canvas.create_text(
+                0.28440 * self.gui.image_width + x_offset, 0.65274 * self.gui.image_height,
+                text=f"Dice {i + 1} Result: {dice_result}",
+                font=("Comic Sans MS", 22, "bold"),
+                fill="#000000",
+                tags=f"dice_result_text_{i + 1}"
+            )
+
+        def display_two_rolls(i):
+            canvas.delete("total_dice_result_text")
+            if i < 2:
+                during_roll(0)
+
+                self.gui.after(500, lambda: show_dice_result(i))
+
+                self.gui.after(1500, lambda: display_two_rolls(i+1)) #wait 1 second before the second roll
+            else:
+                self.gui.after(100, lambda: canvas.delete("dice_animation", "dice_result_text_1", "dice_result_text_2"))
+
+        display_two_rolls(0)
+
+    def message_for_jail_roll(self,canvas,message,roll_dice_y_pos,total_dice):
+        # Display the total dice result on the canvas
+        print("printing status")
+        canvas.create_text(
+            0.28458 * self.gui.image_width, roll_dice_y_pos + 30,
+            text=f"Total Dice is {total_dice}. {message}",
+            font=("Comic Sans MS", 22, "bold"),
+            fill="#000000",
+            tags="total_dice_result_text",
+        )
+        self.gui.after(1000, lambda: canvas.delete("total_dice_result_text"))
+        #self.gui.after(2000, lambda: time.sleep(2))
+
+
 
     def roll_dice_animation(self, canvas, roll_dice_x_pos, roll_dice_y_pos, dice_counter, callback, dice_image_position,total_dice=None):
         # Show each frame of the dice animation
@@ -243,7 +302,6 @@ class GameplayFrame(DisplayManager):
                     # After the animation, display a random dice result
                     result_image, dice_result = self.dice_result_images[dice_image_position]
                     canvas.delete("dice_animation")
-                    print("Displaying Image")
                     canvas.create_image(
                         roll_dice_x_pos, roll_dice_y_pos,
                         image=result_image, anchor="center", tags="dice_animation"
@@ -278,6 +336,7 @@ class GameplayFrame(DisplayManager):
                 fill="#000000",
                 tags="total_dice_result_text",
             )
+            self.gui.after(1000,lambda : canvas.delete("total_dice_result_text"))
 
         # Clear any previous result text before starting a new roll
         if dice_counter == 1:

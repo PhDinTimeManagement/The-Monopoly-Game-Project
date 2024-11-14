@@ -281,3 +281,8 @@ class Gameboard:
         for i in range (0,len(self.tiles)):
             if self.tiles[i].name == "Jail":
                 return self.tiles[i]
+
+    def clear_owner(self):
+        for i in range(0,len(self.tiles)):
+            if self.tiles[i].tile_type == "property":
+                self.tiles[i].owner = None
