@@ -1463,7 +1463,7 @@ class SaveFrame(DisplayManager):
         for i, slot_id in enumerate(self.slot_item_ids):
             canvas.itemconfig(slot_id, image=self.save_slots[i])
 
-    def select_saved_game_slot(self, canvas, idx):
+    def select_saved_slot(self, canvas, idx):
 
         # Clear any previously selected slots by resetting all slots to their original images
         self.clear_selected_slots(canvas)
@@ -1512,9 +1512,9 @@ class SaveFrame(DisplayManager):
                                            font=("Comic Sans MS", 16), fill="#000000")
                 self.display_text.append([text1, text2, file_info[i][0]])
                 canvas.tag_bind(text1, "<Button-1>",
-                                lambda e, idx=i: self.select_saved_game_slot(canvas, idx))
+                                lambda e, idx=i: self.select_saved_slot(canvas, idx))
                 canvas.tag_bind(text2, "<Button-1>",
-                                lambda e, idx=i: self.select_saved_game_slot(canvas, idx))
+                                lambda e, idx=i: self.select_saved_slot(canvas, idx))
 
 
 class SaveGameFrame(SaveFrame):
