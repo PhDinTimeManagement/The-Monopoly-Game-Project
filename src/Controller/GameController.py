@@ -146,7 +146,7 @@ class GameController:
 
     # ----------Hiding logic in controller----------#
     def hide_load_and_save_image(self):
-        self.gui.load_game_frame.hide_load_play_image(self.gui.load_game_canvas)
+        self.gui.load_game_frame.hide_load_image(self.gui.load_game_canvas)
 
     def hide_roll_image(self):
         self.gui.gameplay_frame.hide_roll_image(self.gui.game_canvas)
@@ -203,7 +203,7 @@ class GameController:
     # ----------Showing logic in controller---------#
 
     def show_load_and_save_image(self):
-        self.gui.load_game_frame.show_load_play_image(self.gui.load_game_canvas)
+        self.gui.load_game_frame.show_load_image(self.gui.load_game_canvas)
 
     def show_roll_image(self):
         self.gui.gameplay_frame.show_roll_image(self.gui.game_canvas)
@@ -294,7 +294,7 @@ class GameController:
 
     #----------- Button func in Load Game Page ----------#
     def select_slot(self, idx):
-        self.gui.load_game_frame.select_saved_game_slot(self.gui.load_game_canvas,idx)
+        self.gui.load_game_frame.select_saved_slot(self.gui.load_game_canvas, idx)
         self.bind_load_and_save_button(idx)
 
     def load_and_start_game_button(self,idx):
@@ -317,7 +317,7 @@ class GameController:
 
     #bind a single the slots clicks with save and delete button
     def select_saved_game_slot(self,canvas,idx):
-        self.gui.save_game_frame.select_saved_game_slot(canvas,idx)
+        self.gui.save_game_frame.select_saved_slot(canvas, idx)
         self.bind_delete_button()
         self.bind_save_button()
 

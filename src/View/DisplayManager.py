@@ -1005,8 +1005,7 @@ class MainMenuFrame(DisplayManager):
         super().__init__(gui)
         # Main frame images
         # Main Menu images
-        self.startup_background = tk.PhotoImage(
-            file=os.path.join(assets_base_path, "main_menu_frame/startup_frame_background.png"))
+        self.startup_background = None
         self.new_game_image = tk.PhotoImage(file=os.path.join(assets_base_path, "main_menu_frame/new_game_button.png"))
         self.load_game_image = tk.PhotoImage(
             file=os.path.join(assets_base_path, "main_menu_frame/load_game_button.png"))
@@ -1068,38 +1067,37 @@ class MainMenuFrame(DisplayManager):
         return canvas,load_game_clickable_area #return the clickable area for load game
 
 
-class LoadGameFrame(DisplayManager):
+class LoadFrame(DisplayManager):
     def __init__(self, gui):
         super().__init__(gui)
 
-        self.load_and_play_button_id = None
-        self.saved_game_slots = []
+        self.button_id = None
+        self.save_slots = []
         self.slot_item_ids = [] # Track item IDs for slots
         self.load_button_x, self.load_button_y = self.gui.image_width // 2, 835
         # Load Game frame images
-        self.load_game_frame_background = tk.PhotoImage(
-            file=os.path.join(assets_base_path, "load_game_frame/load_game_frame_background.png"))
-        self.saved_game_slot1_image = tk.PhotoImage(
+        self.load_frame_background = tk.PhotoImage(
+            file=os.path.join(assets_base_path, "load_game_frame/load_frame_background.png"))
+        self.saved_slot1_image = tk.PhotoImage(
             file=os.path.join(assets_base_path, "load_game_frame/saved_game_slot1.png"))
-        self.saved_game_slot2_image = tk.PhotoImage(
+        self.saved_slot2_image = tk.PhotoImage(
             file=os.path.join(assets_base_path, "load_game_frame/saved_game_slot2.png"))
-        self.saved_game_slot3_image = tk.PhotoImage(
+        self.saved_slot3_image = tk.PhotoImage(
             file=os.path.join(assets_base_path, "load_game_frame/saved_game_slot3.png"))
-        self.saved_game_slot4_image = tk.PhotoImage(
+        self.saved_slot4_image = tk.PhotoImage(
             file=os.path.join(assets_base_path, "load_game_frame/saved_game_slot4.png"))
-        self.saved_game_slot5_image = tk.PhotoImage(
+        self.saved_slot5_image = tk.PhotoImage(
             file=os.path.join(assets_base_path, "load_game_frame/saved_game_slot5.png"))
-        self.selected_saved_game_slot_image = tk.PhotoImage(
+        self.selected_save_slot_image = tk.PhotoImage(
             file=os.path.join(assets_base_path, "load_game_frame/selected_saved_game_slot.png"))
-        self.load_and_play_button_image = tk.PhotoImage(
-            file=os.path.join(assets_base_path, "load_game_frame/load_and_play_button.png"))
+        self.button_image = None
         self.display_text = []
-        self.save_base_path = os.path.join(os.path.dirname(__file__), "../../saves/games")
+        self.save_base_path = None
 
     # ------------------------------------# Load Game Frame #------------------------------------#
 
-    def setup_load_game_frame(self, frame):
-        canvas = self.clear_widgets_create_canvas_set_background(frame, self.load_game_frame_background)
+    def setup_load_frame(self, frame):
+        canvas = self.clear_widgets_create_canvas_set_background(frame, self.load_frame_background)
 
         # Saved game slot selection image positions
         self.saved_game_slot_positions = [
@@ -1111,26 +1109,26 @@ class LoadGameFrame(DisplayManager):
         ]
 
         # Saved game slot images
-        self.saved_game_slots = [
-            self.saved_game_slot1_image,
-            self.saved_game_slot2_image,
-            self.saved_game_slot3_image,
-            self.saved_game_slot4_image,
-            self.saved_game_slot5_image
+        self.save_slots = [
+            self.saved_slot1_image,
+            self.saved_slot2_image,
+            self.saved_slot3_image,
+            self.saved_slot4_image,
+            self.saved_slot5_image
         ]
 
-        self.load_and_play_button_id = canvas.create_image(self.load_button_x, self.load_button_y,
-                                                           image=self.load_and_play_button_image)
+        self.button_id = canvas.create_image(self.load_button_x, self.load_button_y,
+                                                           image=self.button_image)
 
         #hide the load_play image
-        self.hide_load_play_image(canvas)
+        self.hide_load_image(canvas)
 
         #create clickable area for load_play
         load_and_play_clickable_area = canvas.create_rectangle(
-            self.load_button_x - (0.5 * self.load_and_play_button_image.width()),
-            self.load_button_y - (0.5 * self.load_and_play_button_image.height()),
-            self.load_button_x + (0.5 * self.load_and_play_button_image.width()),
-            self.load_button_y + (0.5 * self.load_and_play_button_image.height()),
+            self.load_button_x - (0.5 * self.button_image.width()),
+            self.load_button_y - (0.5 * self.button_image.height()),
+            self.load_button_x + (0.5 * self.button_image.width()),
+            self.load_button_y + (0.5 * self.button_image.height()),
             outline="", fill=""
         )
 
@@ -1139,7 +1137,7 @@ class LoadGameFrame(DisplayManager):
         load_game_clickable_area.append(load_and_play_clickable_area)
 
         # Display saved game slots
-        for i, slot_image in enumerate(self.saved_game_slots):
+        for i, slot_image in enumerate(self.save_slots):
             slot_x, slot_y = self.saved_game_slot_positions[i]  # Unpack coordinates
             slot_id = canvas.create_image(slot_x, slot_y, image=slot_image)
             self.slot_item_ids.append(slot_id)
@@ -1154,7 +1152,7 @@ class LoadGameFrame(DisplayManager):
             load_game_clickable_area.append(clickable_area)
             # Bind click event to select the slot
             canvas.tag_bind(clickable_area, "<Button-1>",
-                            lambda e, idx=i: self.select_saved_game_slot(canvas, idx)) #TODO del later
+                            lambda e, idx=i: self.select_saved_slot(canvas, idx)) #TODO del later
 
         # Display the back button to return to the main menu
         back_button = canvas.create_image(50, 50, image=self.back_arrow_image)
@@ -1166,18 +1164,19 @@ class LoadGameFrame(DisplayManager):
 
     def clear_selected_slots(self,canvas):
         for i, slot_id in enumerate(self.slot_item_ids):
-            canvas.itemconfig(slot_id, image=self.saved_game_slots[i])
+            canvas.itemconfig(slot_id, image=self.save_slots[i])
 
     #---------- Show and Hide of the load and play button ----------#
-    def show_load_play_image(self,canvas):
-        canvas.coords(self.load_and_play_button_id,self.load_button_x,self.load_button_y)
 
-    def hide_load_play_image(self,canvas):
-        canvas.coords(self.load_and_play_button_id,-100,-100)
+    def show_load_image(self,canvas):
+        canvas.coords(self.button_id,self.load_button_x,self.load_button_y)
+
+    def hide_load_image(self,canvas):
+        canvas.coords(self.button_id,-100,-100)
 
     #---------------------------------------------------------------#
 
-    def select_saved_game_slot(self, canvas, idx):
+    def select_saved_slot(self, canvas, idx):
         # Clear any previously selected slots by resetting all slots to their original images
         self.clear_selected_slots(canvas)
 
@@ -1186,16 +1185,16 @@ class LoadGameFrame(DisplayManager):
         self.gui.selected_saved_game_slot = idx
 
         # # Display Load and Play button once a slot is selected
-        # if self.load_and_play_button_id is not None:
-        #     canvas.delete(self.load_and_play_button_id)
+        # if self.button_id is not None:
+        #     canvas.delete(self.button_id)
         # load_button_x, load_button_y = self.gui.image_width // 2, 835
-        # self.load_and_play_button_id = canvas.create_image(load_button_x, load_button_y,
-        #                                                    image=self.load_and_play_button_image)
+        # self.button_id = canvas.create_image(load_button_x, load_button_y,
+        #                                                    image=self.button_image)
         # load_and_play_clickable_area = canvas.create_rectangle(
-        #     load_button_x - (0.5 * self.load_and_play_button_image.width()),
-        #     load_button_y - (0.5 * self.load_and_play_button_image.height()),
-        #     load_button_x + (0.5 * self.load_and_play_button_image.width()),
-        #     load_button_y + (0.5 * self.load_and_play_button_image.height()),
+        #     load_button_x - (0.5 * self.button_image.width()),
+        #     load_button_y - (0.5 * self.button_image.height()),
+        #     load_button_x + (0.5 * self.button_image.width()),
+        #     load_button_y + (0.5 * self.button_image.height()),
         #     outline="", fill=""
         # )
         #
@@ -1234,9 +1233,18 @@ class LoadGameFrame(DisplayManager):
                                    font=("Comic Sans MS", 16), fill="#000000")
                 self.display_text.append([text1,text2,file_info[i][0]])
                 canvas.tag_bind(text1, "<Button-1>",
-                                lambda e, idx=i: self.select_saved_game_slot(canvas, idx))
+                                lambda e, idx=i: self.select_saved_slot(canvas, idx))
                 canvas.tag_bind(text2, "<Button-1>",
-                                lambda e, idx=i: self.select_saved_game_slot(canvas, idx))
+                                lambda e, idx=i: self.select_saved_slot(canvas, idx))
+
+class LoadGameFrame(LoadFrame):
+    def __init__(self, gui):
+        super().__init__(gui)
+        self.button_id = None
+        self.button_image = tk.PhotoImage(file=os.path.join(assets_base_path, "load_game_frame/load_and_play_button.png"))
+        self.load_frame_background = tk.PhotoImage(file=os.path.join(assets_base_path, "load_game_frame/load_frame_background.png"))
+        self.save_base_path = os.path.join(os.path.dirname(__file__), "../../saves/games")
+
 
 
 class SaveGameFrame(DisplayManager):
