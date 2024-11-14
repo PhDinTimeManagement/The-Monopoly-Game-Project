@@ -490,6 +490,7 @@ class GameplayFrame(DisplayManager):
 
 
     #----------Handles showing the button image in the canvas----------#
+
     def show_yes_image(self,canvas):
         canvas.coords(self.yes_image_id,self.yes_x_pos, self.yes_y_pos)
 
@@ -1005,7 +1006,7 @@ class MainMenuFrame(DisplayManager):
         super().__init__(gui)
         # Main frame images
         # Main Menu images
-        self.startup_background = None
+        self.startup_background = tk.PhotoImage(file=os.path.join(assets_base_path, "main_menu_frame/startup_frame_background.png"))
         self.new_game_image = tk.PhotoImage(file=os.path.join(assets_base_path, "main_menu_frame/new_game_button.png"))
         self.load_game_image = tk.PhotoImage(
             file=os.path.join(assets_base_path, "main_menu_frame/load_game_button.png"))
@@ -1078,17 +1079,17 @@ class LoadFrame(DisplayManager):
         # Load Game frame images
         self.load_frame_background = None
         self.saved_slot1_image = tk.PhotoImage(
-            file=os.path.join(assets_base_path, "load_game_frame/saved_game_slot1.png"))
+            file=os.path.join(assets_base_path, "load_frame/saved_game_slot1.png"))
         self.saved_slot2_image = tk.PhotoImage(
-            file=os.path.join(assets_base_path, "load_game_frame/saved_game_slot2.png"))
+            file=os.path.join(assets_base_path, "load_frame/saved_game_slot2.png"))
         self.saved_slot3_image = tk.PhotoImage(
-            file=os.path.join(assets_base_path, "load_game_frame/saved_game_slot3.png"))
+            file=os.path.join(assets_base_path, "load_frame/saved_game_slot3.png"))
         self.saved_slot4_image = tk.PhotoImage(
-            file=os.path.join(assets_base_path, "load_game_frame/saved_game_slot4.png"))
+            file=os.path.join(assets_base_path, "load_frame/saved_game_slot4.png"))
         self.saved_slot5_image = tk.PhotoImage(
-            file=os.path.join(assets_base_path, "load_game_frame/saved_game_slot5.png"))
+            file=os.path.join(assets_base_path, "load_frame/saved_game_slot5.png"))
         self.selected_save_slot_image = tk.PhotoImage(
-            file=os.path.join(assets_base_path, "load_game_frame/selected_saved_slot.png"))
+            file=os.path.join(assets_base_path, "load_frame/selected_saved_slot.png"))
         self.button_image = None
         self.display_text = []
         self.save_base_path = None
@@ -1180,7 +1181,7 @@ class LoadFrame(DisplayManager):
         self.clear_selected_slots(canvas)
 
         # Update only the selected slot with the highlight image
-        canvas.itemconfig(self.slot_item_ids[idx], image=self.selected_saved_game_slot_image)
+        canvas.itemconfig(self.slot_item_ids[idx], image=self.selected_save_slot_image)
         self.gui.selected_saved_game_slot = idx
 
         # # Display Load and Play button once a slot is selected
@@ -1263,15 +1264,15 @@ class SaveFrame(DisplayManager):
         # Load Game frame images
         self.save_frame_background = None
         self.saved_game_image = tk.PhotoImage(
-            file=os.path.join(assets_base_path, "save_game_frame/saved_game.png"))
+            file=os.path.join(assets_base_path, "save_frame/saved_game.png"))
         self.selected_saved_image = tk.PhotoImage(
-            file=os.path.join(assets_base_path, "save_game_frame/selected_saved.png"))
+            file=os.path.join(assets_base_path, "save_frame/selected_saved.png"))
         self.save_button_image = tk.PhotoImage(
-            file=os.path.join(assets_base_path, "save_game_frame/save.png"))
+            file=os.path.join(assets_base_path, "save_frame/save.png"))
         self.delete_button_image = tk.PhotoImage(
-            file=os.path.join(assets_base_path, "save_game_frame/delete.png"))
+            file=os.path.join(assets_base_path, "save_frame/delete.png"))
         self.back_arrow_image = tk.PhotoImage(file=os.path.join(assets_base_path, "info_frame/back_arrow.png"))
-        self.home_icon_image=tk.PhotoImage(file=os.path.join(assets_base_path, "save_game_frame/home_button.png"))
+        self.home_icon_image=tk.PhotoImage(file=os.path.join(assets_base_path, "save_frame/home_button.png"))
         self.save_base_path = None
         self.display_text=[]
 
@@ -1477,11 +1478,11 @@ class EnterNameFrame(SaveGameFrame):
     def __init__(self, gui):
         super().__init__(gui)
         self.enter_name_background = tk.PhotoImage(
-            file=os.path.join(assets_base_path, "save_game_frame/enter_name.png"))
+            file=os.path.join(assets_base_path, "save_frame/enter_name.png"))
         self.save_photo = tk.PhotoImage(
-            file=os.path.join(assets_base_path, "save_game_frame/color_save.png"))
+            file=os.path.join(assets_base_path, "save_frame/color_save.png"))
         self.back_photo = tk.PhotoImage(
-            file=os.path.join(assets_base_path, "save_game_frame/back.png"))
+            file=os.path.join(assets_base_path, "save_frame/back.png"))
         self.name_entry=None
         self.error_label=None
 
