@@ -36,6 +36,10 @@ class GameLogic:
         self._removed_last_round = False
         self._player_turn = self._player_turn % len(players_list)
 
+    def reset_player_turn(self):
+        self._player_turn = -1
+        self._removed_last_round = False
+
     def get_current_round(self):
         return self._current_round
 
@@ -201,7 +205,7 @@ class GameLogic:
         dice_roll1, dice_roll2 = GameLogic.roll_dice()
         print("Rolled: dice one: (",dice_roll1, ") dice two: (", dice_roll2,") move: (", dice_roll1+dice_roll2,")") #TODO del later
         if (not GameLogic.same_double(dice_roll1, dice_roll2)) and GameLogic.player_third_round(player_this_turn):
-            action = ["show_pay_fine",None]
+            action = ["show_pay_fine", None, dice_roll1, dice_roll2]
             board.tiles[player_this_turn.get_current_position()].free_player(player_this_turn)
             if player_this_turn.get_current_money() > game_logic.get_fine():
                 landed_tile = GameLogic.player_move(dice_roll1 + dice_roll2, player_this_turn, board)
@@ -213,8 +217,10 @@ class GameLogic:
                 landed_tile = GameLogic.player_move(dice_roll1 + dice_roll2, player_this_turn, board)
                 action = ["move", landed_tile]
             else:
-                action = ["not_move"]
+                action = ["not_move",None]
                 player_this_turn.set_in_jail_turns(player_this_turn.get_in_jail_turns() - 1)
             print("action: ", action[0]) #TODO del later
+            action.append(dice_roll1)
+            action.append(dice_roll2)
             return action
 

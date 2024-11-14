@@ -113,7 +113,7 @@ class TestGameLogic(TestCase):
         player3.set_current_money(600)
         player2.set_current_money(1000)
         message, winners_list = GameLogic.display_winner(game_logic, players_list)
-        self.assertEqual(message,f"The winner is: ['Den', 'Ben'] with {1000} HKD")
+        self.assertEqual(message, f"The winner is: ['Den', 'Ben'] with {1000} HKD")
 
     def test_get_player_turn(self):
         players_list.clear()
@@ -142,4 +142,7 @@ class TestGameLogic(TestCase):
         self.fail()
 
     def test_determine_next_round(self):
+        self.fail()
+
+    def test_reset_player_turn(self):
         self.fail()

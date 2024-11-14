@@ -2,6 +2,7 @@
 
 import json
 import os.path
+import time
 
 from src.Model.Gameboard import *
 from src.Model.Player import *
@@ -44,6 +45,7 @@ class GameController:
         self.all_players.clear()
         self.click_var = tk.StringVar()
         self.gui.gameplay_frame.player_info.clear()
+        self.board.clear_owner()
 
     def get_player_list(self):
         return self.player_list
@@ -359,8 +361,15 @@ class GameController:
 
             self.gui.show_game_play_frame()     # builds gameplay frame when it has all necessary information
 
-            self.game_logic.set_player_turn(self.get_player_list())
+            #The player's turn from load is already decide, but not if it was a new game
+            if not from_load:
+                self.game_logic.reset_player_turn() #reset the player's turn when a new game is starting
+                self.game_logic.set_player_turn(self.get_player_list())
+
             player_this_turn = self.get_player_list()[self.game_logic.get_player_turn()]
+
+            #display the current player who is rolling
+            self.gui.gameplay_frame.highlight_current_player(self.gui.game_canvas, self.game_logic.get_player_turn())
 
             # Show the GameBoard frame
             self.gui.show_frame("gameplay")
@@ -371,8 +380,14 @@ class GameController:
             self.hide_pay_fine_image()
             #bind the buttons
             self.bind_save_quit_button()
-            self.bind_roll_button(player_this_turn)
-            #self.gui.game_canvas.tag_bind(self.gui.game_frame_click_areas[0], "<Button-1>", lambda e: self.roll_dice(player_this_turn))
+
+            #for 'from_load': if the player current player playing is in jail, then load the associated button
+            if player_this_turn.get_jail_status():
+                self.bind_in_jail_roll_button(player_this_turn)
+                if not player_this_turn.get_fine_payed():
+                    self.bind_pay_fine_button(player_this_turn)
+            else:
+                self.bind_roll_button(player_this_turn)
             # TODO <display highlight player_this_turn ONLY.>
 
 
@@ -416,25 +431,23 @@ class GameController:
             if tile.get_owner() is None:
                 can_buy = tile.can_buy(player_this_turn)
                 print("buy(Yes) or not buy(No)")
-                self.bind_no_buy_button() #show and bind the no(buy) button
+                self.gui.after(1250, lambda: self.bind_no_buy_button()) #show and bind the no(buy) button
                 if can_buy:
-                    self.bind_yes_buy_button() #show and bind the yes(buy) button
+                    self.gui.after(1250, lambda: self.bind_yes_buy_button()) #show and bind the yes(buy) button
                 else:
-                    self.gui.gameplay_frame.show_not_enough_money(self.gui.game_canvas)
+                    self.gui.after(1250, lambda: self.gui.gameplay_frame.show_not_enough_money(self.gui.game_canvas))
                 self.gui.wait_variable(self.click_var)  # waits for the click_var to update before allowing execution
                 if self.click_var.get() == "buy":
                     if can_buy:
                         action = "buy"
                         print(player_this_turn.get_name()," is now buying") #TODO del later
                     else:
-                        #TODO display not enough money
                         print("Not enough money") #del
                         action = "not_buy"
                 elif self.click_var.get() == "not_buy":
                     action = "not_buy"
                 self.gui.gameplay_frame.delete_not_enough_money(self.gui.game_canvas)
             else:
-                # TODO update view for rent
                 action = "rent"
             tile.player_landed(player_this_turn, action, Property.get_owner_obj(self.player_list, tile.get_owner()))
             self.unbind_yes_buy_button() #unbind and hide the yes_buy_button
@@ -514,14 +527,25 @@ class GameController:
                 self.gui.gameplay_frame.player_movement(self.gui.game_canvas, self.player_list.index(player_this_turn),
                                                         startingPosition, tile.get_tile_position())
                 self.update_all_game_info()
-                self.land_and_complete_round(tile, player_this_turn)
-                self.determine_next_round(player_this_turn)
+
+                #for smoother game experience, pause shorter when for the player who is buying property
+                if tile.get_tile_type() == "property" and tile.get_owner() is None:
+                    self.gui.after(750, lambda: self.for_delay_round(player_this_turn,tile))
+                else:
+                    #show the button for next round after 500 ms
+                    self.gui.after(1500, lambda: self.for_delay_round(player_this_turn,tile))
 
         # Start the dice animation for the first roll
         self.gui.gameplay_frame.roll_dice_animation(
             self.gui.game_canvas, self.gui.image_width * 2 / 7, self.gui.image_height * 2 / 5 + 120, 1, on_dice_roll,
             dice_select_image_position1
         )
+
+    def for_delay_round(self,player_this_turn,tile):
+        self.land_and_complete_round(tile, player_this_turn)
+        self.determine_next_round(player_this_turn)
+        self.update_all_game_info()
+
 
     # Roll function for player in jail
     def in_jail_roll(self, player_this_turn):
@@ -534,26 +558,56 @@ class GameController:
         print("Money: ", player_this_turn.get_current_money())  # TODO del this line later
         print("Square:", player_this_turn.get_current_position())  # TODO del this line later
 
-
+        #x and y position for the dice image
+        x_position = self.gui.image_width * 2 / 7
+        y_position = self.gui.image_height * 2 / 5 + 120
 
         action = GameLogic.in_jail_roll(self.game_logic, player_this_turn, self.board)
-        if action[0] == "show_pay_fine":
-            self.bind_pay_fine_button(player_this_turn) #bind and show the pay_fine button
-            self.gui.wait_variable(self.click_var)  # wait for pay fine button to be clicked
-            #TODO display fine paid
-            if action[1] is not None:
-                print("Fine paid. Move on")
+
+        dice_select_image_position1 = (2 * action[2] - 1) - random.randint(0, 1)  # for choosing image of dice1
+        dice_select_image_position2 = (2 * action[3] - 1) - random.randint(0, 1)  # for choosing image of dice2
+        dice_results = [dice_select_image_position1, dice_select_image_position2]
+
+        self.gui.gameplay_frame.jail_roll_animation(
+            self.gui.game_canvas,x_position, y_position,dice_results,
+            )
+
+        self.gui.after(3250, lambda: self.update_all_game_info())
+
+        self.gui.after(3250, lambda: on_jail_dice_roll())
+
+        def on_jail_dice_roll():
+            message = f"Out of Jail.\nPlayer move {action[2] + action[3]}"
+            if action[0] == "show_pay_fine":
+                self.bind_pay_fine_button(player_this_turn) #bind and show the pay_fine button
+                self.gui.wait_variable(self.click_var)  # wait for pay fine button to be clicked
+                #TODO display fine paid
+                if action[1] is not None:
+                    print("Fine paid. Move on")
+                    self.gui.gameplay_frame.message_for_jail_roll(self.gui.game_canvas, message, y_position,
+                                                                  sum(action[2:4]))
+                    self.land_and_complete_round(action[1], player_this_turn)
+                    # TODO <show moving animation>
+                else:
+                    message = None #player broke by paying fine
+                    self.gui.gameplay_frame.message_for_jail_roll(self.gui.game_canvas, message, y_position,
+                                                                  sum(action[2:4]))
+            elif action[0] == "move":
+                # TODO <show animation for player moving>
+                print("Out of Jail, Move on")
+                self.gui.gameplay_frame.player_movement(self.gui.game_canvas, self.player_list.index(player_this_turn), 5, action[1].get_tile_position())
+                self.gui.gameplay_frame.message_for_jail_roll(self.gui.game_canvas, message, y_position,
+                                                              sum(action[2:4]))
                 self.land_and_complete_round(action[1], player_this_turn)
-                # TODO <show moving animation>
-        elif action[0] == "move":
-            # TODO <show animation for player moving>
-            print("Out of Jail, Move on")
-            self.gui.gameplay_frame.player_movement(self.gui.game_canvas, self.player_list.index(player_this_turn), 5, action[1].get_tile_position())
-            self.land_and_complete_round(action[1], player_this_turn)
-        elif action[0] == 'not_move':
-            pass  # del
-        self.determine_next_round(player_this_turn)
-        self.update_all_game_info()
+            elif action[0] == 'not_move':
+                message = "Stay in Jail"
+                self.gui.gameplay_frame.message_for_jail_roll(self.gui.game_canvas, message, y_position,
+                                                              sum(action[2:4]))
+
+
+            self.update_all_game_info()
+            self.gui.after(50,lambda:self.determine_next_round(player_this_turn))
+
 
     def pay_fine(self, player_this_turn):
         # pay_fine_logic
