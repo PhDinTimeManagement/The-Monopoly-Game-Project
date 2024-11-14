@@ -1076,8 +1076,7 @@ class LoadFrame(DisplayManager):
         self.slot_item_ids = [] # Track item IDs for slots
         self.load_button_x, self.load_button_y = self.gui.image_width // 2, 835
         # Load Game frame images
-        self.load_frame_background = tk.PhotoImage(
-            file=os.path.join(assets_base_path, "load_game_frame/load_frame_background.png"))
+        self.load_frame_background = None
         self.saved_slot1_image = tk.PhotoImage(
             file=os.path.join(assets_base_path, "load_game_frame/saved_game_slot1.png"))
         self.saved_slot2_image = tk.PhotoImage(
@@ -1089,7 +1088,7 @@ class LoadFrame(DisplayManager):
         self.saved_slot5_image = tk.PhotoImage(
             file=os.path.join(assets_base_path, "load_game_frame/saved_game_slot5.png"))
         self.selected_save_slot_image = tk.PhotoImage(
-            file=os.path.join(assets_base_path, "load_game_frame/selected_saved_game_slot.png"))
+            file=os.path.join(assets_base_path, "load_game_frame/selected_saved_slot.png"))
         self.button_image = None
         self.display_text = []
         self.save_base_path = None
@@ -1240,47 +1239,51 @@ class LoadFrame(DisplayManager):
 class LoadGameFrame(LoadFrame):
     def __init__(self, gui):
         super().__init__(gui)
-        self.button_id = None
-        self.button_image = tk.PhotoImage(file=os.path.join(assets_base_path, "load_game_frame/load_and_play_button.png"))
-        self.load_frame_background = tk.PhotoImage(file=os.path.join(assets_base_path, "load_game_frame/load_frame_background.png"))
+        self.button_image = tk.PhotoImage(file=os.path.join(assets_base_path, "load_frame/load_and_play_button.png"))
+        self.load_frame_background = tk.PhotoImage(file=os.path.join(assets_base_path, "load_frame/load_game_frame_background.png"))
         self.save_base_path = os.path.join(os.path.dirname(__file__), "../../saves/games")
 
+class LoadGameboardFrame(LoadFrame):
+    def __init__(self, gui):
+        super().__init__(gui)
+        self.button_image = tk.PhotoImage(file=os.path.join(assets_base_path, "load_frame/load_gameboard_button.png"))
+        self.load_frame_background = tk.PhotoImage(file=os.path.join(assets_base_path, "load_frame/load_gameboard_frame_background.png"))
+        self.save_base_path = os.path.join(os.path.dirname(__file__), "../../saves/gameboard_setups")
 
 
-class SaveGameFrame(DisplayManager):
+class SaveFrame(DisplayManager):
     def __init__(self, gui):
         super().__init__(gui)
 
         self.save_button_id = None
         self.delete_button_id = None
-        self.saved_game_slots = []
+        self.save_slots = []
         self.slot_item_ids = [] # Track item IDs for slots
 
         # Load Game frame images
-        self.save_game_frame_background = tk.PhotoImage(
-            file=os.path.join(assets_base_path, "save_game_frame/save_game_frame_background.png"))
+        self.save_frame_background = None
         self.saved_game_image = tk.PhotoImage(
             file=os.path.join(assets_base_path, "save_game_frame/saved_game.png"))
-        self.selected_saved_game_image = tk.PhotoImage(
-            file=os.path.join(assets_base_path, "save_game_frame/selected_saved_game.png"))
+        self.selected_saved_image = tk.PhotoImage(
+            file=os.path.join(assets_base_path, "save_game_frame/selected_saved.png"))
         self.save_button_image = tk.PhotoImage(
             file=os.path.join(assets_base_path, "save_game_frame/save.png"))
         self.delete_button_image = tk.PhotoImage(
             file=os.path.join(assets_base_path, "save_game_frame/delete.png"))
         self.back_arrow_image = tk.PhotoImage(file=os.path.join(assets_base_path, "info_frame/back_arrow.png"))
         self.home_icon_image=tk.PhotoImage(file=os.path.join(assets_base_path, "save_game_frame/home_button.png"))
-        self.save_base_path = os.path.join(os.path.dirname(__file__), "../../saves/games")
+        self.save_base_path = None
         self.display_text=[]
 
-        # ----------- buttons position and initialization -----------#
+# ------------------------ # buttons position and initialization # ----------------------#
+
         self.delete_button_x, self.delete_button_y = self.gui.image_width // 3, 835
         self.save_button_x, self.save_button_y = self.gui.image_width * 2 // 3, 835
 
-
-    # ------------------------------------# Load Game Frame #------------------------------------#
+# ------------------------------------# Load Save Frame #------------------------------------#
 
     def setup_save_game_frame(self, frame):
-        canvas = self.clear_widgets_create_canvas_set_background(frame, self.save_game_frame_background)
+        canvas = self.clear_widgets_create_canvas_set_background(frame, self.save_frame_background)
 
         # Saved game slot selection image positions
         self.saved_game_slot_positions = [
@@ -1292,7 +1295,7 @@ class SaveGameFrame(DisplayManager):
         ]
 
         # Saved game slot images
-        self.saved_game_slots = [
+        self.save_slots = [
             self.saved_game_image,
             self.saved_game_image,
             self.saved_game_image,
@@ -1320,7 +1323,7 @@ class SaveGameFrame(DisplayManager):
         #canvas.tag_bind(home_button, "<Button-1>", lambda e: self.gui.show_frame("main_menu"))
 
         # Display saved game slots
-        for i, slot_image in enumerate(self.saved_game_slots):
+        for i, slot_image in enumerate(self.save_slots):
             slot_x, slot_y = self.saved_game_slot_positions[i]  # Unpack coordinates
             slot_id = canvas.create_image(slot_x, slot_y, image=slot_image)
             self.slot_item_ids.append(slot_id)
@@ -1346,7 +1349,7 @@ class SaveGameFrame(DisplayManager):
         self.clear_selected_slots(canvas)
         self.gui.show_frame("gameplay")
 
-    # ------------------------------------ Functions for Creating Delete and Save Button------------------------------------#
+# ------------------------------------ Functions for Creating Delete and Save Button------------------------------------#
     def create_rectangle(self,canvas,x,y):
 
         clickable_area = canvas.create_rectangle(
@@ -1378,28 +1381,27 @@ class SaveGameFrame(DisplayManager):
 
         return canvas,save_clickable_area
 
-    # ------------------------------------ Functions for Showing Delete and Save Button--------------------------------------#
+# ------------------------------------ Functions for Showing Delete and Save Button--------------------------------------#
+
     def show_delete_button(self,canvas):
         canvas.coords(self.delete_button_id, self.delete_button_x, self.delete_button_y)
 
     def show_save_button(self,canvas):
         canvas.coords(self.save_button_id, self.save_button_x, self.save_button_y)
 
-    # -----------------------------------------------------------------------------------------------------------------------#
+# ------------------------------------ Functions for Hiding Delete and Save Button---------------------------------------#
 
-
-
-    # ------------------------------------ Functions for Hiding Delete and Save Button---------------------------------------#
     def hide_delete_button(self,canvas):
         canvas.coords(self.delete_button_id, -100,-100)
 
     def hide_save_button(self,canvas):
         canvas.coords(self.save_button_id, -100,-100)
-    # -----------------------------------------------------------------------------------------------------------------------#
+
+# -----------------------------------------------------------------------------------------------------------------------#
 
     def clear_selected_slots(self,canvas):
         for i, slot_id in enumerate(self.slot_item_ids):
-            canvas.itemconfig(slot_id, image=self.saved_game_slots[i])
+            canvas.itemconfig(slot_id, image=self.save_slots[i])
 
     def select_saved_game_slot(self, canvas, idx):
 
@@ -1407,7 +1409,7 @@ class SaveGameFrame(DisplayManager):
         self.clear_selected_slots(canvas)
 
         # Update only the selected slot with the highlight image
-        canvas.itemconfig(self.slot_item_ids[idx], image=self.selected_saved_game_image)
+        canvas.itemconfig(self.slot_item_ids[idx], image=self.selected_saved_image)
         self.gui.selected_saved_game_slot = idx
 
         #show delete button
@@ -1454,6 +1456,23 @@ class SaveGameFrame(DisplayManager):
                 canvas.tag_bind(text2, "<Button-1>",
                                 lambda e, idx=i: self.select_saved_game_slot(canvas, idx))
 
+
+class SaveGameFrame(SaveFrame):
+    def __init__(self, gui):
+        super().__init__(gui)
+
+        self.save_frame_background = tk.PhotoImage(file=os.path.join(assets_base_path, "save_frame/save_game_frame_background.png"))
+        self.save_base_path = os.path.join(os.path.dirname(__file__), "../../saves/games")
+
+
+class SaveGameboardFrame(SaveFrame):
+    def __init__(self, gui):
+        super().__init__(gui)
+
+        self.save_frame_background = tk.PhotoImage(file=os.path.join(assets_base_path, "save_frame/save_gameboard_frame_background.png"))
+        self.save_base_path = os.path.join(os.path.dirname(__file__), "../../saves/gameboard_setups")
+
+
 class EnterNameFrame(SaveGameFrame):
     def __init__(self, gui):
         super().__init__(gui)
@@ -1468,7 +1487,7 @@ class EnterNameFrame(SaveGameFrame):
 
 
     def setup_enter_name_frame(self, frame):
-        canvas = self.clear_widgets_create_canvas_set_background(frame, self.save_game_frame_background)
+        canvas = self.clear_widgets_create_canvas_set_background(frame, self.save_frame_background)
         # Saved game slot selection image positions
         self.saved_game_slot_positions = [
             (self.gui.image_width // 2, 370),
@@ -1496,6 +1515,7 @@ class EnterNameFrame(SaveGameFrame):
 
         # save and delete clickable area, the first is the save button, second is the delete button
         save_delete_click_area = [save_click_area, delete_click_area]
+
         # Display saved game slots
         for i, slot_image in enumerate(self.saved_game_slots):
             slot_x, slot_y = self.saved_game_slot_positions[i]  # Unpack coordinates
@@ -1558,6 +1578,7 @@ class EnterNameFrame(SaveGameFrame):
         )
         self.error_label.place(x=x_position, y=y_position)
 
+
 class InfoPageFrame(DisplayManager):
     def __init__(self, gui):
         super().__init__(gui)
@@ -1588,8 +1609,6 @@ class InfoPageFrame(DisplayManager):
         canvas.tag_bind(back_button_clickable_area, "<Button-1>", lambda e: self.gui.show_frame("main_menu"))
 
         return canvas
-
-
 
 
 class EditBoardFrame(GameplayFrame):
