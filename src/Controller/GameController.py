@@ -43,6 +43,8 @@ class GameController:
         self.player_list.clear()
         self.broke_list.clear()
         self.all_players.clear()
+        self.gui.gameplay_frame.player_info.clear()
+        self.gui.gameplay_frame.tile_info.clear()
         self.click_var = tk.StringVar()
         self.gui.gameplay_frame.player_info.clear()
         self.board.clear_owner()
@@ -310,6 +312,9 @@ class GameController:
 
     def home_button(self):
         self.clear_all_data()
+        """self.board = Gameboard()
+        self.game_logic = GameLogic()
+        self.pass_gameboard_info_to_view()"""
         self.gui.show_frame("main_menu")
 
     def back_to_game_play_frame(self):
@@ -343,7 +348,7 @@ class GameController:
 
     """ This function is called after the 'Play' button is clicked in the game """
 
-    def button_play(self,from_load):
+    def button_play(self, from_load):
         if self.new_name_frame.check_and_start_game(self.input_handler) or from_load:
             # if not from_load: #TODO bind the clear_all_data() to the home button in save game page later
             #     self.clear_all_data() #clear all the data
@@ -403,6 +408,7 @@ class GameController:
             return
 
         self.gui.gameplay_frame.highlight_current_player(self.gui.game_canvas, self.game_logic.get_player_turn())
+
         if action[0] == "jail_roll":
             self.bind_in_jail_roll_button(action[1])
             print("\nNext round, click roll\n")
