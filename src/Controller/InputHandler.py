@@ -7,6 +7,9 @@ class InputHandler:
     def set_num_players(self, num_players):
         self.players_names = [None] * num_players
 
+    def reset_players_names(self):
+        self.players_names = [None] * 6
+
     @staticmethod
     def valid_current_game_name(user_input):
         if (user_input is not None) and (user_input != "") and (len(user_input) <=20):
