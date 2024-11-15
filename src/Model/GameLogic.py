@@ -115,10 +115,10 @@ class GameLogic:
         return player.get_current_money() < 0
 
     @staticmethod
-    def player_out(game_logic,player, player_list, broke_list):
+    def player_out(game_logic,player, player_list, broke_list,gameboard):
         player_list.remove(player)
         broke_list.append(player)
-        player.delete_all_properties()
+        player.delete_all_properties(gameboard)
         game_logic.set_removed_last_round(True)
 
     """Check if the game is finished"""
@@ -141,13 +141,13 @@ class GameLogic:
         return f"The winner is: {winners_list} with {greatestBalance} HKD", winners_list
 
     @staticmethod
-    def determine_next_round(game_logic,player_this_turn,player_list,broke_list):
+    def determine_next_round(game_logic,player_this_turn,player_list,broke_list,gameboard):
         extra_info = None
 
         #After each round check whether if the player_this_turn is broke
         if GameLogic.player_broke(player_this_turn):
             #Remove the player is the player is broke from the players_list into the broke list
-            GameLogic.player_out(game_logic, player_this_turn, player_list,broke_list)
+            GameLogic.player_out(game_logic, player_this_turn, player_list,broke_list,gameboard)
 
         #Increment current round
         game_logic.set_current_round(game_logic.get_current_round() + 1)
