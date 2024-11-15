@@ -1665,24 +1665,16 @@ class InfoPageFrame(DisplayManager):
 
         return canvas
 
-
 class EditBoardFrame(GameplayFrame):
     def __init__(self, gui):
         super().__init__(gui)
-        self.edit_board_background = tk.PhotoImage(
-            file=os.path.join(assets_base_path, "edit_gameboard_frame/edit_board_frame_background.png"))
-        self.price_input_box_image = tk.PhotoImage(
-            file=os.path.join(assets_base_path, "edit_gameboard_frame/price_input_box.png"))
-        self.rent_input_box_image = tk.PhotoImage(
-            file=os.path.join(assets_base_path, "edit_gameboard_frame/rent_input_box.png"))
-        self.reset_button_image = tk.PhotoImage(
-            file=os.path.join(assets_base_path, "edit_gameboard_frame/reset_button.png"))
-        self.confirm_button_image = tk.PhotoImage(
-            file=os.path.join(assets_base_path, "edit_gameboard_frame/confirm_button.png"))
-        self.save_board_button_image = tk.PhotoImage(
-            file=os.path.join(assets_base_path, "edit_gameboard_frame/save_board_profile_button.png"))
-        self.back_arrow_photo = tk.PhotoImage(
-            file=os.path.join(assets_base_path, "edit_gameboard_frame/back_arrow.png"))
+        self.edit_board_background = tk.PhotoImage(file=os.path.join(assets_base_path, "edit_gameboard_frame/edit_board_frame_background.png"))
+        self.price_input_box_image = tk.PhotoImage(file=os.path.join(assets_base_path, "edit_gameboard_frame/price_input_box.png"))
+        self.rent_input_box_image = tk.PhotoImage(file=os.path.join(assets_base_path, "edit_gameboard_frame/rent_input_box.png"))
+        self.reset_button_image = tk.PhotoImage(file=os.path.join(assets_base_path, "edit_gameboard_frame/reset_button.png"))
+        self.confirm_button_image = tk.PhotoImage(file=os.path.join(assets_base_path, "edit_gameboard_frame/confirm_button.png"))
+        self.save_board_button_image = tk.PhotoImage(file=os.path.join(assets_base_path, "edit_gameboard_frame/save_board_profile_button.png"))
+        self.back_arrow_photo = tk.PhotoImage(file=os.path.join(assets_base_path, "edit_gameboard_frame/back_arrow.png"))
 
         # Two Important Data Points: 30 * 140, 840 * 940 to (1512 * 982)
         top_left_x_of_board = self.gui.image_width * 30 / 1512
@@ -1737,7 +1729,6 @@ class EditBoardFrame(GameplayFrame):
         canvas.tag_bind(confirm_click_area, "<Button-1>", lambda e: self.process_user_input())
 
         game_board_area = canvas.create_rectangle(27, 144, 836, 954, outline="", fill="", tags="game_board")
-        # canvas.tag_bind("game_board", '<Button-1>', self.show_coordinates)
         canvas.tag_bind("game_board", '<Button-1>', self.on_game_board_click)
         self.display_tile_info(canvas)
         self.bind_text(canvas)
