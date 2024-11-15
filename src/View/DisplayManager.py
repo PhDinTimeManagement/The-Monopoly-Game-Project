@@ -1855,9 +1855,9 @@ class EditBoardFrame(GameplayFrame):
         GameplayFrame.tile_info[self.grid_index][3] = new_rent
         self.rent_entry.destroy()
         self.rent_text_id = self.canvas.create_text(
-            1188, 760, text=new_rent, font=("Comic Sans MS", 18), fill="#333333"
+            1188, 695, text=new_rent, font=("Comic Sans MS", 18), fill="#333333"
         )
-        self.canvas.tag_bind(self.rent_text_id, "<Button-1>", lambda e: self.show_rent_entry(1188, 760))
+        self.canvas.tag_bind(self.rent_text_id, "<Button-1>", lambda e: self.show_rent_entry(1188, 695))
 
     def remove_entries(self):
         # Destroy all widgets in the clear list
@@ -1866,10 +1866,10 @@ class EditBoardFrame(GameplayFrame):
                 try:
                     entry.destroy()  # Destroy any existing widgets
                 except Exception as e:
-                    print(f"Error clearing entry: {e}")  # For debugging purposes
+                    print(f"Error clearing entry: {e}")  # For debugging
             self.clear = []  # Clear the list after all widgets are removed
 
-        # Remove any canvas text items specifically
+        # Forget to initialize the entry widgets (fixed)
         if self.price_text_id:
             self.canvas.delete(self.price_text_id)
             self.price_text_id = None
