@@ -1,11 +1,7 @@
 import tkinter as tk
 import os
 import time
-from random import choice
 from tkinter import ttk
-from typing import final
-
-from tests.test_GameLogic import players_list
 
 # Base path for assets
 assets_base_path = os.path.join(os.path.dirname(__file__), "../../assets")
@@ -1716,12 +1712,23 @@ class EditBoardFrame(GameplayFrame):
         self.clear = []
         self.canvas = None
 
+        self.place_names = [
+            # Default places
+            "Central", "Wan Chai", "Stanley", "Shek O", "Mong Kok",
+            "Tsing Yi", "Sha Tin", "Tuen Mun", "Tai Po", "Sai Kung",
+            "Yuen Long", "Tai O",
+            # Custom places
+            "Kwun Tong", "Sham Shui Po", "Tsim Sha Tsui", "Causeway Bay",
+            "North Point", "Aberdeen", "Cheung Chau", "Kowloon Tong",
+            "Sham Shui Po", "Lamma Island", "Lantau Island"
+        ]
+
     def setup_edit_board_frame(self, frame):
         canvas = self.clear_widgets_create_canvas_set_background(frame, self.edit_board_background)
         self.current_frame = frame
         self.canvas = canvas
-        reset_click_area, canvas, cancel_id = self.create_button(canvas, self.gui.image_width * 3 / 4 - 80, self.gui.image_height * 3 / 4 + 50, self.reset_button_image)
-        confirm_click_area, canvas, confirm_id = self.create_button(canvas, self.gui.image_width * 3 / 4 + 195, self.gui.image_height * 3 / 4 + 50, self.confirm_button_image)
+        reset_click_area, canvas, cancel_id = self.create_button(canvas, self.gui.image_width * 3 / 4 - 80, self.gui.image_height * 3 / 4 + 55, self.reset_button_image)
+        confirm_click_area, canvas, confirm_id = self.create_button(canvas, self.gui.image_width * 3 / 4 + 195, self.gui.image_height * 3 / 4 + 55, self.confirm_button_image)
         save_board_click_area, canvas, save_board_id = self.create_button(canvas, self.gui.image_width * 3 / 4 + 60, self.gui.image_height * 4 / 5 + 130, self.save_board_button_image)
         back_click_area, canvas, back_id = self.create_button(canvas, 50, 50, self.back_arrow_photo)
 
@@ -1738,11 +1745,10 @@ class EditBoardFrame(GameplayFrame):
         self.remove_entries()
         x = event.x
         y = event.y
-        print(f"Coordinates: ({x}, {y})")
         self.grid_index = self.check_click_grid(x, y)
         if self.grid_index != -1:
-            print(GameplayFrame.tile_info[self.grid_index])
-            self.create_input_entries(self.current_frame)
+            # print(GameplayFrame.tile_info[self.grid_index])
+            self.create_input_entries()
 
     def check_click_grid(self, x, y):
         grid_index = -1
@@ -1755,39 +1761,143 @@ class EditBoardFrame(GameplayFrame):
     def check_inside_grid(self, x, y, top_left_x, top_left_y, bottom_right_x, bottom_right_y):
         return top_left_x <= x <= bottom_right_x and top_left_y <= y <= bottom_right_y
 
-    def create_input_entries(self, frame):
-        self.name_entry = tk.Entry(frame, width=400, font=("Comic Sans MS", 40))
-        self.price_entry = tk.Entry(frame, width=400, font=("Comic Sans MS", 40))
-        self.rent_entry = tk.Entry(frame, width=400, font=("Comic Sans MS", 40))
-        self.name_entry.place(x=1188, y=390, width=400, height=80, anchor="center")
-        self.price_entry.place(x=1188, y=570, width=400, height=80, anchor="center")
-        self.rent_entry.place(x=1188, y=760, width=400, height=80, anchor="center")
-        self.name_entry.insert(0, GameplayFrame.tile_info[self.grid_index][1])  # 1 is "name"
-        self.price_entry.insert(0, GameplayFrame.tile_info[self.grid_index][2])  # 2 is "price"
-        self.rent_entry.insert(0, GameplayFrame.tile_info[self.grid_index][3])  # 3 is "rent"
+    def create_input_entries(self):
+        # Clear any previous entries to avoid overlapping entries on multiple clicks
+        self.remove_entries()
+
+        # Dropdown menu for Name
+        self.name_entry = ttk.Combobox(
+            self.canvas,  # Attach to existing canvas
+            values=self.place_names,
+            font=("Comic Sans MS", 20),
+            state="readonly",
+        )
+        self.name_entry.place(x=self.gui.image_width * 1 / 2 + 180, y=self.gui.image_height * 1 / 4 + 40, width=400,
+                              height=30)
+        self.name_entry.set(GameplayFrame.tile_info[self.grid_index][1])
+
+        # Place Price input box image on the canvas
+        price_image_x = self.gui.image_width * 3 / 4 + 60
+        price_image_y = self.gui.image_height * 1 / 2 + 75
+        self.canvas.create_image(price_image_x, price_image_y, image=self.price_input_box_image, anchor="center")
+
+        # Display Price Text or Input Entry
+        self.price_text_id = self.canvas.create_text(
+            price_image_x, price_image_y, text=GameplayFrame.tile_info[self.grid_index][2],
+            font=("Comic Sans MS", 18), fill="#333333", justify="left"
+        )
+        # Bind click event to show editable entry box on click
+        self.canvas.tag_bind(self.price_text_id, "<Button-1>",
+                             lambda e: self.show_price_entry(price_image_x, price_image_y))
+
+        # Place Rent input box image on the canvas
+        rent_image_x = self.gui.image_width * 3 / 4 + 60
+        rent_image_y = self.gui.image_height * 1 / 2 + 205
+        self.canvas.create_image(rent_image_x, rent_image_y, image=self.rent_input_box_image, anchor="center")
+
+        # Display Rent Text or Input Entry
+        self.rent_text_id = self.canvas.create_text(
+            rent_image_x, rent_image_y, text=GameplayFrame.tile_info[self.grid_index][3],
+            font=("Comic Sans MS", 18), fill="#333333"
+        )
+        # Bind click event to show editable entry box on click
+        self.canvas.tag_bind(self.rent_text_id, "<Button-1>",
+                             lambda e: self.show_rent_entry(rent_image_x, rent_image_y))
+
+    def show_price_entry(self, x, y):
+        # Remove the existing text and create an entry for editing
+        self.canvas.delete(self.price_text_id)
+        self.price_entry = tk.Entry(
+            self.canvas, font=("Comic Sans MS", 18), bg="#FBF8F5", bd=0, highlightthickness=0, fg="#333333"
+        )
+        self.price_entry.insert(0, GameplayFrame.tile_info[self.grid_index][2])
+        self.price_entry.place(x=x - 80, y=y - 10, width=160, height=30)
+        self.price_entry.focus_set()
+
+        # Save the price on Enter key press
+        self.price_entry.bind("<Return>", lambda event: self.save_price())
+
+        # Clear the entry after display the price
+        self.clear.append(self.price_entry)
+
+    def save_price(self):
+        # Save the new price value, remove the entry, and show the updated text
+        new_price = self.price_entry.get()
+        GameplayFrame.tile_info[self.grid_index][2] = new_price
+        self.price_entry.destroy()
+        self.price_text_id = self.canvas.create_text(
+            1188, 570, text=new_price, font=("Comic Sans MS", 18), fill="#333333", justify="left"
+        )
+        self.canvas.tag_bind(self.price_text_id, "<Button-1>", lambda e: self.show_price_entry(1188, 570))
+
+    def show_rent_entry(self, x, y):
+        # Remove the existing text and create an entry for editing
+        self.canvas.delete(self.rent_text_id)
+        self.rent_entry = tk.Entry(
+            self.canvas, font=("Comic Sans MS", 18), bg="#FBF8F5", bd=0, highlightthickness=0, fg="#333333"
+        )
+        self.rent_entry.insert(0, GameplayFrame.tile_info[self.grid_index][3])
+        self.rent_entry.place(x=x - 80, y=y - 15, width=160, height=30)
+        self.rent_entry.focus_set()
+
+        # Save the rent on Enter key press
+        self.rent_entry.bind("<Return>", lambda event: self.save_rent())
+
+        # Clear the entry after display the rent
+        self.clear.append(self.rent_entry)
+
+    def save_rent(self):
+        # Save the new rent value, remove the entry, and show the updated text
+        new_rent = self.rent_entry.get()
+        GameplayFrame.tile_info[self.grid_index][3] = new_rent
+        self.rent_entry.destroy()
+        self.rent_text_id = self.canvas.create_text(
+            1188, 760, text=new_rent, font=("Comic Sans MS", 18), fill="#333333"
+        )
+        self.canvas.tag_bind(self.rent_text_id, "<Button-1>", lambda e: self.show_rent_entry(1188, 760))
 
     def remove_entries(self):
-        if self.name_entry is not None:
-            self.name_entry.destroy()
-        if self.price_entry is not None:
-            self.price_entry.destroy()
-        if self.rent_entry is not None:
-            self.rent_entry.destroy()
+        # if self.name_entry is not None:
+        #     self.name_entry.destroy()
+        # if self.price_entry is not None:
+        #     self.price_entry.destroy()
+        # if self.rent_entry is not None:
+        #     self.rent_entry.destroy()
+        if self.clear:
+            for entry in self.clear:
+                entry.destroy()
+            self.clear = []
 
     def process_user_input(self):
+        # Get the current name from the dropdown
         name = self.name_entry.get()
-        price = self.price_entry.get()
-        rent = self.rent_entry.get()
-        # check valid and if valid
+
+        # Check if the price entry is active; if not, use the displayed text
+        try:
+            price = self.price_entry.get() if self.price_entry else self.canvas.itemcget(self.price_text_id, "text")
+        except tk.TclError:
+            # If entry widget is not accessible, fallback to the displayed text
+            price = self.canvas.itemcget(self.price_text_id, "text")
+
+        # Check if the rent entry is active; if not, use the displayed text
+        try:
+            rent = self.rent_entry.get() if self.rent_entry else self.canvas.itemcget(self.rent_text_id, "text")
+        except tk.TclError:
+            # If entry widget is not accessible, fallback to the displayed text
+            rent = self.canvas.itemcget(self.rent_text_id, "text")
+
+        # Update the tile info with the new values
         GameplayFrame.tile_info[self.grid_index][1] = name
         GameplayFrame.tile_info[self.grid_index][2] = price
         GameplayFrame.tile_info[self.grid_index][3] = rent
+
+        # Clear the entries and refresh the display
         self.remove_entries()
         self.remove_game_board_text()
-        self.canvas.update()
         self.display_tile_info(self.canvas)
         self.bind_text(self.canvas)
-        print(GameplayFrame.tile_info)
+
+        # print(GameplayFrame.tile_info)  # For debugging
 
     # deletes all info from gameboard
     def remove_game_board_text(self):
