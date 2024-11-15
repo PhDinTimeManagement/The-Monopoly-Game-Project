@@ -207,7 +207,10 @@ class GameController:
 
     # ----------Showing logic in controller---------#
 
-    def show_load_and_save_image(self):
+    def show_load_board_button(self):
+        self.gui.load_board_frame.show_load_image(self.gui.load_board_canvas)
+
+    def show_load_and_play_image(self):
         self.gui.load_game_frame.show_load_image(self.gui.load_game_canvas)
 
     def show_roll_image(self):
@@ -230,9 +233,18 @@ class GameController:
         self.gui.load_game_canvas.tag_bind(self.gui.load_game_click_areas[0], "<Button-1>",
                                  lambda e: self.load_and_start_game_button(idx) )
 
+    def bind_load_board_button(self, idx):
+        self.show_load_board_button()
+        self.gui.load_board_canvas.tag_bind(self.gui.load_board_click_areas[0], "<Button-1>",
+                                            lambda e: self.load_board_button(idx))
+
     def bind_load_game(self):
         self.gui.canvas.tag_bind(self.gui.load_game_click_area, "<Button-1>",
                                  lambda e: self.load_button() )
+
+    def bind_load_board(self):
+        self.gui.canvas.tag_bind(self.gui.load_board_click_areas, "<Button-1>",
+                                 lambda e: self.load_board() )
 
     def bind_roll_button(self, player_this_turn):
         self.show_roll_image()

@@ -7,7 +7,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e63f52e8-b5e2-4b82-8eb0-ddb8c465611b" name="Changes" comment="Load and Save Frame Maintenance">
+    <list default="true" id="e63f52e8-b5e2-4b82-8eb0-ddb8c465611b" name="Changes" comment="Load and Save board implementation">
       <change beforePath="$PROJECT_DIR$/src/Controller/GameController.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Controller/GameController.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -107,6 +107,7 @@
       <recent name="C:\Users\Hp\Desktop\The-Monopoly-Game-Project\src" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\tommy\Documents\INGEGNERIA\3.1 () Software Engineering\Group Project\The-Monopoly-Game-Project\assets\load_frame" />
       <recent name="$PROJECT_DIR$/assets/dice" />
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/src/View" />
@@ -327,7 +328,7 @@
       <workItem from="1731536203867" duration="799000" />
       <workItem from="1731554271474" duration="7803000" />
       <workItem from="1731640416181" duration="36000" />
-      <workItem from="1731640459665" duration="2018000" />
+      <workItem from="1731640459665" duration="9715000" />
     </task>
     <task id="LOCAL-00001" summary="gameboard functions">
       <created>1729259402457</created>
@@ -384,22 +385,6 @@
       <option name="presentableId" value="LOCAL-00008" />
       <option name="project" value="LOCAL" />
       <updated>1730113203511</updated>
-    </task>
-    <task id="LOCAL-00012" summary="VIEW deconfliction">
-      <option name="closed" value="true" />
-      <created>1730959929307</created>
-      <option name="number" value="00012" />
-      <option name="presentableId" value="LOCAL-00012" />
-      <option name="project" value="LOCAL" />
-      <updated>1730959929307</updated>
-    </task>
-    <task id="LOCAL-00013" summary="View pulling information from Controller's Gameboard to display tile colors">
-      <option name="closed" value="true" />
-      <created>1730960307059</created>
-      <option name="number" value="00013" />
-      <option name="presentableId" value="LOCAL-00013" />
-      <option name="project" value="LOCAL" />
-      <updated>1730960307059</updated>
     </task>
     <task id="LOCAL-00014" summary="gameplay frame updates">
       <option name="closed" value="true" />
@@ -713,7 +698,23 @@
       <option name="project" value="LOCAL" />
       <updated>1731641258440</updated>
     </task>
-    <option name="localTasksCounter" value="53" />
+    <task id="LOCAL-00053" summary="Maintenance on HomeButton">
+      <option name="closed" value="true" />
+      <created>1731642538256</created>
+      <option name="number" value="00053" />
+      <option name="presentableId" value="LOCAL-00053" />
+      <option name="project" value="LOCAL" />
+      <updated>1731642538256</updated>
+    </task>
+    <task id="LOCAL-00054" summary="Load and Save board implementation">
+      <option name="closed" value="true" />
+      <created>1731650344494</created>
+      <option name="number" value="00054" />
+      <option name="presentableId" value="LOCAL-00054" />
+      <option name="project" value="LOCAL" />
+      <updated>1731650344494</updated>
+    </task>
+    <option name="localTasksCounter" value="55" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -769,7 +770,9 @@
     <MESSAGE value="Player Movement + fixed editing frame arrays" />
     <MESSAGE value="Edit board work" />
     <MESSAGE value="Load and Save Frame Maintenance" />
-    <option name="LAST_COMMIT_MESSAGE" value="Load and Save Frame Maintenance" />
+    <MESSAGE value="Maintenance on HomeButton" />
+    <MESSAGE value="Load and Save board implementation" />
+    <option name="LAST_COMMIT_MESSAGE" value="Load and Save board implementation" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -805,7 +808,7 @@
     <SUITE FILE_PATH="coverage/Game_py$GUI.coverage" NAME="GUI Coverage Results" MODIFIED="1730824526772" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/View" />
     <SUITE FILE_PATH="coverage/The_Monopoly_Game_py$GUI.coverage" NAME="GUI Coverage Results" MODIFIED="1730881360455" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/View" />
     <SUITE FILE_PATH="coverage/The_Monopoly_Game_py$.coverage" NAME=" Coverage Results" MODIFIED="1731425663854" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
-    <SUITE FILE_PATH="coverage/The_Monopoly_Game_py$play_game.coverage" NAME="play_game Coverage Results" MODIFIED="1731642191590" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/The_Monopoly_Game_py$play_game.coverage" NAME="play_game Coverage Results" MODIFIED="1731650484575" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Game_py$.coverage" NAME=" Coverage Results" MODIFIED="1730198824506" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/Game_py$Test.coverage" NAME="Test Coverage Results" MODIFIED="1730432574768" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Game_py$gui.coverage" NAME="gui Coverage Results" MODIFIED="1730294710638" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/View" />
