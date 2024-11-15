@@ -1720,12 +1720,13 @@ class EditBoardFrame(GameplayFrame):
         canvas = self.clear_widgets_create_canvas_set_background(frame, self.edit_board_background)
         self.current_frame = frame
         self.canvas = canvas
-        cancel_click_area, canvas, cancel_id = self.create_button(canvas, 1051, 897, self.reset_button_image)
-        confirm_click_area, canvas, confirm_id = self.create_button(canvas, 1318, 897, self.confirm_button_image)
+        reset_click_area, canvas, cancel_id = self.create_button(canvas, self.gui.image_width * 3 / 4 - 80, self.gui.image_height * 3 / 4 + 50, self.reset_button_image)
+        confirm_click_area, canvas, confirm_id = self.create_button(canvas, self.gui.image_width * 3 / 4 + 195, self.gui.image_height * 3 / 4 + 50, self.confirm_button_image)
+        save_board_click_area, canvas, save_board_id = self.create_button(canvas, self.gui.image_width * 3 / 4 + 60, self.gui.image_height * 4 / 5 + 130, self.save_board_button_image)
         back_click_area, canvas, back_id = self.create_button(canvas, 50, 50, self.back_arrow_photo)
 
         canvas.tag_bind(back_click_area, "<Button-1>", lambda e: self.gui.show_frame("new_game"))
-        canvas.tag_bind(cancel_click_area, "<Button-1>", lambda e: self.remove_entries())
+        canvas.tag_bind(reset_click_area, "<Button-1>", lambda e: self.remove_entries())
         canvas.tag_bind(confirm_click_area, "<Button-1>", lambda e: self.process_user_input())
 
         game_board_area = canvas.create_rectangle(27, 144, 836, 954, outline="", fill="", tags="game_board")
