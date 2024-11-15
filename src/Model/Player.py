@@ -1,7 +1,7 @@
 class Player:
     def __init__(self, username):
         self._username = username
-        self._current_money = 1500
+        self._current_money = 600
         self._jail_status = False
         self._fine_payed = False
         self._current_square = 0
@@ -19,9 +19,6 @@ class Player:
 
     def set_current_money(self, new_balance):
         self._current_money = new_balance
-
-    def add_current_money(self, amount):
-        self._current_money += amount
 
     def get_jail_status(self):
         return self._jail_status
@@ -68,9 +65,6 @@ class Player:
     def add_all_properties(self, properties_list):
         self._properties = properties_list.copy()
 
-    def delete_properties(self, new_properties):
-        pass
-
     def get_properties_list(self):
         return self._properties
 
@@ -85,7 +79,9 @@ class Player:
 
     """Delete all properties when the player is broke"""
 
-    def delete_all_properties(self):
+    def delete_all_properties(self,gameboard):
         for key in self._properties:
-            key.set_owner(None) #TODO _properties is now a string, and it does not have the set_owner() function
+            for tile in gameboard.tiles:
+                if tile.get_tile_type() == "property" and tile.get_property_name() == key:
+                    tile.set_owner(None)  # TODO _properties is now a string, and it does not have the set_owner() function
         self._properties.clear()

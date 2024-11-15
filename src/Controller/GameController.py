@@ -9,7 +9,6 @@ from src.Model.Player import *
 from src.Model.GameLogic import GameLogic
 from datetime import datetime
 from src.View.GUI import *
-from tests.test_GameLogic import players_list, gameboard
 
 
 class GameController:
@@ -483,7 +482,7 @@ class GameController:
 
     def determine_next_round(self, player_this_turn):
         """ Action is an array that stores the state of the Model after calling the 'determine_next_round' function """
-        action, winners_list = GameLogic.determine_next_round(self.game_logic, player_this_turn, self.player_list,self.broke_list)
+        action, winners_list = GameLogic.determine_next_round(self.game_logic, player_this_turn, self.player_list,self.broke_list,self.board)
 
         if action[0] == "game_ends":
             print(action[1])
