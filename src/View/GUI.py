@@ -70,7 +70,7 @@ class GUI(tk.Tk):
     def show_new_game_frame(self):
         frame = tk.Frame(self)
         self.frames["new_game"] = frame
-        self.new_game_canvas,self.play_button_clickable_area = self.new_game_frame.setup_new_game_page(frame, self.input_handler)
+        self.new_game_canvas,self.new_game_clickable_areas = self.new_game_frame.setup_new_game_page(frame, self.input_handler)
 
     # Edit the game board
     def show_edit_board_frame(self):

@@ -828,9 +828,11 @@ class NewGameFrame(DisplayManager):
                         lambda e: self.gui.show_frame("edit_board"))  # Placeholder action
 
         canvas.tag_bind(load_button_clickable_area, "<Button-1>",
-                        lambda e: self.gui.show_frame("load_board"))
+                        lambda e: self.gui.show_frame("load_board")) #TODO unbind this later
 
-        return canvas, play_button_clickable_area
+        new_game_clickable_areas = [play_button_clickable_area, load_button_clickable_area]
+
+        return canvas, new_game_clickable_areas
 
     def clear_active_widgets(self):
         for widget in self.active_widgets:
@@ -932,6 +934,11 @@ class NewGameFrame(DisplayManager):
         entry.destroy()
         self.player_entries[idx] = None
         canvas.itemconfig(self.player_box_images_refs[idx], image=self.player_box_images[idx])
+
+
+    def clear_all_entries(self):
+        for i in range(len(self.gui.input_handler.players_names)):
+            self.clear_entry()
 
     def save_player_name(self, entry, idx, canvas):
         player_name = entry.get().strip()
@@ -1219,9 +1226,9 @@ class LoadFrame(DisplayManager):
                 outline="", fill="")
 
             load_game_clickable_area.append(clickable_area)
-            # Bind click event to select the slot
-            canvas.tag_bind(clickable_area, "<Button-1>",
-                            lambda e, idx=i: self.select_saved_slot(canvas, idx)) #TODO del later
+            # # Bind click event to select the slot
+            # canvas.tag_bind(clickable_area, "<Button-1>",
+            #                 lambda e, idx=i: self.select_saved_slot(canvas, idx)) #TODO del later
 
         # Display the back button to return to the main menu
         back_button = canvas.create_image(50, 50, image=self.back_arrow_image)
@@ -1253,32 +1260,9 @@ class LoadFrame(DisplayManager):
         canvas.itemconfig(self.slot_item_ids[idx], image=self.selected_save_slot_image)
         self.gui.selected_saved_game_slot = idx
 
-        # # Display Load and Play button once a slot is selected
-        # if self.button_id is not None:
-        #     canvas.delete(self.button_id)
-        # load_button_x, load_button_y = self.gui.image_width // 2, 835
-        # self.button_id = canvas.create_image(load_button_x, load_button_y,
-        #                                                    image=self.button_image)
-        # load_and_play_clickable_area = canvas.create_rectangle(
-        #     load_button_x - (0.5 * self.button_image.width()),
-        #     load_button_y - (0.5 * self.button_image.height()),
-        #     load_button_x + (0.5 * self.button_image.width()),
-        #     load_button_y + (0.5 * self.button_image.height()),
-        #     outline="", fill=""
-        # )
-        #
-        # canvas.tag_bind(load_and_play_clickable_area, "<Button-1>", lambda e: self.load_data(idx))
-
         return canvas
 
     def load_data(self,idx):
-        # from src.Controller.GameController import GameController
-        # g=GameController(self.gui)
-        # if idx<len(self.display_text):
-        #     print(self.display_text[idx][2].split('.')[0])
-        #     g.load_game(self.display_text[idx][2].split('.')[0])
-        #     self.gui.show_game_play_frame()
-        #     self.gui.show_frame("gameplay")
         if idx<len(self.display_text):
             return self.display_text[idx][2].split('.')[0]
 
