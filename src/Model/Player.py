@@ -1,7 +1,7 @@
 class Player:
     def __init__(self, username):
         self._username = username
-        self._current_money = 600
+        self._current_money = 1500
         self._jail_status = False
         self._fine_payed = False
         self._current_square = 0
