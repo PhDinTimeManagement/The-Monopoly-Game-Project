@@ -3,6 +3,8 @@ import os
 import time
 from tkinter import ttk
 
+from wcwidth import wcwidth
+
 # Base path for assets
 assets_base_path = os.path.join(os.path.dirname(__file__), "../../assets")
 
@@ -699,9 +701,9 @@ class GameplayFrame(DisplayManager):
     def modify_tile_color(self, color, tile_position):
         # gets the right color path based on the tile position (vertical or horizontal)
         if 0 < tile_position < 5 or 10 < tile_position < 15: #tile is horizontal
-            color_path = f"gameplay_frame/{color}_h.png"
+            color_path = f"gameplay_frame/color/{color}_h.png"
         else:
-            color_path = f"gameplay_frame/{color}_v.png"
+            color_path = f"gameplay_frame/color/{color}_v.png"
 
         #gets the appropriate image path
         image_color_path = os.path.join(assets_base_path, color_path)
@@ -908,7 +910,7 @@ class NewGameFrame(DisplayManager):
             if previous_name:
                 entry.insert(0, previous_name)
             entry.place(x=x_position + 22, y=y_position + 16)
-            entry.focus_set()
+            entry.focus_set() # Focus on the entry widget
 
             def on_submit(event):
                 new_name = entry.get().strip()
@@ -1789,7 +1791,7 @@ class EditBoardFrame(GameplayFrame):
         # Display Price Text or Input Entry
         self.price_text_id = self.canvas.create_text(
             price_image_x, price_image_y, text=GameplayFrame.tile_info[self.grid_index][2],
-            font=("Comic Sans MS", 18), fill="#333333", justify="left"
+            font=("Comic Sans MS", 18), fill="#333333", width=50
         )
         # Bind click event to show editable entry box on click
         self.canvas.tag_bind(self.price_text_id, "<Button-1>",
@@ -1803,7 +1805,7 @@ class EditBoardFrame(GameplayFrame):
         # Display Rent Text or Input Entry
         self.rent_text_id = self.canvas.create_text(
             rent_image_x, rent_image_y, text=GameplayFrame.tile_info[self.grid_index][3],
-            font=("Comic Sans MS", 18), fill="#333333"
+            font=("Comic Sans MS", 18), fill="#333333", width=50
         )
         # Bind click event to show editable entry box on click
         self.canvas.tag_bind(self.rent_text_id, "<Button-1>",
@@ -1813,7 +1815,7 @@ class EditBoardFrame(GameplayFrame):
         # Remove the existing text and create an entry for editing
         self.canvas.delete(self.price_text_id)
         self.price_entry = tk.Entry(
-            self.canvas, font=("Comic Sans MS", 18), bg="#FBF8F5", bd=0, highlightthickness=0, fg="#333333"
+            self.canvas, font=("Comic Sans MS", 18), width=20, bd=0, bg="#D3D7D8", fg="#000000", highlightthickness=0
         )
         self.price_entry.insert(0, GameplayFrame.tile_info[self.grid_index][2])
         self.price_entry.place(x=x - 80, y=y - 15, width=160, height=30)
@@ -1838,8 +1840,9 @@ class EditBoardFrame(GameplayFrame):
     def show_rent_entry(self, x, y):
         # Remove the existing text and create an entry for editing
         self.canvas.delete(self.rent_text_id)
-        self.rent_entry = tk.Entry(
-            self.canvas, font=("Comic Sans MS", 18), bg="#FBF8F5", bd=0, highlightthickness=0, fg="#333333"
+
+        self.rent_entry = tk.Entry( #D2D7D8, CDCDCE, C6C8CD
+            self.canvas, font=("Comic Sans MS", 18), width=20, bd=0, bg="#D3D7D8", fg="#000000", highlightthickness=0
         )
         self.rent_entry.insert(0, GameplayFrame.tile_info[self.grid_index][3])
         self.rent_entry.place(x=x - 80, y=y - 15, width=160, height=30)
@@ -1857,7 +1860,7 @@ class EditBoardFrame(GameplayFrame):
         GameplayFrame.tile_info[self.grid_index][3] = new_rent
         self.rent_entry.destroy()
         self.rent_text_id = self.canvas.create_text(
-            1188, 695, text=new_rent, font=("Comic Sans MS", 18), fill="#333333"
+            1188, 695, text=new_rent, font=("Comic Sans MS", 18), fill="#333333",
         )
         self.canvas.tag_bind(self.rent_text_id, "<Button-1>", lambda e: self.show_rent_entry(1188, 695))
 
