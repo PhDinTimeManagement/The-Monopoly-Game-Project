@@ -48,6 +48,7 @@ class GameController:
         self.click_var = tk.StringVar()
         self.gui.gameplay_frame.player_info.clear()
         self.board.clear_owner()
+        self.input_handler.reset_players_names()
 
     def get_player_list(self):
         return self.player_list
@@ -303,6 +304,7 @@ class GameController:
 
     def load_and_start_game_button(self,idx):
         save_name = self.gui.load_game_frame.load_data(idx)
+        self.clear_all_data()
         self.load_game(save_name)
         self.button_play(True)
 
@@ -353,10 +355,11 @@ class GameController:
             # if not from_load: #TODO bind the clear_all_data() to the home button in save game page later
             #     self.clear_all_data() #clear all the data
             print("In the Game!!!",len(self.input_handler.players_names))#TODO del this line later
-            for player_name in self.input_handler.players_names:
-                if player_name is not None:
-                    player = Player(player_name)
-                    self.player_list.append(player)
+            if not from_load:
+                for player_name in self.input_handler.players_names:
+                    if player_name is not None:
+                        player = Player(player_name)
+                        self.player_list.append(player)
 
             self.all_players = self.player_list.copy()  # maintains a record copy of all players obj to keep updating the view even after they are broke
 
