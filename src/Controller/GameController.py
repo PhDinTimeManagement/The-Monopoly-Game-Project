@@ -308,15 +308,26 @@ class GameController:
         self.button_play(True)
 
     #------------ Save Game Frame Button ----------------#
+    def reset_game_states_and_views(self):
+        # resets game states
+        self.board = Gameboard()
+        self.game_logic = GameLogic()
+        self.gui.input_handler = InputHandler()
+        self.input_handler = self.gui.input_handler
+        self.pass_gameboard_info_to_view()
+
+        # resets views
+        self.gui.gameplay_frame = GameplayFrame(self.gui)
+        # self.gui.show_game_play_frame() called on play button click
+        self.gui.new_game_frame = NewGameFrame(self.gui)
+        self.gui.show_new_game_frame()
+        self.gui.edit_board_frame = EditBoardFrame(self.gui)
+        self.gui.show_edit_board_frame()
 
     def home_button(self):
         self.clear_all_data()
-
-        # resets game states and view
-        self.gui.gameplay_frame = GameplayFrame(self.gui)
-        self.board = Gameboard()
-        self.game_logic = GameLogic()
-
+        self.reset_game_states_and_views()
+        self.end_game_on_quit()
         self.gui.show_frame("main_menu")
 
     def back_to_game_play_frame(self):
@@ -635,10 +646,6 @@ class GameController:
         self.click_var.set("no_buy")
         print("Not Buying")
         # TODO <Show did not buy property>
-
-    def end_game(self):
-        # Need to modify the logic in GameLogic endgame
-        pass
 
     def save_gameboard(self, save_name):
         # gets current directory in which the program is running
