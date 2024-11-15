@@ -1711,6 +1711,8 @@ class EditBoardFrame(GameplayFrame):
         self.grid_index = -1
         self.clear = []
         self.canvas = None
+        self.price_text_id = None
+        self.rent_text_id = None
 
         self.place_names = [
             # Default places
@@ -1775,6 +1777,7 @@ class EditBoardFrame(GameplayFrame):
         self.name_entry.place(x=self.gui.image_width * 1 / 2 + 180, y=self.gui.image_height * 1 / 4 + 40, width=400,
                               height=30)
         self.name_entry.set(GameplayFrame.tile_info[self.grid_index][1])
+        self.clear.append(self.name_entry)
 
         # Place Price input box image on the canvas
         price_image_x = self.gui.image_width * 3 / 4 + 60
@@ -1811,7 +1814,7 @@ class EditBoardFrame(GameplayFrame):
             self.canvas, font=("Comic Sans MS", 18), bg="#FBF8F5", bd=0, highlightthickness=0, fg="#333333"
         )
         self.price_entry.insert(0, GameplayFrame.tile_info[self.grid_index][2])
-        self.price_entry.place(x=x - 80, y=y - 10, width=160, height=30)
+        self.price_entry.place(x=x - 80, y=y - 15, width=160, height=30)
         self.price_entry.focus_set()
 
         # Save the price on Enter key press
@@ -1857,16 +1860,23 @@ class EditBoardFrame(GameplayFrame):
         self.canvas.tag_bind(self.rent_text_id, "<Button-1>", lambda e: self.show_rent_entry(1188, 760))
 
     def remove_entries(self):
-        # if self.name_entry is not None:
-        #     self.name_entry.destroy()
-        # if self.price_entry is not None:
-        #     self.price_entry.destroy()
-        # if self.rent_entry is not None:
-        #     self.rent_entry.destroy()
+        # Destroy all widgets in the clear list
         if self.clear:
             for entry in self.clear:
-                entry.destroy()
-            self.clear = []
+                try:
+                    entry.destroy()  # Destroy any existing widgets
+                except Exception as e:
+                    print(f"Error clearing entry: {e}")  # For debugging purposes
+            self.clear = []  # Clear the list after all widgets are removed
+
+        # Remove any canvas text items specifically
+        if self.price_text_id:
+            self.canvas.delete(self.price_text_id)
+            self.price_text_id = None
+
+        if self.rent_text_id:
+            self.canvas.delete(self.rent_text_id)
+            self.rent_text_id = None
 
     def process_user_input(self):
         # Get the current name from the dropdown
@@ -1891,7 +1901,7 @@ class EditBoardFrame(GameplayFrame):
         GameplayFrame.tile_info[self.grid_index][2] = price
         GameplayFrame.tile_info[self.grid_index][3] = rent
 
-        # Clear the entries and refresh the display
+        # Destroy all the input boxes, canvas, dropdown menu
         self.remove_entries()
         self.remove_game_board_text()
         self.display_tile_info(self.canvas)
