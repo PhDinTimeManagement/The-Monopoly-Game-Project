@@ -1210,8 +1210,8 @@ class LoadFrame(DisplayManager):
         )
 
         #An array to store all the clickable area in an array
-        load_game_clickable_area = []
-        load_game_clickable_area.append(load_and_play_clickable_area)
+        back_button = canvas.create_image(50, 50, image=self.back_arrow_image)
+        load_game_clickable_area = [load_and_play_clickable_area,back_button]
 
         # Display saved game slots
         for i, slot_image in enumerate(self.save_slots):
@@ -1227,13 +1227,6 @@ class LoadFrame(DisplayManager):
                 outline="", fill="")
 
             load_game_clickable_area.append(clickable_area)
-            # # Bind click event to select the slot
-            # canvas.tag_bind(clickable_area, "<Button-1>",
-            #                 lambda e, idx=i: self.select_saved_slot(canvas, idx)) #TODO del later
-
-        # Display the back button to return to the main menu
-        back_button = canvas.create_image(50, 50, image=self.back_arrow_image)
-        canvas.tag_bind(back_button, "<Button-1>", lambda e: self.gui.show_frame("main_menu")) #TODO link with delete selection area
 
         self.show_save_file(canvas)
 
