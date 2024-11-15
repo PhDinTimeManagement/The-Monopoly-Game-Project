@@ -171,7 +171,7 @@ class GameController:
 
     def unbind_load_and_save_button(self):
         self.hide_load_and_save_image()
-        self.gui.load_game_cvanvas.tag_unbind(self.gui.load_game_click_area[0],"<Button-1>") #position 0 is the click area of load_save button
+        self.gui.load_game_canvas.tag_unbind(self.gui.load_game_click_area[0],"<Button-1>") #position 0 is the click area of load_save button
 
     def unbind_roll_button(self):
         self.hide_roll_image()
@@ -207,7 +207,10 @@ class GameController:
 
     # ----------Showing logic in controller---------#
 
-    def show_load_and_save_image(self):
+    def show_load_board_button(self):
+        self.gui.load_board_frame.show_load_image(self.gui.load_board_canvas)
+
+    def show_load_and_play_image(self):
         self.gui.load_game_frame.show_load_image(self.gui.load_game_canvas)
 
     def show_roll_image(self):
@@ -225,14 +228,23 @@ class GameController:
     def show_save_quit_image(self):
         self.gui.gameplay_frame.show_save_quit_image(self.gui.game_canvas)
 
-    def bind_load_and_save_button(self, idx):
-        self.show_load_and_save_image()
+    def bind_load_and_play_button(self, idx):
+        self.show_load_and_play_image()
         self.gui.load_game_canvas.tag_bind(self.gui.load_game_click_areas[0], "<Button-1>",
                                  lambda e: self.load_and_start_game_button(idx) )
+
+    def bind_load_board_button(self, idx):
+        self.show_load_board_button()
+        self.gui.load_board_canvas.tag_bind(self.gui.load_board_click_areas[0], "<Button-1>",
+                                            lambda e: self.load_board_button(idx))
 
     def bind_load_game(self):
         self.gui.canvas.tag_bind(self.gui.load_game_click_area, "<Button-1>",
                                  lambda e: self.load_button() )
+
+    def bind_load_board(self):
+        self.gui.canvas.tag_bind(self.gui.load_board_click_areas, "<Button-1>",
+                                 lambda e: self.load_board() )
 
     def bind_roll_button(self, player_this_turn):
         self.show_roll_image()
@@ -288,19 +300,19 @@ class GameController:
     # ---------------------------------------------------#
 
     #------------ Button func in Main Page --------------#
+
     def load_button(self):
         self.gui.load_game_frame.show_save_file(self.gui.load_game_canvas)
         self.gui.show_frame("load_game")
         #bind all the slots in the load page
         for i,slots in enumerate(self.gui.load_game_click_areas[1:]):
-            self.gui.load_game_canvas.tag_bind(slots, "<Button-1>", lambda e, idx=i: self.select_slot(idx))
-
-    # ---------------------------------------------------#
+            self.gui.load_game_canvas.tag_bind(slots, "<Button-1>", lambda e, idx=i: self.select_load_game_slot(idx))
 
     #----------- Button func in Load Game Page ----------#
-    def select_slot(self, idx):
+
+    def select_load_game_slot(self, idx):
         self.gui.load_game_frame.select_saved_slot(self.gui.load_game_canvas, idx)
-        self.bind_load_and_save_button(idx)
+        self.bind_load_and_play_button(idx)
 
     def load_and_start_game_button(self,idx):
         save_name = self.gui.load_game_frame.load_data(idx)
@@ -308,19 +320,30 @@ class GameController:
         self.load_game(save_name)
         self.button_play(True)
 
-    #----------------------------------------------------#
-
     #------------ Save Game Frame Button ----------------#
+    def reset_game_states_and_views(self):
+        # resets game states
+        self.board = Gameboard()
+        self.game_logic = GameLogic()
+        self.gui.input_handler = InputHandler()
+        self.input_handler = self.gui.input_handler
+        self.pass_gameboard_info_to_view()
+
+        # resets views
+        self.gui.gameplay_frame = GameplayFrame(self.gui)
+        # self.gui.show_game_play_frame() called on play button click
+        self.gui.new_game_frame = NewGameFrame(self.gui)
+        self.gui.show_new_game_frame()
+        self.gui.edit_board_frame = EditBoardFrame(self.gui)
+        self.gui.show_edit_board_frame()
 
     def home_button(self):
         self.clear_all_data()
-        """self.board = Gameboard()
-        self.game_logic = GameLogic()
-        self.pass_gameboard_info_to_view()"""
+        self.reset_game_states_and_views()
         self.gui.show_frame("main_menu")
 
     def back_to_game_play_frame(self):
-        self.gui.save_game_frame.back_button(self.gui.save_game_canvas)
+        self.gui.save_game_frame.back_button(self.gui.save_game_canvas, "gameplay")
         self.unbind_delete_button()
         self.unbind_save_button()
 
@@ -635,10 +658,6 @@ class GameController:
         self.click_var.set("no_buy")
         print("Not Buying")
         # TODO <Show did not buy property>
-
-    def end_game(self):
-        # Need to modify the logic in GameLogic endgame
-        pass
 
     def save_gameboard(self, save_name):
         # gets current directory in which the program is running
