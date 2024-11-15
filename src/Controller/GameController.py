@@ -294,9 +294,8 @@ class GameController:
         for i,slots in enumerate(self.gui.load_game_click_areas[1:]):
             self.gui.load_game_canvas.tag_bind(slots, "<Button-1>", lambda e, idx=i: self.select_slot(idx))
 
-    # ---------------------------------------------------#
-
     #----------- Button func in Load Game Page ----------#
+
     def select_slot(self, idx):
         self.gui.load_game_frame.select_saved_slot(self.gui.load_game_canvas, idx)
         self.bind_load_and_save_button(idx)
@@ -306,15 +305,16 @@ class GameController:
         self.load_game(save_name)
         self.button_play(True)
 
-    #----------------------------------------------------#
-
     #------------ Save Game Frame Button ----------------#
 
     def home_button(self):
         self.clear_all_data()
-        """self.board = Gameboard()
+
+        # resets game states and view
+        self.gui.gameplay_frame = GameplayFrame(self.gui)
+        self.board = Gameboard()
         self.game_logic = GameLogic()
-        self.pass_gameboard_info_to_view()"""
+
         self.gui.show_frame("main_menu")
 
     def back_to_game_play_frame(self):
