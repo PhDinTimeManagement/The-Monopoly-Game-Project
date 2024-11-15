@@ -38,6 +38,25 @@ class DisplayManager:
     def calc_button_dim(button_image):
         return button_image.width(), button_image.height()
 
+    def show_msg(self, frame, idx, msg, is_error=False, x_position=None, y_position=None):
+        if x_position is None:
+            x_position = 325
+        if y_position is None:
+            y_position = 322 + idx * 100
+
+        if self.error_labels[idx]:
+            self.error_labels[idx].destroy()
+
+        color = "red" if is_error else "green"
+        self.error_labels[idx] = tk.Label(
+            frame,
+            text=msg,
+            font=("Comic Sans MS", 16),
+            fg=color,
+            bg="#FBF8F5"
+        )
+        self.error_labels[idx].place(x=x_position, y=y_position)
+        self.active_widgets.append(self.error_labels[idx])  # Track the label for later removal
 
 # noinspection DuplicatedCode
 class GameplayFrame(DisplayManager):
@@ -983,26 +1002,6 @@ class NewGameFrame(DisplayManager):
             self.show_msg(canvas, idx, "* Name must be 1-20 characters.", is_error=True)
             entry.delete(0, tk.END)
 
-    def show_msg(self, frame, idx, msg, is_error=False, x_position=None, y_position=None):
-        if x_position is None:
-            x_position = 325
-        if y_position is None:
-            y_position = 322 + idx * 100
-
-        if self.error_labels[idx]:
-            self.error_labels[idx].destroy()
-
-        color = "red" if is_error else "green"
-        self.error_labels[idx] = tk.Label(
-            frame,
-            text=msg,
-            font=("Comic Sans MS", 16),
-            fg=color,
-            bg="#FBF8F5"
-        )
-        self.error_labels[idx].place(x=x_position, y=y_position)
-        self.active_widgets.append(self.error_labels[idx])  # Track the label for later removal
-
     def check_and_start_game(self, input_handler):
         # Retrieve all player names
         player_names = input_handler.get_all_player_names()
@@ -1671,7 +1670,7 @@ class EditBoardFrame(GameplayFrame):
         self.rent_input_box_image = tk.PhotoImage(file=os.path.join(assets_base_path, "edit_gameboard_frame/rent_input_box.png"))
         self.reset_button_image = tk.PhotoImage(file=os.path.join(assets_base_path, "edit_gameboard_frame/reset_button.png"))
         self.confirm_button_image = tk.PhotoImage(file=os.path.join(assets_base_path, "edit_gameboard_frame/confirm_button.png"))
-        self.save_board_button_image = tk.PhotoImage(file=os.path.join(assets_base_path, "edit_gameboard_frame/save_board_profile_button.png"))
+        self.save_board_profile_button_image = tk.PhotoImage(file=os.path.join(assets_base_path, "edit_gameboard_frame/save_board_profile_button.png"))
         self.back_arrow_photo = tk.PhotoImage(file=os.path.join(assets_base_path, "edit_gameboard_frame/back_arrow.png"))
 
         # Two Important Data Points: 30 * 140, 840 * 940 to (1512 * 982)
@@ -1735,12 +1734,16 @@ class EditBoardFrame(GameplayFrame):
         self.canvas = canvas
         reset_click_area, canvas, cancel_id = self.create_button(canvas, self.gui.image_width * 3 / 4 - 80, self.gui.image_height * 3 / 4 + 55, self.reset_button_image)
         confirm_click_area, canvas, confirm_id = self.create_button(canvas, self.gui.image_width * 3 / 4 + 195, self.gui.image_height * 3 / 4 + 55, self.confirm_button_image)
-        save_board_click_area, canvas, save_board_id = self.create_button(canvas, self.gui.image_width * 3 / 4 + 60, self.gui.image_height * 4 / 5 + 130, self.save_board_button_image)
+        save_board_profile_click_area, canvas, save_board_id = self.create_button(canvas, self.gui.image_width * 3 / 4 + 60, self.gui.image_height * 4 / 5 + 130, self.save_board_profile_button_image)
         back_click_area, canvas, back_id = self.create_button(canvas, 50, 50, self.back_arrow_photo)
+
+        # Display all the colors in the Edit Board Frame
+        self.gui.gameplay_frame.display_tile_colors(canvas)
 
         canvas.tag_bind(back_click_area, "<Button-1>", lambda e: self.gui.show_frame("new_game"))
         canvas.tag_bind(reset_click_area, "<Button-1>", lambda e: self.remove_entries())
         canvas.tag_bind(confirm_click_area, "<Button-1>", lambda e: self.process_user_input())
+        canvas.tag_bind(save_board_profile_click_area, "<Button-1>", lambda e: self.gui.show_frame("save_board"))
 
         game_board_area = canvas.create_rectangle(27, 144, 836, 954, outline="", fill="", tags="game_board")
         canvas.tag_bind("game_board", '<Button-1>', self.on_game_board_click)
