@@ -1314,12 +1314,14 @@ class LoadGameFrame(LoadFrame):
         self.load_frame_background = tk.PhotoImage(file=os.path.join(assets_base_path, "load_frame/load_game_frame_background.png"))
         self.save_base_path = os.path.join(os.path.dirname(__file__), "../../saves/games")
 
-<<<<<<< HEAD
-
 class LoadGameboardFrame(LoadFrame):
-=======
+    def __init__(self, gui):
+        super()._init_(gui)
+        self.button_image = tk.PhotoImage(file=os.path.join(assets_base_path, "load_frame/load_and_play_button.png"))
+        self.load_frame_background = tk.PhotoImage(file=os.path.join(assets_base_path, "load_frame/load_game_frame_background.png"))
+        self.save_base_path = os.path.join(os.path.dirname(__file__), "../../saves/games")
+
 class LoadBoardFrame(LoadFrame):
->>>>>>> 5d5be560ec71ad4a1c7eb0122e6d017b4e6a6898
     def __init__(self, gui):
         super().__init__(gui)
         self.button_image = tk.PhotoImage(file=os.path.join(assets_base_path, "load_frame/load_board_button.png"))
