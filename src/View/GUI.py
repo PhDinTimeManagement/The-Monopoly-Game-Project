@@ -34,6 +34,8 @@ class GUI(tk.Tk):
         self.save_game_frame= SaveGameFrame(self)
         self.enter_file_name_frame= EnterNameFrame(self)
         self.edit_board_frame= EditBoardFrame(self)
+        self.load_board_frame = LoadBoardFrame(self)
+        self.save_board_frame = SaveBoardFrame(self)
         #TODO <Remove the controller object from the GameplayFrame>
         self.gameplay_frame = GameplayFrame(self)
         self.input_handler = InputHandler()
@@ -46,7 +48,8 @@ class GUI(tk.Tk):
         self.show_load_game_frame()
         self.show_save_game_frame()
         self.show_enter_name_frame()
-
+        self.show_load_board_frame()
+        self.show_save_board_frame()
 
         # Initially show the main menu
         self.show_frame("main_menu")
@@ -84,8 +87,18 @@ class GUI(tk.Tk):
     def show_save_game_frame(self):
         frame = tk.Frame(self)
         self.frames["save_game"] = frame
-        self.save_game_canvas, self.save_delete_click_areas  = self.save_game_frame.setup_save_game_frame(frame)
+        self.save_game_canvas, self.save_delete_click_areas  = self.save_game_frame.setup_save_frame(frame)
         print("The length of this array is: ", len(self.save_delete_click_areas))
+
+    def show_load_board_frame(self):
+        frame = tk.Frame(self)
+        self.frames["load_board"] = frame
+        self.load_board_canvas, self.load_board_click_areas = self.load_board_frame.setup_load_frame(frame)
+
+    def show_save_board_frame(self):
+        frame = tk.Frame(self)
+        self.frames["save_board"] = frame
+        self.save_board_frame, self.save_board_click_areas = self.save_board_frame.setup_save_frame(frame)
 
     # Enter the main game board
     def show_game_play_frame(self):
