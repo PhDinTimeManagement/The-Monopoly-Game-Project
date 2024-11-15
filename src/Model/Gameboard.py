@@ -286,3 +286,8 @@ class Gameboard:
         for i in range(0,len(self.tiles)):
             if self.tiles[i].tile_type == "property":
                 self.tiles[i].owner = None
+
+    def update_tile_color(self, position, new_color):
+        tile = self.tiles[position - 1]  # Adjust for 0-indexing
+        if isinstance(tile, Property):
+            tile.set_color(new_color)

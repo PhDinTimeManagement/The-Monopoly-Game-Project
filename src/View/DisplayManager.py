@@ -2,6 +2,7 @@ import tkinter as tk
 import os
 import time
 from random import choice
+from tkinter import ttk
 from typing import final
 
 from tests.test_GameLogic import players_list
@@ -1675,58 +1676,65 @@ class InfoPageFrame(DisplayManager):
 class EditBoardFrame(GameplayFrame):
     def __init__(self, gui):
         super().__init__(gui)
-        self.edit_board_background = tk.PhotoImage(file=os.path.join(assets_base_path, "edit_gameboard_frame/edit_board_frame_background.png"))
-        self.price_input_box_image = tk.PhotoImage(file=os.path.join(assets_base_path, "edit_gameboard_frame/price_input_box.png"))
-        self.rent_input_box_image = tk.PhotoImage(file=os.path.join(assets_base_path, "edit_gameboard_frame/rent_input_box.png"))
-        self.reset_button_image = tk.PhotoImage(file=os.path.join(assets_base_path, "edit_gameboard_frame/reset_button.png"))
-        self.confirm_button_image = tk.PhotoImage(file=os.path.join(assets_base_path, "edit_gameboard_frame/confirm_button.png"))
-        self.save_board_button_image = tk.PhotoImage(file=os.path.join(assets_base_path, "edit_gameboard_frame/save_board_profile_button.png"))
-        self.back_arrow_photo=tk.PhotoImage(file=os.path.join(assets_base_path, "edit_gameboard_frame/back_arrow.png"))
+        self.edit_board_background = tk.PhotoImage(
+            file=os.path.join(assets_base_path, "edit_gameboard_frame/edit_board_frame_background.png"))
+        self.price_input_box_image = tk.PhotoImage(
+            file=os.path.join(assets_base_path, "edit_gameboard_frame/price_input_box.png"))
+        self.rent_input_box_image = tk.PhotoImage(
+            file=os.path.join(assets_base_path, "edit_gameboard_frame/rent_input_box.png"))
+        self.reset_button_image = tk.PhotoImage(
+            file=os.path.join(assets_base_path, "edit_gameboard_frame/reset_button.png"))
+        self.confirm_button_image = tk.PhotoImage(
+            file=os.path.join(assets_base_path, "edit_gameboard_frame/confirm_button.png"))
+        self.save_board_button_image = tk.PhotoImage(
+            file=os.path.join(assets_base_path, "edit_gameboard_frame/save_board_profile_button.png"))
+        self.back_arrow_photo = tk.PhotoImage(
+            file=os.path.join(assets_base_path, "edit_gameboard_frame/back_arrow.png"))
 
         # Two Important Data Points: 30 * 140, 840 * 940 to (1512 * 982)
         top_left_x_of_board = self.gui.image_width * 30 / 1512
-        top_left_y_of_board = self.gui.image_height * 140 / 982
-        bottom_right_x_of_board = self.gui.image_width * 840 / 1512
-        bottom_right_y_of_board = self.gui.image_height * 940 / 982
+        top_left_y_of_board = self.gui.image_height * 148 / 982
+        bottom_right_x_of_board = self.gui.image_width * 833 / 1512
+        bottom_right_y_of_board = self.gui.image_height * 952 / 982
 
         # top_left_x,top_left_y,bottom_right_x,bottom_right_y,index
         # Each grid is 137 * 137
         # Index is clockwise, start from "Go" Grid
         # From top to down, left to right
-        self.property_coordinates=[
-            # Last Row
-            [bottom_right_x_of_board - 280, bottom_right_y_of_board - 140, bottom_right_x_of_board - 140, bottom_right_y_of_board, 1], # Central by default
-            [bottom_right_x_of_board - 420, bottom_right_y_of_board - 140, bottom_right_x_of_board - 280, bottom_right_y_of_board, 2], # Wan Chai by default
-            [bottom_right_x_of_board - 700, bottom_right_y_of_board - 140, bottom_right_x_of_board - 560, bottom_right_y_of_board, 4], # Stanley by default
+        self.property_coordinates = [
+            # Last Row (Manually adjust the position)
+            [bottom_right_x_of_board - 264, bottom_right_y_of_board - 128, bottom_right_x_of_board - 135, bottom_right_y_of_board, 1],  # Central by default
+            [bottom_right_x_of_board - 398, bottom_right_y_of_board - 128, bottom_right_x_of_board - 273, bottom_right_y_of_board, 2],  # Wan Chai by default
+            [bottom_right_x_of_board - 668, bottom_right_y_of_board - 128, bottom_right_x_of_board - 540, bottom_right_y_of_board, 4],  # Stanley by default
 
-            # First Column
-            [top_left_x_of_board, top_left_y_of_board + 548, top_left_x_of_board + 137, top_left_y_of_board + 685, 6], # Shek O by default
-            [top_left_x_of_board, top_left_y_of_board + 411, top_left_x_of_board + 137, top_left_y_of_board + 548, 7], # Mong Kok by default
-            [top_left_x_of_board, top_left_y_of_board + 137, top_left_x_of_board + 137, top_left_y_of_board + 274, 9], # Tsing Yi by default
+            # First Column (Manually adjust the position)
+            [top_left_x_of_board, top_left_y_of_board + 541, top_left_x_of_board + 128, top_left_y_of_board + 668, 6], # Shek O by default
+            [top_left_x_of_board, top_left_y_of_board + 406, top_left_x_of_board + 128, top_left_y_of_board + 534, 7], # Mong Kok by default
+            [top_left_x_of_board, top_left_y_of_board + 136, top_left_x_of_board + 128, top_left_y_of_board + 263, 9], # Tsing Yi by default
 
-            # First Row
-            [top_left_x_of_board + 137, top_left_y_of_board, top_left_x_of_board + 274, top_left_y_of_board + 137, 11], # Sha Tin by default
-            [top_left_x_of_board + 411, top_left_y_of_board, top_left_x_of_board + 548, top_left_y_of_board + 137, 13], # Tuen Mun by default
-            [top_left_x_of_board + 548, top_left_y_of_board, top_left_x_of_board + 685, top_left_y_of_board + 137, 14], # Tai Po by default
+            # First Row (Manually adjust the position)
+            [top_left_x_of_board + 135, top_left_y_of_board, top_left_x_of_board + 265, top_left_y_of_board + 128, 11], # Sha Tin by default
+            [top_left_x_of_board + 405, top_left_y_of_board, top_left_x_of_board + 535, top_left_y_of_board + 128, 13], # Tuen Mun by default
+            [top_left_x_of_board + 540, top_left_y_of_board, top_left_x_of_board + 670, top_left_y_of_board + 128, 14], # Tai Po by default
 
-            # Last Column
-            [bottom_right_x_of_board - 137, bottom_right_y_of_board - 685, bottom_right_x_of_board, bottom_right_y_of_board - 548, 16], # Sai Kung by default
-            [bottom_right_x_of_board - 137, bottom_right_y_of_board - 548, bottom_right_x_of_board, bottom_right_y_of_board - 411, 17], # Yuen Long by default
-            [bottom_right_x_of_board - 137, bottom_right_y_of_board - 274, bottom_right_x_of_board, bottom_right_y_of_board - 137, 19] # Tai O by default
+            # Last Column (Manually adjust the position)
+            [bottom_right_x_of_board - 128, bottom_right_y_of_board - 668, bottom_right_x_of_board, bottom_right_y_of_board - 540, 16],  # Sai Kung by default
+            [bottom_right_x_of_board - 128, bottom_right_y_of_board - 534, bottom_right_x_of_board, bottom_right_y_of_board - 405, 17],  # Yuen Long by default
+            [bottom_right_x_of_board - 128, bottom_right_y_of_board - 263, bottom_right_x_of_board, bottom_right_y_of_board - 136, 19]  # Tai O by default
         ]
 
-        self.name_entry=None
-        self.price_entry=None
-        self.rent_entry=None
-        self.current_frame=None
-        self.grid_index=-1
-        self.clear=[]
-        self.canvas=None
+        self.name_entry = None
+        self.price_entry = None
+        self.rent_entry = None
+        self.current_frame = None
+        self.grid_index = -1
+        self.clear = []
+        self.canvas = None
 
     def setup_edit_board_frame(self, frame):
         canvas = self.clear_widgets_create_canvas_set_background(frame, self.edit_board_background)
-        self.current_frame=frame
-        self.canvas=canvas
+        self.current_frame = frame
+        self.canvas = canvas
         cancel_click_area, canvas, cancel_id = self.create_button(canvas, 1051, 897, self.reset_button_image)
         confirm_click_area, canvas, confirm_id = self.create_button(canvas, 1318, 897, self.confirm_button_image)
         back_click_area, canvas, back_id = self.create_button(canvas, 50, 50, self.back_arrow_photo)
@@ -1736,51 +1744,42 @@ class EditBoardFrame(GameplayFrame):
         canvas.tag_bind(confirm_click_area, "<Button-1>", lambda e: self.process_user_input())
 
         game_board_area = canvas.create_rectangle(27, 144, 836, 954, outline="", fill="", tags="game_board")
-        canvas.tag_bind("game_board", '<Button-1>', self.show_coordinates)
+        # canvas.tag_bind("game_board", '<Button-1>', self.show_coordinates)
+        canvas.tag_bind("game_board", '<Button-1>', self.on_game_board_click)
         self.display_tile_info(canvas)
-
-    def show_coordinates(self, event):
-        # Display the coordinates where the user clicked
-        x, y = event.x, event.y
-        print(f"Clicked at: ({x}, {y})")
-        
-        # Clear previous text if it exists
-        self.canvas.delete("coord_text")
-
-        # Display the new coordinates
-        self.canvas.create_text(x, y, text=f"({x}, {y})", anchor="nw", tags="coord_text", fill="red")
+        self.bind_text(canvas)
 
     def on_game_board_click(self, event):
         self.remove_entries()
         x = event.x
         y = event.y
         print(f"Coordinates: ({x}, {y})")
-        self.grid_index=self.check_click_grid(x,y)
-        if self.grid_index!=-1:
+        self.grid_index = self.check_click_grid(x, y)
+        if self.grid_index != -1:
             print(GameplayFrame.tile_info[self.grid_index])
             self.create_input_entries(self.current_frame)
 
-    def check_click_grid(self,x,y):
-        grid_index=-1
-        for top_left_x,top_left_y,bottom_right_x,bottom_right_y,index in self.property_coordinates:
-            if self.check_inside_grid(x,y,top_left_x,top_left_y,bottom_right_x,bottom_right_y):
-                grid_index=index
+    def check_click_grid(self, x, y):
+        grid_index = -1
+        for top_left_x, top_left_y, bottom_right_x, bottom_right_y, index in self.property_coordinates:
+            if self.check_inside_grid(x, y, top_left_x, top_left_y, bottom_right_x, bottom_right_y):
+                grid_index = index
                 break
         return grid_index
 
-    def check_inside_grid(self,x,y,top_left_x,top_left_y,bottom_right_x,bottom_right_y):
-        return top_left_x<=x<=bottom_right_x and top_left_y<=y<=bottom_right_y
+    def check_inside_grid(self, x, y, top_left_x, top_left_y, bottom_right_x, bottom_right_y):
+        return top_left_x <= x <= bottom_right_x and top_left_y <= y <= bottom_right_y
 
-    def create_input_entries(self,frame):
+    def create_input_entries(self, frame):
         self.name_entry = tk.Entry(frame, width=400, font=("Comic Sans MS", 40))
         self.price_entry = tk.Entry(frame, width=400, font=("Comic Sans MS", 40))
         self.rent_entry = tk.Entry(frame, width=400, font=("Comic Sans MS", 40))
-        self.name_entry.place(x=1188, y=390, width=400, height=80,anchor="center")
-        self.price_entry.place(x=1188, y=570, width=400, height=80,anchor="center")
-        self.rent_entry.place(x=1188, y=760, width=400, height=80,anchor="center")
-        self.name_entry.insert(0, GameplayFrame.tile_info[self.grid_index][1]) # 1 is "name"
-        self.price_entry.insert(0, GameplayFrame.tile_info[self.grid_index][2]) # 2 is "price"
-        self.rent_entry.insert(0, GameplayFrame.tile_info[self.grid_index][3]) # 3 is "rent"
+        self.name_entry.place(x=1188, y=390, width=400, height=80, anchor="center")
+        self.price_entry.place(x=1188, y=570, width=400, height=80, anchor="center")
+        self.rent_entry.place(x=1188, y=760, width=400, height=80, anchor="center")
+        self.name_entry.insert(0, GameplayFrame.tile_info[self.grid_index][1])  # 1 is "name"
+        self.price_entry.insert(0, GameplayFrame.tile_info[self.grid_index][2])  # 2 is "price"
+        self.rent_entry.insert(0, GameplayFrame.tile_info[self.grid_index][3])  # 3 is "rent"
 
     def remove_entries(self):
         if self.name_entry is not None:
@@ -1791,10 +1790,10 @@ class EditBoardFrame(GameplayFrame):
             self.rent_entry.destroy()
 
     def process_user_input(self):
-        name= self.name_entry.get()
-        price= self.price_entry.get()
-        rent= self.rent_entry.get()
-        #check valid and if valid
+        name = self.name_entry.get()
+        price = self.price_entry.get()
+        rent = self.rent_entry.get()
+        # check valid and if valid
         GameplayFrame.tile_info[self.grid_index][1] = name
         GameplayFrame.tile_info[self.grid_index][2] = price
         GameplayFrame.tile_info[self.grid_index][3] = rent
@@ -1802,6 +1801,7 @@ class EditBoardFrame(GameplayFrame):
         self.remove_game_board_text()
         self.canvas.update()
         self.display_tile_info(self.canvas)
+        self.bind_text(self.canvas)
         print(GameplayFrame.tile_info)
 
     # deletes all info from gameboard
@@ -1810,3 +1810,48 @@ class EditBoardFrame(GameplayFrame):
             for i in range(5, 8):
                 self.canvas.delete(GameplayFrame.tile_info[j][i])
                 GameplayFrame.tile_info[j][i] = None
+
+    def bind_text(self, canvas):
+        for i in range(0, 20):
+            # gets all information necessary to display
+            tile_type = GameplayFrame.tile_info[i][0]
+
+            # displays text based on tile type
+            if tile_type == "property":
+                canvas.tag_bind(GameplayFrame.tile_info[i][5], '<Button-1>', self.on_game_board_click)
+                canvas.tag_bind(GameplayFrame.tile_info[i][6], '<Button-1>', self.on_game_board_click)
+                canvas.tag_bind(GameplayFrame.tile_info[i][7], '<Button-1>', self.on_game_board_click)
+                canvas.tag_bind(GameplayFrame.tile_info[i][8], '<Button-1>', self.on_game_board_click)
+            elif tile_type == "go":
+                canvas.tag_bind(GameplayFrame.tile_info[i][6], '<Button-1>', self.on_game_board_click)
+            elif tile_type == "free_parking":
+                canvas.tag_bind(GameplayFrame.tile_info[i][6], '<Button-1>', self.on_game_board_click)
+            elif tile_type == "chance":
+                canvas.tag_bind(GameplayFrame.tile_info[i][6], '<Button-1>', self.on_game_board_click)
+            elif tile_type == "income_tax":
+                canvas.tag_bind(GameplayFrame.tile_info[i][6], '<Button-1>', self.on_game_board_click)
+                canvas.tag_bind(GameplayFrame.tile_info[i][7], '<Button-1>', self.on_game_board_click)
+
+#------------------------------------# This is used for debugging, DONT DELETE #------------------------------------#
+    def show_coordinates(self, event):
+        # Get click coordinates
+        x, y = event.x, event.y
+
+        # Determine if the click is inside a grid using check_click_grid
+        grid_index = self.check_click_grid(x, y)
+        in_grid = grid_index != -1
+
+        # Print the coordinates and grid status
+        print(f"Clicked at: ({x}, {y}) - In Grid: {in_grid}")
+
+        # Display the coordinates and grid status on the canvas
+        # Clear previous text if it exists
+        self.canvas.delete("coord_text")
+
+        # Show the new coordinates and grid status
+        status_text = f"({x}, {y}) - In Grid: {in_grid}"
+        if in_grid:
+            status_text += f" (Grid Index: {grid_index})"  # Show grid index if within a grid
+        self.canvas.create_text(x, y, text=status_text, anchor="nw", tags="coord_text", fill="red")
+
+
