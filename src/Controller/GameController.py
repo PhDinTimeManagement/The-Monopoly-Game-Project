@@ -2,7 +2,6 @@
 
 import json
 import os.path
-import time
 
 from src.Model.Gameboard import *
 from src.Model.Player import *
@@ -200,11 +199,11 @@ class GameController:
         self.hide_no_buy_image()
         self.gui.game_canvas.tag_unbind(self.gui.game_frame_click_areas[2], "<Button-1>")
 
-    def unbind_pay_fine_button(self, player_this_turn):
+    def unbind_pay_fine_button(self):
         self.hide_pay_fine_image()
         self.gui.game_canvas.tag_unbind(self.gui.game_frame_click_areas[3], "<Button-1>")
 
-    def unbind_in_jail_roll_button(self, player_this_turn):
+    def unbind_in_jail_roll_button(self):
         self.hide_roll_image()
         self.gui.game_canvas.tag_unbind(self.gui.game_frame_click_areas[0], "<Button-1>")
 
@@ -585,16 +584,16 @@ class GameController:
         print(player_this_turn.get_name(), "is Rolling, and rolled: ", dice_roll1 ,dice_roll2, dice_select_image_position1, dice_select_image_position2)
 
         # Save the dice results
-        self.dice_results = []
+        dice_results = []
 
         # Handle the result of each dice roll animation
         def on_dice_roll(dice_result):
-            self.dice_results.append(dice_result)
+            dice_results.append(dice_result)
 
             # Display each roll result
-            roll_number = len(self.dice_results)
+            roll_number = len(dice_results)
 
-            if len(self.dice_results) < 2:
+            if len(dice_results) < 2:
                 #Wait for 1 second before starting the second roll
                 self.gui.after(1000, lambda: self.gui.gameplay_frame.roll_dice_animation(
                             self.gui.game_canvas, self.gui.image_width * 2 / 7, self.gui.image_height * 2 / 5 + 120,
@@ -603,19 +602,19 @@ class GameController:
 
             else:
                 # Both dice rolls are complete
-                total_dice = sum(self.dice_results)
+                total_dice = sum(dice_results)
                 # Pass total_dice to roll_dice_animation to display final result and hide dice
                 self.gui.gameplay_frame.roll_dice_animation(
                     self.gui.game_canvas, self.gui.image_width * 2 / 7, self.gui.image_height * 2 / 5 + 120,
                     3, on_dice_roll,None, total_dice
                 )
 
-                startingPosition = player_this_turn.get_current_position()
+                starting_position  = player_this_turn.get_current_position()
                 # Continue game logic with the total dice result after displaying it, updates position
                 tile = GameLogic.player_move(total_dice, player_this_turn, self.board)
                 # Shows player movement
                 self.gui.gameplay_frame.player_movement(self.gui.game_canvas, self.player_list.index(player_this_turn),
-                                                        startingPosition, tile.get_tile_position())
+                                                        starting_position , tile.get_tile_position())
                 self.update_all_game_info()
 
                 #for smoother game experience, pause shorter when for the player who is buying property
@@ -641,7 +640,7 @@ class GameController:
     def in_jail_roll(self, player_this_turn):
         #unbind the in_jail_roll button and pay_fine button
         self.unbind_roll_button()
-        self.unbind_pay_fine_button(player_this_turn)
+        self.unbind_pay_fine_button()
         self.unbind_save_quit_button()
 
         print(player_this_turn.get_name(), "is Rolling IN JAIL.") # TODO del this line later
@@ -705,7 +704,7 @@ class GameController:
         self.update_all_game_info()
         self.click_var.set("pay_fine")
         print("Paying fine")
-        self.unbind_pay_fine_button(player_this_turn)
+        self.unbind_pay_fine_button()
         # TODO <Show the money is deduced>
 
     def buy_button(self):

@@ -1708,6 +1708,8 @@ class EditBoardFrame(GameplayFrame):
         self.price_entry = None
         self.rent_entry = None
         self.current_frame = None
+        self.price_image_id = None
+        self.rent_image_id = None
         self.grid_index = -1
         self.clear = []
         self.canvas = None
@@ -1782,7 +1784,7 @@ class EditBoardFrame(GameplayFrame):
         # Place Price input box image on the canvas
         price_image_x = self.gui.image_width * 3 / 4 + 60
         price_image_y = self.gui.image_height * 1 / 2 + 75
-        self.canvas.create_image(price_image_x, price_image_y, image=self.price_input_box_image, anchor="center")
+        self.price_image_id = self.canvas.create_image(price_image_x, price_image_y, image=self.price_input_box_image, anchor="center")
 
         # Display Price Text or Input Entry
         self.price_text_id = self.canvas.create_text(
@@ -1796,7 +1798,7 @@ class EditBoardFrame(GameplayFrame):
         # Place Rent input box image on the canvas
         rent_image_x = self.gui.image_width * 3 / 4 + 60
         rent_image_y = self.gui.image_height * 1 / 2 + 205
-        self.canvas.create_image(rent_image_x, rent_image_y, image=self.rent_input_box_image, anchor="center")
+        self.rent_image_id = self.canvas.create_image(rent_image_x, rent_image_y, image=self.rent_input_box_image, anchor="center")
 
         # Display Rent Text or Input Entry
         self.rent_text_id = self.canvas.create_text(
@@ -1878,6 +1880,8 @@ class EditBoardFrame(GameplayFrame):
             self.canvas.delete(self.rent_text_id)
             self.rent_text_id = None
 
+        self.canvas.delete(self.price_image_id)
+        self.canvas.delete(self.rent_image_id)
     def process_user_input(self):
         # Get the current name from the dropdown
         name = self.name_entry.get()

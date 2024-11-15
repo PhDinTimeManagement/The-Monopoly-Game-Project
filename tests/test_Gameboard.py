@@ -78,9 +78,9 @@ class TestProperty(TestCase):
 class TestJail(TestCase):
     def test_set_jailed_players(self):
         JailTile = gameboard_testing.get_jail_tile()
-        player_list = [player1, player2]
-        JailTile.set_jailed_players(player_list)
-        jailed_list = [player.get_name() for player in player_list]
+        player_list1 = [player1, player2]
+        JailTile.set_jailed_players(player_list1)
+        jailed_list = [player.get_name() for player in player_list1]
 
         self.assertListEqual(JailTile.get_jailed_players(), jailed_list)
         JailTile.free_player(player2)
