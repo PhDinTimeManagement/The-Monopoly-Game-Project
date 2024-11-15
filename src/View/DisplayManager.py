@@ -1296,12 +1296,14 @@ class LoadFrame(DisplayManager):
                 canvas.tag_bind(text2, "<Button-1>",
                                 lambda e, idx=i: self.select_saved_slot(canvas, idx))
 
+
 class LoadGameFrame(LoadFrame):
     def __init__(self, gui):
         super().__init__(gui)
         self.button_image = tk.PhotoImage(file=os.path.join(assets_base_path, "load_frame/load_and_play_button.png"))
         self.load_frame_background = tk.PhotoImage(file=os.path.join(assets_base_path, "load_frame/load_game_frame_background.png"))
         self.save_base_path = os.path.join(os.path.dirname(__file__), "../../saves/games")
+
 
 class LoadGameboardFrame(LoadFrame):
     def __init__(self, gui):
@@ -1674,17 +1676,45 @@ class InfoPageFrame(DisplayManager):
 class EditBoardFrame(GameplayFrame):
     def __init__(self, gui):
         super().__init__(gui)
-        self.edit_board_background = tk.PhotoImage(
-            file=os.path.join(assets_base_path, "edit_gameboard_frame/editboard_frame_background.png"))
-        self.confirm_photo=tk.PhotoImage(
-            file=os.path.join(assets_base_path, "edit_gameboard_frame/confirm.png"))
-        self.cancel_photo=tk.PhotoImage(
-            file=os.path.join(assets_base_path, "edit_gameboard_frame/cancel.png"))
-        self.back_arrow_photo=tk.PhotoImage(
-            file=os.path.join(assets_base_path, "edit_gameboard_frame/back_arrow.png"))
+        self.edit_board_background = tk.PhotoImage(file=os.path.join(assets_base_path, "edit_gameboard_frame/edit_board_frame_background.png"))
+        self.price_input_box_image = tk.PhotoImage(file=os.path.join(assets_base_path, "edit_gameboard_frame/price_input_box.png"))
+        self.rent_input_box_image = tk.PhotoImage(file=os.path.join(assets_base_path, "edit_gameboard_frame/rent_input_box.png"))
+        self.reset_button_image = tk.PhotoImage(file=os.path.join(assets_base_path, "edit_gameboard_frame/reset_button.png"))
+        self.confirm_button_image = tk.PhotoImage(file=os.path.join(assets_base_path, "edit_gameboard_frame/confirm_button.png"))
+        self.save_board_button_image = tk.PhotoImage(file=os.path.join(assets_base_path, "edit_gameboard_frame/save_board_profile_button.png"))
+        self.back_arrow_photo=tk.PhotoImage(file=os.path.join(assets_base_path, "edit_gameboard_frame/back_arrow.png"))
 
-        self.property_coordinates=[[567, 820, 700, 953, 1], [431, 819, 568, 951, 2], [164, 817, 296, 953, 4], [27, 684, 160, 816, 6], [28, 549, 161, 684, 7],
-                                   [28,278,160,413,9], [161,147,297,278,11], [433,144,567,279,13], [568,144,700,278,14], [700,278,833,413,16], [704,415,837,547,17], [701,685,835,817,19]]
+        # Two Important Data Points: 30 * 140, 840 * 940 to (1512 * 982)
+        top_left_x_of_board = self.gui.image_width * 30 / 1512
+        top_left_y_of_board = self.gui.image_height * 140 / 982
+        bottom_right_x_of_board = self.gui.image_width * 840 / 1512
+        bottom_right_y_of_board = self.gui.image_height * 940 / 982
+
+        # top_left_x,top_left_y,bottom_right_x,bottom_right_y,index
+        # Each grid is 137 * 137
+        # Index is clockwise, start from "Go" Grid
+        # From top to down, left to right
+        self.property_coordinates=[
+            # Last Row
+            [bottom_right_x_of_board - 280, bottom_right_y_of_board - 140, bottom_right_x_of_board - 140, bottom_right_y_of_board, 1], # Central by default
+            [bottom_right_x_of_board - 420, bottom_right_y_of_board - 140, bottom_right_x_of_board - 280, bottom_right_y_of_board, 2], # Wan Chai by default
+            [bottom_right_x_of_board - 700, bottom_right_y_of_board - 140, bottom_right_x_of_board - 560, bottom_right_y_of_board, 4], # Stanley by default
+
+            # First Column
+            [top_left_x_of_board, top_left_y_of_board + 548, top_left_x_of_board + 137, top_left_y_of_board + 685, 6], # Shek O by default
+            [top_left_x_of_board, top_left_y_of_board + 411, top_left_x_of_board + 137, top_left_y_of_board + 548, 7], # Mong Kok by default
+            [top_left_x_of_board, top_left_y_of_board + 137, top_left_x_of_board + 137, top_left_y_of_board + 274, 9], # Tsing Yi by default
+
+            # First Row
+            [top_left_x_of_board + 137, top_left_y_of_board, top_left_x_of_board + 274, top_left_y_of_board + 137, 11], # Sha Tin by default
+            [top_left_x_of_board + 411, top_left_y_of_board, top_left_x_of_board + 548, top_left_y_of_board + 137, 13], # Tuen Mun by default
+            [top_left_x_of_board + 548, top_left_y_of_board, top_left_x_of_board + 685, top_left_y_of_board + 137, 14], # Tai Po by default
+
+            # Last Column
+            [bottom_right_x_of_board - 137, bottom_right_y_of_board - 685, bottom_right_x_of_board, bottom_right_y_of_board - 548, 16], # Sai Kung by default
+            [bottom_right_x_of_board - 137, bottom_right_y_of_board - 548, bottom_right_x_of_board, bottom_right_y_of_board - 411, 17], # Yuen Long by default
+            [bottom_right_x_of_board - 137, bottom_right_y_of_board - 274, bottom_right_x_of_board, bottom_right_y_of_board - 137, 19] # Tai O by default
+        ]
 
         self.name_entry=None
         self.price_entry=None
@@ -1698,8 +1728,8 @@ class EditBoardFrame(GameplayFrame):
         canvas = self.clear_widgets_create_canvas_set_background(frame, self.edit_board_background)
         self.current_frame=frame
         self.canvas=canvas
-        cancel_click_area, canvas, cancel_id = self.create_button(canvas, 1051, 897, self.cancel_photo)
-        confirm_click_area, canvas, confirm_id = self.create_button(canvas, 1318, 897, self.confirm_photo)
+        cancel_click_area, canvas, cancel_id = self.create_button(canvas, 1051, 897, self.reset_button_image)
+        confirm_click_area, canvas, confirm_id = self.create_button(canvas, 1318, 897, self.confirm_button_image)
         back_click_area, canvas, back_id = self.create_button(canvas, 50, 50, self.back_arrow_photo)
 
         canvas.tag_bind(back_click_area, "<Button-1>", lambda e: self.gui.show_frame("new_game"))
