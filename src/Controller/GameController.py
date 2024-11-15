@@ -29,8 +29,9 @@ class GameController:
         self.function_array = [self.roll_dice,self.buy_button,self.no_buy_button]
 
         #binding the buttons
-        self.gui.new_game_canvas.tag_bind(self.gui.new_game_clickable_areas[0], "<Button-1>", lambda e: self.button_play(False))
-        self.gui.new_game_canvas.tag_bind(self.gui.new_game_clickable_areas[1], "<Button-1>", lambda e: self.new_game_load_board_button())
+        self.bind_play_and_edit_gameboard_buttons()
+        # self.gui.new_game_canvas.tag_bind(self.gui.new_game_clickable_areas[0], "<Button-1>", lambda e: self.button_play(False))
+        # self.gui.new_game_canvas.tag_bind(self.gui.new_game_clickable_areas[1], "<Button-1>", lambda e: self.new_game_load_board_button())
 
         # TODO same function is also called in play_button IS NECESSARY?
         self.pass_gameboard_info_to_view()
@@ -39,6 +40,12 @@ class GameController:
         #bind the load game button here
         self.bind_load_game()
 
+    def bind_play_and_edit_gameboard_buttons(self):
+        # binding the buttons
+        self.gui.new_game_canvas.tag_bind(self.gui.new_game_clickable_areas[0], "<Button-1>",
+                                          lambda e: self.button_play(False))
+        self.gui.new_game_canvas.tag_bind(self.gui.new_game_clickable_areas[1], "<Button-1>",
+                                          lambda e: self.new_game_load_board_button())
     #To clear all the data when loading ot starting a new game
     def clear_all_data(self):
         self.player_list.clear()
@@ -155,7 +162,7 @@ class GameController:
     def hide_load_board_image(self):
         self.gui.load_board_frame.hide_load_image(self.gui.load_board_canvas)
 
-    def hide_load_and_save_image(self):
+    def hide_load_and_play_image(self):
         self.gui.load_game_frame.hide_load_image(self.gui.load_game_canvas)
 
     def hide_roll_image(self):
@@ -178,9 +185,9 @@ class GameController:
         self.hide_load_board_image()
         self.gui.load_board_canvas.tag_unbind(self.gui.load_board_click_areas[0],"<Button-1>")
 
-    def unbind_load_and_save_button(self):
-        self.hide_load_and_save_image()
-        self.gui.load_game_canvas.tag_unbind(self.gui.load_game_click_area[0],"<Button-1>") #position 0 is the click area of load_save button
+    def unbind_load_and_play_button(self):
+        self.hide_load_and_play_image()
+        self.gui.load_game_canvas.tag_unbind(self.gui.load_game_click_areas[0],"<Button-1>") #position 0 is the click area of load_save button
 
     def unbind_roll_button(self):
         self.hide_roll_image()
@@ -211,6 +218,7 @@ class GameController:
 
     def unbind_delete_button(self):
         self.gui.save_game_canvas.tag_unbind(self.gui.save_delete_click_areas[1], "<Button-1>")
+
 
     # ----------------------------------------------#
 
@@ -251,9 +259,12 @@ class GameController:
         self.gui.canvas.tag_bind(self.gui.load_game_click_area, "<Button-1>",
                                  lambda e: self.load_button() )
 
-    def bind_load_board(self):
-        self.gui.canvas.tag_bind(self.gui.load_board_click_areas, "<Button-1>",
-                                 lambda e: self.load_board() )
+    def bind_load_game_back_button(self):
+        self.gui.load_game_canvas.tag_bind(self.gui.load_game_click_areas[1], "<Button-1>",
+                                           lambda e: self.load_game_back_button() )
+    def bind_load_board_back_button(self):
+        self.gui.load_board_canvas.tag_bind(self.gui.load_board_click_areas[1], "<Button-1>",
+                                            lambda e: self.load_board_back_button())
 
     def bind_roll_button(self, player_this_turn):
         self.show_roll_image()
@@ -310,10 +321,12 @@ class GameController:
 
     def load_button(self):
         self.gui.load_game_frame.show_save_file(self.gui.load_game_canvas)
+        self.bind_load_game_back_button()
         self.gui.show_frame("load_game")
         #bind all the slots in the load page
-        for i,slots in enumerate(self.gui.load_game_click_areas[1:]):
+        for i,slots in enumerate(self.gui.load_game_click_areas[2:]):
             self.gui.load_game_canvas.tag_bind(slots, "<Button-1>", lambda e, idx=i: self.select_load_game_slot(idx))
+        self.bind_load_game_back_button()
 
     #----------- Load Game Frame Button ----------#
 
@@ -327,15 +340,12 @@ class GameController:
         self.load_game(save_name)
         self.button_play(True)
 
+    def load_game_back_button(self):
+        self.unbind_load_and_play_button()
+        self.gui.load_game_frame.clear_selected_slots(self.gui.load_game_canvas)
+        self.gui.show_frame("main_menu")
+
     #----------- Load Board Frame Button ---------#
-
-    def new_game_load_board_button(self):
-        self.gui.load_board_frame.show_save_file(self.gui.load_board_canvas)
-        self.gui.show_frame("load_board")
-        #bind all the slots in load board page
-        for i, slots in enumerate(self.gui.load_board_click_areas[1:]):
-            self.gui.load_board_canvas.tag_bind(slots, "<Button-1>",lambda e, idx=i: self.select_load_board_slot(idx))
-
 
     def select_load_board_slot(self, idx):
         self.gui.load_board_frame.select_saved_slot(self.gui.load_board_canvas, idx)
@@ -344,7 +354,11 @@ class GameController:
     def load_board_button(self,idx):
         save_name = self.gui.load_board_frame.load_data(idx)
         self.load_gameboard(save_name)
+        self.load_board_back_button()
+
+    def load_board_back_button(self):
         self.unbind_load_board_button()
+        self.gui.load_board_frame.clear_selected_slots(self.gui.load_board_canvas)
         self.gui.show_frame("new_game")
 
 
@@ -364,6 +378,8 @@ class GameController:
         self.gui.show_new_game_frame()
         self.gui.edit_board_frame = EditBoardFrame(self.gui)
         self.gui.show_edit_board_frame()
+        # rebind the play button and edit gameboard button after the canvas and clickable areas and canvases are re-initialized
+        self.bind_play_and_edit_gameboard_buttons()
 
     def home_button(self):
         self.clear_all_data()
@@ -387,6 +403,15 @@ class GameController:
         self.gui.show_frame("enter_name")
 
     # ------------ New Game Frame ----------------#
+
+    #Bind the load game board button to initialize the clicks in the load gameboard frame
+    def new_game_load_board_button(self):
+        self.gui.load_board_frame.show_save_file(self.gui.load_board_canvas)
+        self.gui.show_frame("load_board")
+        self.bind_load_board_back_button()
+        #bind all the slots in load board page
+        for i, slots in enumerate(self.gui.load_board_click_areas[2:]):
+            self.gui.load_board_canvas.tag_bind(slots, "<Button-1>",lambda e, idx=i: self.select_load_board_slot(idx))
     """ This function is called after the 'Play' button is clicked in the game """
 
     def button_play(self, from_load):
