@@ -1736,8 +1736,19 @@ class EditBoardFrame(GameplayFrame):
         canvas.tag_bind(confirm_click_area, "<Button-1>", lambda e: self.process_user_input())
 
         game_board_area = canvas.create_rectangle(27, 144, 836, 954, outline="", fill="", tags="game_board")
-        canvas.tag_bind("game_board", '<Button-1>', self.on_game_board_click)
+        canvas.tag_bind("game_board", '<Button-1>', self.show_coordinates)
         self.display_tile_info(canvas)
+
+    def show_coordinates(self, event):
+        # Display the coordinates where the user clicked
+        x, y = event.x, event.y
+        print(f"Clicked at: ({x}, {y})")
+        
+        # Clear previous text if it exists
+        self.canvas.delete("coord_text")
+
+        # Display the new coordinates
+        self.canvas.create_text(x, y, text=f"({x}, {y})", anchor="nw", tags="coord_text", fill="red")
 
     def on_game_board_click(self, event):
         self.remove_entries()
