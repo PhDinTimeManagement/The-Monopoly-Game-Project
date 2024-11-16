@@ -7,10 +7,20 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e63f52e8-b5e2-4b82-8eb0-ddb8c465611b" name="Changes" comment="Edit Board">
+    <list default="true" id="e63f52e8-b5e2-4b82-8eb0-ddb8c465611b" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/assets/edit_gameboard_frame/apply_changes_button.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/edit_gameboard_frame/reset_changes_button.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_07_11_2024_12_51_[Changes]/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_07_11_2024_12_51__Changes_.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_07_11_2024_18_43_[Changes]/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_07_11_2024_18_43__Changes_.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_07_11_2024_23_11_[Changes]/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_07_11_2024_23_11__Changes_.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Controller/GameController.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Controller/GameController.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Model/Gameboard.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Model/Gameboard.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/edit_gameboard_frame/confirm_button.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets/edit_gameboard_frame/confirm_button.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/edit_gameboard_frame/edit_board_frame_background.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets/edit_gameboard_frame/edit_board_frame_background.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/edit_gameboard_frame/reset_button.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/edit_gameboard_frame/save_board_profile_button.png" beforeDir="false" afterPath="$PROJECT_DIR$/assets/edit_gameboard_frame/save_board_profile_button.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/View/DisplayManager.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/View/DisplayManager.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -61,47 +71,47 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Python tests.Python tests for test_GameController.TestGameController.executor": "Run",
-    "Python tests.Python tests for test_GameController.TestGameController.test_load_game.executor": "Run",
-    "Python tests.Python tests for test_GameController.TestGameController.test_save_game.executor": "Run",
-    "Python tests.Python tests for test_GameController.TestGameController.test_save_gameboard.executor": "Run",
-    "Python tests.Python tests for test_GameController.TestGameController.test_set_player_list.executor": "Run",
-    "Python tests.Python tests for test_GameLogic.TestGameLogic.executor": "Run",
-    "Python tests.Python tests for test_GameLogic.TestGameLogic.test_display_winner.executor": "Run",
-    "Python tests.Python tests for test_GameLogic.TestGameLogic.test_game_ends.executor": "Run",
-    "Python tests.Python tests for test_GameLogic.TestGameLogic.test_get_player_turn.executor": "Run",
-    "Python tests.Python tests for test_GameLogic.TestGameLogic.test_out_jail_on_double.executor": "Run",
-    "Python tests.Python tests for test_GameLogic.TestGameLogic.test_player_out.executor": "Run",
-    "Python tests.Python tests for test_Gameboard.TestProperty.executor": "Run",
-    "Python tests.Python tests in test_GameController.py.executor": "Run",
-    "Python tests.Python tests in test_GameLogic.py.executor": "Run",
-    "Python tests.Python tests in test_Gameboard.py.executor": "Run",
-    "Python tests.Python tests in tests.executor": "Run",
-    "Python.DisplayManager.executor": "Run",
-    "Python.GUI.executor": "Run",
-    "Python.GUI.py.executor": "Run",
-    "Python.converter.executor": "Run",
-    "Python.gui.executor": "Run",
-    "Python.new.executor": "Run",
-    "Python.play_game.executor": "Run",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "TODO_SCOPE": "All Places",
-    "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "D:/Programming Projects/pythonProject",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "run.code.analysis.last.selected.profile": "aDefault",
-    "settings.editor.selected.configurable": "preferences.keymap",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python tests.Python tests for test_GameController.TestGameController.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_GameController.TestGameController.test_load_game.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_GameController.TestGameController.test_save_game.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_GameController.TestGameController.test_save_gameboard.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_GameController.TestGameController.test_set_player_list.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_GameLogic.TestGameLogic.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_GameLogic.TestGameLogic.test_display_winner.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_GameLogic.TestGameLogic.test_game_ends.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_GameLogic.TestGameLogic.test_get_player_turn.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_GameLogic.TestGameLogic.test_out_jail_on_double.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_GameLogic.TestGameLogic.test_player_out.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests for test_Gameboard.TestProperty.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in test_GameController.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in test_GameLogic.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in test_Gameboard.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Python tests in tests.executor&quot;: &quot;Run&quot;,
+    &quot;Python.DisplayManager.executor&quot;: &quot;Run&quot;,
+    &quot;Python.GUI.executor&quot;: &quot;Run&quot;,
+    &quot;Python.GUI.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python.converter.executor&quot;: &quot;Run&quot;,
+    &quot;Python.gui.executor&quot;: &quot;Run&quot;,
+    &quot;Python.new.executor&quot;: &quot;Run&quot;,
+    &quot;Python.play_game.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;TODO_SCOPE&quot;: &quot;All Places&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/Programming Projects/pythonProject&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;run.code.analysis.last.selected.profile&quot;: &quot;aDefault&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.keymap&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="PyCoverageOptionsProvider">
     <option name="myUseBundledCoveragePy" value="true" />
   </component>
@@ -332,6 +342,7 @@
       <workItem from="1731554271474" duration="7803000" />
       <workItem from="1731640416181" duration="36000" />
       <workItem from="1731640459665" duration="10664000" />
+      <workItem from="1731778803708" duration="1746000" />
     </task>
     <task id="LOCAL-00001" summary="gameboard functions">
       <created>1729259402457</created>
@@ -701,23 +712,23 @@
       <option name="project" value="LOCAL" />
       <updated>1731748075542</updated>
     </task>
-    <task id="LOCAL-00054" summary="Load and Save board implementation">
+    <task id="LOCAL-00054" summary="Edit Board">
       <option name="closed" value="true" />
-      <created>1731650344494</created>
+      <created>1731755145422</created>
       <option name="number" value="00054" />
       <option name="presentableId" value="LOCAL-00054" />
       <option name="project" value="LOCAL" />
-      <updated>1731650344494</updated>
+      <updated>1731755145422</updated>
     </task>
-    <task id="LOCAL-00055" summary="Load and Save board implementation">
+    <task id="LOCAL-00055" summary="Maintenance on button initialization in Display Manager">
       <option name="closed" value="true" />
-      <created>1731650741852</created>
+      <created>1731755175634</created>
       <option name="number" value="00055" />
       <option name="presentableId" value="LOCAL-00055" />
       <option name="project" value="LOCAL" />
-      <updated>1731650741852</updated>
+      <updated>1731755175634</updated>
     </task>
-    <option name="localTasksCounter" value="54" />
+    <option name="localTasksCounter" value="56" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -750,7 +761,6 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$/.." />
     </ignored-roots>
-    <MESSAGE value="gameboard functions" />
     <MESSAGE value="Classes V1 created&#10;standard Gameboard initialized and objects created" />
     <MESSAGE value="Updated gameboard and player functions to NEW US8" />
     <MESSAGE value="Updated gameboard and player functions to NEW US8 v2" />
@@ -775,7 +785,8 @@
     <MESSAGE value="Load and Save Frame Maintenance" />
     <MESSAGE value="Maintenance" />
     <MESSAGE value="Edit Board" />
-    <option name="LAST_COMMIT_MESSAGE" value="Edit Board" />
+    <MESSAGE value="Maintenance on button initialization in Display Manager" />
+    <option name="LAST_COMMIT_MESSAGE" value="Maintenance on button initialization in Display Manager" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -811,7 +822,7 @@
     <SUITE FILE_PATH="coverage/Game_py$GUI.coverage" NAME="GUI Coverage Results" MODIFIED="1730824526772" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/View" />
     <SUITE FILE_PATH="coverage/The_Monopoly_Game_py$GUI.coverage" NAME="GUI Coverage Results" MODIFIED="1730881360455" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/View" />
     <SUITE FILE_PATH="coverage/The_Monopoly_Game_py$.coverage" NAME=" Coverage Results" MODIFIED="1731753445375" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
-    <SUITE FILE_PATH="coverage/The_Monopoly_Game_py$play_game.coverage" NAME="play_game Coverage Results" MODIFIED="1731754294959" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/The_Monopoly_Game_py$play_game.coverage" NAME="play_game Coverage Results" MODIFIED="1731780499299" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Game_py$.coverage" NAME=" Coverage Results" MODIFIED="1730198824506" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
     <SUITE FILE_PATH="coverage/Game_py$Test.coverage" NAME="Test Coverage Results" MODIFIED="1730432574768" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Game_py$gui.coverage" NAME="gui Coverage Results" MODIFIED="1730294710638" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/View" />

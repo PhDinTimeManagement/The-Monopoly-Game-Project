@@ -1571,7 +1571,8 @@ class EditBoardFrame(GameplayFrame):
         self.edit_board_background = tk.PhotoImage(file=os.path.join(assets_base_path, "edit_gameboard_frame/edit_board_frame_background.png"))
         self.price_input_box_image = tk.PhotoImage(file=os.path.join(assets_base_path, "edit_gameboard_frame/price_input_box.png"))
         self.rent_input_box_image = tk.PhotoImage(file=os.path.join(assets_base_path, "edit_gameboard_frame/rent_input_box.png"))
-        self.reset_button_image = tk.PhotoImage(file=os.path.join(assets_base_path, "edit_gameboard_frame/reset_button.png"))
+        self.apply_changes_button_image = tk.PhotoImage(file=os.path.join(assets_base_path, "edit_gameboard_frame/apply_changes_button.png"))
+        self.reset_changes_button_image = tk.PhotoImage(file=os.path.join(assets_base_path, "edit_gameboard_frame/reset_changes_button.png"))
         self.confirm_button_image = tk.PhotoImage(file=os.path.join(assets_base_path, "edit_gameboard_frame/confirm_button.png"))
         self.save_board_profile_button_image = tk.PhotoImage(file=os.path.join(assets_base_path, "edit_gameboard_frame/save_board_profile_button.png"))
         self.back_arrow_photo = tk.PhotoImage(file=os.path.join(assets_base_path, "edit_gameboard_frame/back_arrow.png"))
@@ -1652,9 +1653,11 @@ class EditBoardFrame(GameplayFrame):
         canvas = self.clear_widgets_create_canvas_set_background(frame, self.edit_board_background)
         self.current_frame = frame
         self.canvas = canvas
-        reset_click_area, canvas, cancel_id = self.create_button(canvas, self.gui.image_width * 3 / 4 - 80, self.gui.image_height * 3 / 4 + 55, self.reset_button_image)
-        confirm_click_area, canvas, confirm_id = self.create_button(canvas, self.gui.image_width * 3 / 4 + 195, self.gui.image_height * 3 / 4 + 55, self.confirm_button_image)
-        save_board_profile_click_area, canvas, save_board_id = self.create_button(canvas, self.gui.image_width * 3 / 4 + 60, self.gui.image_height * 4 / 5 + 130, self.save_board_profile_button_image)
+        reset_changes_y = self.gui.image_height * 3/5 - 39
+        apply_changes_click_area, canvas, apply_id = self.create_button(canvas, self.gui.image_width * 2/7, reset_changes_y - 110, self.apply_changes_button_image)
+        reset_click_area, canvas, cancel_id = self.create_button(canvas, self.gui.image_width * 2/7 , reset_changes_y , self.reset_changes_button_image)
+        save_board_profile_click_area, canvas, save_board_id = self.create_button(canvas, self.gui.image_width * 2/7 , reset_changes_y + 110, self.save_board_profile_button_image)
+        confirm_click_area, canvas, confirm_id = self.create_button(canvas, self.gui.image_width * 11/14, self.gui.image_height * 9/10 - 20, self.confirm_button_image)
         back_click_area, canvas, back_id = self.create_button(canvas, 50, 50, self.back_arrow_photo)
 
         # Display all the colors in the Edit Board Frame
