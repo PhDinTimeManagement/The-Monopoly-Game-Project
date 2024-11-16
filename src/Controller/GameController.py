@@ -336,6 +336,7 @@ class GameController:
         save_name = self.gui.load_game_frame.load_data(idx)
         self.clear_all_data()
         self.load_game(save_name)
+        self.pass_gameboard_info_to_view()
         self.button_play(True)
 
     def load_game_back_button(self):
@@ -352,6 +353,7 @@ class GameController:
     def load_board_button(self,idx):
         save_name = self.gui.load_board_frame.load_data(idx)
         self.load_gameboard(save_name)
+        self.pass_gameboard_info_to_view()
         self.load_board_back_button()
 
     def load_board_back_button(self):
@@ -426,7 +428,7 @@ class GameController:
             self.all_players = self.player_list.copy()  # maintains a record copy of all players obj to keep updating the view even after they are broke
 
             # passes all info to view to build the board
-            self.pass_gameboard_info_to_view()
+            EditBoardFrame.load_changes_in_gameboard(self.board)
             self.pass_player_information_to_view()
 
             self.gui.show_game_play_frame()  # builds gameplay frame when it has all necessary information

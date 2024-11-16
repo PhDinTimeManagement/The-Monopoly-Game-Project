@@ -62,13 +62,13 @@ class Property(Tile):
         return self.rent
 
     def set_rent(self, new_rent):
-        self.rent = new_rent
+        self.rent = int(new_rent)
 
     def get_price(self):
         return self.price
 
     def set_price(self, new_price):
-        self.price = new_price
+        self.price = int(new_price)
 
     def get_owner(self):
         return self.owner
@@ -174,7 +174,7 @@ class Go(Tile):
         return self.pass_prize
 
     def set_pass_prize(self, new_prize):
-        self.pass_prize = new_prize
+        self.pass_prize = int(new_prize)
 
     def update_values(self, pass_prize):
         self.set_pass_prize(pass_prize)
@@ -230,7 +230,7 @@ class IncomeTax(Tile):
         return self.tax_percentage
 
     def set_income_tax(self, new_tax):
-        self.tax_percentage = new_tax
+        self.tax_percentage = int(new_tax)
 
     def update_values(self, income_tax):
         self.set_income_tax(income_tax)

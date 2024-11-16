@@ -22,6 +22,15 @@ class DisplayManager:
 
         self.back_arrow_image = tk.PhotoImage(file=os.path.join(assets_base_path, "info_frame/back_arrow.png"))
 
+    #gets image bounding box and sets that as clickable area
+    @staticmethod
+    def create_button(canvas, x_pos, y_pos, button_image, anchor = "center"):
+        image_id = canvas.create_image(x_pos, y_pos, anchor= anchor, image=button_image)
+        click_coords = canvas.bbox(image_id)
+        button_click_area = canvas.create_rectangle(click_coords[0], click_coords[1], click_coords[2], click_coords[3],
+                                                    outline="", fill="")
+        return button_click_area, canvas, image_id
+
     def clear_widgets_create_canvas_set_background(self, frame, background):
         # Clear any existing widgets in the frame
         for widget in frame.winfo_children():
@@ -33,10 +42,6 @@ class DisplayManager:
         canvas.place(x=0, y=0)
         canvas.create_image(0, 0, anchor="nw", image=background)
         return canvas
-
-    @staticmethod
-    def calc_button_dim(button_image):
-        return button_image.width(), button_image.height()
 
     def show_msg(self, frame, msg, idx=None, is_error=False, x_position=None, y_position=None):
         if x_position is None:
@@ -240,7 +245,8 @@ class GameplayFrame(DisplayManager):
             text_rotate = 90.0
         return text_rotate
 
-    def set_color(self, pos, color):
+    @staticmethod
+    def set_color(pos, color):
         GameplayFrame.tile_colors[pos][0] = color
 
     def get_color_coord(self, pos):
@@ -369,16 +375,6 @@ class GameplayFrame(DisplayManager):
     #for testing
     def save_quit(self):
         self.gui.show_frame("save_game")
-
-    def create_button(self, canvas, x_pos, y_pos, button_image):
-        button_width, button_height = self.calc_button_dim(button_image)
-        image_id = canvas.create_image(x_pos, y_pos, anchor="center", image=button_image)
-        button_click_area = canvas.create_rectangle(
-            (x_pos - button_width // 2), (y_pos - button_height // 2),
-            (x_pos + button_width // 2), (y_pos + button_height // 2),
-            outline="", fill=""
-        )
-        return button_click_area, canvas, image_id
 
     def show_pay_fine_button(self, canvas):
         pay_fine_click_area, canvas, pay_fine_image_id = self.create_button(canvas, self.pay_fine_x_pos, self.pay_fine_y_pos, self.pay_fine_image)
@@ -807,9 +803,11 @@ class NewGameFrame(DisplayManager):
         y_position = 260  # Starting Y position for player boxes
 
         for i, player_box_image in enumerate(self.player_box_images):
-            # Display each player box image
-            player_box = canvas.create_image(x_position, y_position, anchor="nw", image=player_box_image)
+            # Player Box
+            clickable_area, canvas, player_box = self.create_button(canvas, x_position, y_position, player_box_image, "nw")
             self.player_box_images_refs.append(player_box)
+            canvas.tag_bind(clickable_area, "<Button-1>",
+                            lambda e, idx=i, x=x_position, y=y_position: self.show_insert_entry(canvas, idx, x, y))
 
             # Dice button for random name generation
             dice_button = tk.Button(
@@ -829,41 +827,13 @@ class NewGameFrame(DisplayManager):
             trash_button.place(x=x_position - 55, y=y_position + 9)
             self.active_widgets.append(trash_button)  # Track trash button for removal
 
-            # Set up clickable area for player box
-            clickable_area = canvas.create_rectangle(
-                x_position, y_position, x_position + 1.2 * player_box_image.width(),
-                                        y_position + 1.2 * player_box_image.height(),
-                outline="", fill=""
-            )
-            canvas.tag_bind(clickable_area, "<Button-1>",
-                            lambda e, idx=i, x=x_position, y=y_position: self.show_insert_entry(canvas, idx, x, y))
-
             y_position += 100  # Adjust y-position for the next player box
 
         # Display Edit Board and Play buttons on the right side
-        load_ID = canvas.create_image(self.gui.image_width - 450, 365, image=self.load_board_button_image)
-        edit_ID = canvas.create_image(self.gui.image_width - 450, 530, image=self.edit_board_button_image)
-        play_ID = canvas.create_image(self.gui.image_width - 450, 695, image=self.start_game_image)
+        load_button_clickable_area, canvas, load_ID = self.create_button(canvas, self.gui.image_width - 450, 365, self.load_board_button_image)
+        edit_board_clickable_area, canvas, edit_ID = self.create_button(canvas, self.gui.image_width - 450, 530, self.edit_board_button_image)
+        play_button_clickable_area, canvas, play_ID = self.create_button(canvas, self.gui.image_width - 450, 695, self.start_game_image)
 
-        load_board_coords = canvas.bbox(load_ID)
-        edit_board_coords = canvas.bbox(edit_ID)
-        play_board_coords = canvas.bbox(play_ID)
-
-        # Create clickable rectangles for Edit Board and Play buttons
-        load_button_clickable_area = canvas.create_rectangle(
-            load_board_coords[0], load_board_coords[1], load_board_coords[2], load_board_coords[3],
-            outline="", fill=""
-        )
-
-        edit_board_clickable_area = canvas.create_rectangle(
-            edit_board_coords[0], edit_board_coords[1], edit_board_coords[2], edit_board_coords[3],
-            outline="", fill=""
-        )
-
-        play_button_clickable_area = canvas.create_rectangle(
-            play_board_coords[0], play_board_coords[1], play_board_coords[2], play_board_coords[3],
-            outline="", fill=""
-        )
 
         # Bind actions for Edit Board and Play clickable areas
         canvas.tag_bind(edit_board_clickable_area, "<Button-1>",
@@ -1119,48 +1089,20 @@ class MainMenuFrame(DisplayManager):
         # Button positions
         button_y_positions = [self.gui.image_height * 0.55, self.gui.image_height * 0.70, self.gui.image_height * 0.85]
 
-        # Calculate dimensions for each button to set clickable areas
-        new_game_width, new_game_height = self.calc_button_dim(self.new_game_image)
-        load_game_width, load_game_height = self.calc_button_dim(self.load_game_image)
-        exit_width, exit_height = self.calc_button_dim(self.exit_image)
-        info_width, info_height = self.calc_button_dim(self.info_image)
-
         # "New Game" button and clickable area
-        new_game_button = canvas.create_image(self.gui.image_width // 2, button_y_positions[0],
-                                              image=self.new_game_image)
-        new_game_clickable_area = canvas.create_rectangle(
-            (self.gui.image_width // 2) - (0.6 * new_game_width), button_y_positions[0] - (0.6 * new_game_height),
-            (self.gui.image_width // 2) + (0.6 * new_game_width), button_y_positions[0] + (0.6 * new_game_height),
-            outline="", fill=""
-        )
+        new_game_clickable_area, canvas, self.new_game_id = self.create_button(canvas, self.gui.image_width // 2, button_y_positions[0], self.new_game_image)
         canvas.tag_bind(new_game_clickable_area, "<Button-1>", lambda e: self.gui.show_frame("new_game"))
 
         # "Load Game" button and clickable area
-        load_game_button = canvas.create_image(self.gui.image_width // 2, button_y_positions[1],
-                                               image=self.load_game_image)
-        load_game_clickable_area = canvas.create_rectangle(
-            (self.gui.image_width // 2) - (0.6 * load_game_width), button_y_positions[1] - (0.6 * load_game_height),
-            (self.gui.image_width // 2) + (0.6 * load_game_width), button_y_positions[1] + (0.6 * load_game_height),
-            outline="", fill=""
-        )
+        load_game_clickable_area, canvas, self.load_game_id = self.create_button(canvas, self.gui.image_width // 2, button_y_positions[1], self.load_game_image)
         #canvas.tag_bind(load_game_clickable_area, "<Button-1>", lambda e: self.gui.show_frame("load_game"))
 
         # "Exit" button and clickable area
-        exit_button = canvas.create_image(self.gui.image_width // 2, button_y_positions[2], image=self.exit_image)
-        exit_clickable_area = canvas.create_rectangle(
-            (self.gui.image_width // 2) - (0.6 * exit_width), button_y_positions[2] - (0.6 * exit_height),
-            (self.gui.image_width // 2) + (0.6 * exit_width), button_y_positions[2] + (0.6 * exit_height),
-            outline="", fill=""
-        )
+        exit_clickable_area, canvas, self.exit_button_id = self.create_button(canvas, self.gui.image_width // 2, button_y_positions[2], self.exit_image)
         canvas.tag_bind(exit_clickable_area, "<Button-1>", lambda e: self.gui.quit())
 
         # "Info" button in the corner and clickable area
-        info_button = canvas.create_image(self.gui.image_width - 85, 75, image=self.info_image)
-        info_clickable_area = canvas.create_rectangle(
-            (self.gui.image_width - 85) - (0.6 * info_width), 75 - (0.6 * info_height),
-            (self.gui.image_width - 85) + (0.6 * info_width), 75 + (0.6 * info_height),
-            outline="", fill=""
-        )
+        info_clickable_area, canvas, self.info_button_id = self.create_button(canvas, self.gui.image_width - 85, 75, self.info_image)
         canvas.tag_bind(info_clickable_area, "<Button-1>", lambda e: self.gui.show_frame("info"))
 
         return canvas,load_game_clickable_area #return the clickable area for load game
@@ -1191,12 +1133,6 @@ class LoadFrame(DisplayManager):
         self.button_image = None
         self.display_text = []
         self.save_base_path = None
-
-    # ------------------------------------# Load Game Frame #------------------------------------#
-
-    def setup_load_frame(self, frame):
-        canvas = self.clear_widgets_create_canvas_set_background(frame, self.load_frame_background)
-
         # Saved game slot selection image positions
         self.saved_game_slot_positions = [
             (self.gui.image_width // 2, 370),
@@ -1205,6 +1141,11 @@ class LoadFrame(DisplayManager):
             (self.gui.image_width // 2, 616),
             (self.gui.image_width // 2, 698)
         ]
+
+    # ------------------------------------# Load Game Frame #------------------------------------#
+
+    def setup_load_frame(self, frame):
+        canvas = self.clear_widgets_create_canvas_set_background(frame, self.load_frame_background)
 
         # Saved game slot images
         self.save_slots = [
@@ -1215,20 +1156,10 @@ class LoadFrame(DisplayManager):
             self.saved_slot5_image
         ]
 
-        self.button_id = canvas.create_image(self.load_button_x, self.load_button_y,
-                                                           image=self.button_image)
+        load_and_play_clickable_area, canvas, self.button_id = self.create_button(canvas, self.load_button_x, self.load_button_y, self.button_image)
 
         #hide the load_play image
         self.hide_load_image(canvas)
-
-        #create clickable area for load_play
-        load_and_play_clickable_area = canvas.create_rectangle(
-            self.load_button_x - (0.5 * self.button_image.width()),
-            self.load_button_y - (0.5 * self.button_image.height()),
-            self.load_button_x + (0.5 * self.button_image.width()),
-            self.load_button_y + (0.5 * self.button_image.height()),
-            outline="", fill=""
-        )
 
         #An array to store all the clickable area in an array
         back_button = canvas.create_image(50, 50, image=self.back_arrow_image)
@@ -1237,16 +1168,9 @@ class LoadFrame(DisplayManager):
         # Display saved game slots
         for i, slot_image in enumerate(self.save_slots):
             slot_x, slot_y = self.saved_game_slot_positions[i]  # Unpack coordinates
-            slot_id = canvas.create_image(slot_x, slot_y, image=slot_image)
+            clickable_area, canvas, slot_id = self.create_button(canvas, slot_x, slot_y, slot_image)
+
             self.slot_item_ids.append(slot_id)
-
-            slot_id_coords = canvas.bbox(slot_id)
-
-            # Create a clickable area for each slot
-            clickable_area = canvas.create_rectangle(
-                slot_id_coords[0], slot_id_coords[1], slot_id_coords[2], slot_id_coords[3],
-                outline="", fill="")
-
             load_game_clickable_area.append(clickable_area)
 
         self.show_save_file(canvas)
@@ -1313,12 +1237,14 @@ class LoadGameFrame(LoadFrame):
         self.load_frame_background = tk.PhotoImage(file=os.path.join(assets_base_path, "load_frame/load_game_frame_background.png"))
         self.save_base_path = os.path.join(os.path.dirname(__file__), "../../saves/games")
 
+
 class LoadGameboardFrame(LoadFrame):
     def __init__(self, gui):
         super()._init_(gui)
         self.button_image = tk.PhotoImage(file=os.path.join(assets_base_path, "load_frame/load_and_play_button.png"))
         self.load_frame_background = tk.PhotoImage(file=os.path.join(assets_base_path, "load_frame/load_game_frame_background.png"))
         self.save_base_path = os.path.join(os.path.dirname(__file__), "../../saves/games")
+
 
 class LoadBoardFrame(LoadFrame):
     def __init__(self, gui):
@@ -1351,17 +1277,6 @@ class SaveFrame(DisplayManager):
         self.home_icon_image=tk.PhotoImage(file=os.path.join(assets_base_path, "save_frame/home_button.png"))
         self.save_base_path = None
         self.display_text=[]
-
-# ------------------------ # buttons position and initialization # ----------------------#
-
-        self.delete_button_x, self.delete_button_y = self.gui.image_width // 3, 835
-        self.save_button_x, self.save_button_y = self.gui.image_width * 2 // 3, 835
-
-# ------------------------------------# Load Save Frame #------------------------------------#
-
-    def setup_save_frame(self, frame):
-        canvas = self.clear_widgets_create_canvas_set_background(frame, self.save_frame_background)
-
         # Saved game slot selection image positions
         self.saved_game_slot_positions = [
             (self.gui.image_width // 2, 370),
@@ -1379,9 +1294,20 @@ class SaveFrame(DisplayManager):
             self.saved_game_image,
             self.saved_game_image
         ]
+
+# ------------------------ # buttons position and initialization # ----------------------#
+
+        self.delete_button_x, self.delete_button_y = self.gui.image_width // 3, 835
+        self.save_button_x, self.save_button_y = self.gui.image_width * 2 // 3, 835
+
+# ------------------------------------# Load Save Frame #------------------------------------#
+
+    def setup_save_frame(self, frame):
+        canvas = self.clear_widgets_create_canvas_set_background(frame, self.save_frame_background)
+
         # create delete and save button and hide them from screen first
-        canvas, delete_click_area = self.create_delete_button(canvas)
-        canvas, save_click_area = self.create_save_button(canvas)
+        delete_click_area, canvas, self.delete_button_id = self.create_button(canvas, self.delete_button_x, self.delete_button_y, self.delete_button_image)
+        save_click_area, canvas, self.save_button_id = self.create_button(canvas, self.save_button_x, self.save_button_y, self.save_button_image)
 
         # hide them
         self.hide_delete_button(canvas)
@@ -1402,15 +1328,9 @@ class SaveFrame(DisplayManager):
         # Display saved game slots
         for i, slot_image in enumerate(self.save_slots):
             slot_x, slot_y = self.saved_game_slot_positions[i]  # Unpack coordinates
-            slot_id = canvas.create_image(slot_x, slot_y, image=slot_image)
-            self.slot_item_ids.append(slot_id)
+            clickable_area, canvas, slot_id = self.create_button(canvas, slot_x, slot_y, slot_image)
 
-            # Create a clickable area for each slot
-            clickable_area = canvas.create_rectangle(
-                slot_x - (0.5 * slot_image.width()), slot_y - (0.5 * slot_image.height()),
-                slot_x + (0.5 * slot_image.width()), slot_y + (0.5 * slot_image.height()),
-                outline="", fill=""
-            )
+            self.slot_item_ids.append(slot_id)
             save_delete_click_area.append(clickable_area)
 
         self.show_save_file(canvas)
@@ -1424,38 +1344,6 @@ class SaveFrame(DisplayManager):
         self.hide_save_button(canvas)
         self.clear_selected_slots(canvas)
         self.gui.show_frame(page)
-
-# ------------------------------------ Functions for Creating Delete and Save Button------------------------------------#
-    def create_rectangle(self,canvas,x,y):
-
-        clickable_area = canvas.create_rectangle(
-            x - (0.5 * self.save_button_image.width()),
-            y - (0.5 * self.save_button_image.height()),
-            x + (0.5 * self.save_button_image.width()),
-            y + (0.5 * self.save_button_image.height()),
-            outline="", fill=""
-        )
-        return clickable_area
-
-    def create_delete_button(self,canvas):
-        # if self.delete_button_id is not None:
-        #     canvas.delete(self.delete_button_id)
-
-        self.delete_button_id = canvas.create_image(self.delete_button_x, self.delete_button_y,
-                                                           image=self.delete_button_image)
-        delete_clickable_area = self.create_rectangle(canvas,self.delete_button_x,self.delete_button_y)
-
-        return canvas,delete_clickable_area
-
-    def create_save_button(self,canvas):
-        # save button
-        # if self.save_button_id is not None:
-        #     canvas.delete(self.save_button_id)
-        self.save_button_id = canvas.create_image(self.save_button_x, self.save_button_y,
-                                                  image=self.save_button_image)
-        save_clickable_area = self.create_rectangle(canvas,self.save_button_x,self.save_button_y)
-
-        return canvas,save_clickable_area
 
 # ------------------------------------ Functions for Showing Delete and Save Button--------------------------------------#
 
@@ -1582,8 +1470,8 @@ class EnterNameFrame(SaveGameFrame):
             self.saved_game_image
         ]
         # create delete and save button and hide them from screen first
-        canvas, delete_click_area = self.create_delete_button(canvas)
-        canvas, save_click_area = self.create_save_button(canvas)
+        delete_click_area, canvas, self.delete_button_id = self.create_button(canvas, self.delete_button_x, self.delete_button_y, self.delete_button_image)
+        save_click_area, canvas, self.save_button_id = self.create_button(canvas, self.save_button_x, self.save_button_y, self.save_button_image)
 
         # hide them
         self.hide_delete_button(canvas)
@@ -1660,6 +1548,7 @@ class InfoPageFrame(DisplayManager):
         super().__init__(gui)
 
         # Info frame images
+        self.back_id = None
         self.info_frame_background = tk.PhotoImage(
             file=os.path.join(assets_base_path, "info_frame/info_frame_background.png"))
 
@@ -1668,18 +1557,8 @@ class InfoPageFrame(DisplayManager):
     def setup_info_page(self, frame):
         canvas = self.clear_widgets_create_canvas_set_background(frame, self.info_frame_background)
 
-        # Back button dimensions for creating a larger clickable area
-        back_button_width, back_button_height = self.back_arrow_image.width(), self.back_arrow_image.height()
-
         # Display the back button to return to the main menu
-        back_button = canvas.create_image(50, 50, image=self.back_arrow_image)
-
-        # Create a clickable rectangle slightly larger than the back button image
-        back_button_clickable_area = canvas.create_rectangle(
-            50 - (0.2 * back_button_width), 50 - (0.2 * back_button_height),  # Top-left corner
-            50 + back_button_width * 1.2, 50 + back_button_height * 1.2,  # Bottom-right corner
-            outline="", fill=""
-        )
+        back_button_clickable_area, canvas, self.back_id = self.create_button(canvas,50, 50, self.back_arrow_image)
 
         # Bind the enlarged clickable area to the main menu transition
         canvas.tag_bind(back_button_clickable_area, "<Button-1>", lambda e: self.gui.show_frame("main_menu"))
@@ -1763,10 +1642,11 @@ class EditBoardFrame(GameplayFrame):
             name = GameplayFrame.tile_info[i][1]
             price = GameplayFrame.tile_info[i][2]
             rent = GameplayFrame.tile_info[i][3]
-            board.set_tile_name(name)
-            board.set_price(price)
-            board.set_rent(rent)
-
+            color = GameplayFrame.tile_colors[i][0]
+            board.tiles[i].set_tile_name(name)
+            board.tiles[i].set_price(price)
+            board.tiles[i].set_rent(rent)
+            board.tiles[i].set_color(color)
 
     def setup_edit_board_frame(self, frame):
         canvas = self.clear_widgets_create_canvas_set_background(frame, self.edit_board_background)
@@ -1782,7 +1662,7 @@ class EditBoardFrame(GameplayFrame):
         canvas.tag_bind(back_click_area, "<Button-1>", lambda e: self.gui.show_frame("new_game"))
         canvas.tag_bind(reset_click_area, "<Button-1>", lambda e: self.remove_entries())
         canvas.tag_bind(confirm_click_area, "<Button-1>", lambda e: self.process_user_input())
-        canvas.tag_bind(save_board_profile_click_area, "<Button-1>", lambda e: self.handle_save_board_click)
+        canvas.tag_bind(save_board_profile_click_area, "<Button-1>", lambda e: self.handle_save_board_click())
 
         game_board_area = canvas.create_rectangle(27, 144, 836, 954, outline="", fill="", tags="game_board")
         canvas.tag_bind("game_board", '<Button-1>', self.on_game_board_click)
@@ -1806,9 +1686,9 @@ class EditBoardFrame(GameplayFrame):
                 break
         return grid_index
 
-    def check_inside_grid(self, x, y, top_left_x, top_left_y, bottom_right_x, bottom_right_y):
+    @staticmethod
+    def check_inside_grid(x, y, top_left_x, top_left_y, bottom_right_x, bottom_right_y):
         return top_left_x <= x <= bottom_right_x and top_left_y <= y <= bottom_right_y
-
 
     def create_input_entries(self):
         # Clear any previous entries to avoid overlapping entries on multiple clicks
@@ -1939,6 +1819,7 @@ class EditBoardFrame(GameplayFrame):
 
         self.canvas.delete(self.price_image_id)
         self.canvas.delete(self.rent_image_id)
+        
     def process_user_input(self):
         # Get the current name from the dropdown
         name = self.name_entry.get()
@@ -2008,7 +1889,6 @@ class EditBoardFrame(GameplayFrame):
                 canvas.tag_bind(GameplayFrame.tile_info[i][6], '<Button-1>', self.on_game_board_click)
                 canvas.tag_bind(GameplayFrame.tile_info[i][7], '<Button-1>', self.on_game_board_click)
 
-
     def handle_save_board_click(self):
         errors, suggestions = self.validate_input()
 
@@ -2025,8 +1905,6 @@ class EditBoardFrame(GameplayFrame):
         # If no errors or suggestions, save the board profile
         # self.gui.save_frame("save_board") # Use it later
         print("Board Profile Saved")
-
-
 
     def validate_input(self):
         errors = []
@@ -2062,8 +1940,8 @@ class EditBoardFrame(GameplayFrame):
 
         return errors, suggestions
 
-
 #------------------------------------# This is used for debugging, DONT DELETE #------------------------------------#
+    
     def show_coordinates(self, event):
         # Get click coordinates
         x, y = event.x, event.y
