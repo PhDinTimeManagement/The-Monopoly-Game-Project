@@ -367,13 +367,14 @@ class GameController:
         self.game_logic = GameLogic()
         self.gui.input_handler = InputHandler()
         self.input_handler = self.gui.input_handler
-        self.pass_gameboard_info_to_view()
+
 
         # resets views
         self.gui.gameplay_frame = GameplayFrame(self.gui)
         # self.gui.show_game_play_frame() called on play button click
         self.gui.new_game_frame = NewGameFrame(self.gui)
         self.gui.show_new_game_frame()
+        self.pass_gameboard_info_to_view() #pass all the modifications of board after the gameplay_frame is reinitialized
         self.gui.edit_board_frame = EditBoardFrame(self.gui)
         self.gui.show_edit_board_frame()
         # rebind the play button and edit gameboard button after the canvas and clickable areas and canvases are re-initialized

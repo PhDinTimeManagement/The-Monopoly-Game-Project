@@ -587,6 +587,7 @@ class GameplayFrame(DisplayManager):
 
     # from the gameboard information loads the appropriate colors in the game frame
     def load_tile_colors(self):
+        print("The length is: ", len(self.tile_colors))
         for i in range(0,20):
             color = self.tile_colors[i][0]
             if color:
