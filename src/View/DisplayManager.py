@@ -1004,7 +1004,7 @@ class NewGameFrame(DisplayManager):
         if len([name for name in player_names if name]) < 2:
             # Show error message below play button if fewer than 2 players
             self.show_msg(self.gui.frames["new_game"], "* At least two players are required to start the game.", 0,
-                          is_error=True, x_position=self.gui.image_width - 550, y_position=722)
+                          is_error=True, x_position=self.gui.image_width - 550, y_position=770)
             return False
         # If all checks pass, transition to the GameBoard frame
         print("Starting game with players:")
