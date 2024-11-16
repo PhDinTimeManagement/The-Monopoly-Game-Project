@@ -3,7 +3,7 @@ import os
 import time
 from tkinter import ttk
 
-from wcwidth import wcwidth
+# from wcwidth import wcwidth
 
 # Base path for assets
 assets_base_path = os.path.join(os.path.dirname(__file__), "../../assets")
@@ -118,10 +118,10 @@ class GameplayFrame(DisplayManager):
             None,
             [118, 278],
             None, # free parking
-            [565, 236],
+            [160, 236],
             None,
             [430, 236],
-            [160, 236],
+            [565, 236], #14
             None, # go to jail
             [700, 278],
             [700, 413],
@@ -592,25 +592,35 @@ class GameplayFrame(DisplayManager):
             if color:
                 self.modify_tile_color(color, i)
 
-    # gets the information from the lists above and display all the tiles colors
-    def display_tile_colors(self, canvas):
-        self.load_tile_colors()
-        for i in range(0, 20):
-            color_coord = self.__tile_color_coord[i]
-            if color_coord: # if None (meaning at that position there is a tile that has no color) doesn't execute
-                x_pos = color_coord[0]
-                y_pos = color_coord[1]
-                tile_color = self.tile_colors[i][1]
-                canvas.create_image(x_pos, y_pos, anchor="nw", image=tile_color)
-
-    def display_single_tile_colors(self,canvas,color,coords):
-        self.modify_tile_color(color,coords)
+    def display_color(self,canvas,coords):
         color_coord = self.__tile_color_coord[coords]
-        if color_coord:
+        if color_coord:  # if None (meaning at that position there is a tile that has no color) doesn't execute
             x_pos = color_coord[0]
             y_pos = color_coord[1]
             tile_color = self.tile_colors[coords][1]
             canvas.create_image(x_pos, y_pos, anchor="nw", image=tile_color)
+
+    # gets the information from the lists above and display all the tiles colors
+    def display_tile_colors(self, canvas):
+        self.load_tile_colors()
+        for i in range(0, 20):
+            self.display_color(canvas,i)
+            # color_coord = self.__tile_color_coord[i]
+            # if color_coord: # if None (meaning at that position there is a tile that has no color) doesn't execute
+            #     x_pos = color_coord[0]
+            #     y_pos = color_coord[1]
+            #     tile_color = self.tile_colors[i][1]
+            #     canvas.create_image(x_pos, y_pos, anchor="nw", image=tile_color)
+
+    def display_single_tile_colors(self,canvas,color,coords):
+        self.modify_tile_color(color,coords)
+        self.display_color(canvas,coords)
+        # color_coord = self.__tile_color_coord[coords]
+        # if color_coord:
+        #     x_pos = color_coord[0]
+        #     y_pos = color_coord[1]
+        #     tile_color = self.tile_colors[coords][1]
+        #     canvas.create_image(x_pos, y_pos, anchor="nw", image=tile_color)
 
 
 
@@ -1756,7 +1766,7 @@ class EditBoardFrame(GameplayFrame):
 
         # Display all the colors in the Edit Board Frame
         self.gui.gameplay_frame.display_tile_colors(canvas)
-
+        self.gui.gameplay_frame.display_tile_colors(canvas)
         canvas.tag_bind(back_click_area, "<Button-1>", lambda e: self.gui.show_frame("new_game"))
         canvas.tag_bind(reset_click_area, "<Button-1>", lambda e: self.remove_entries())
         canvas.tag_bind(confirm_click_area, "<Button-1>", lambda e: self.process_user_input())
@@ -1939,8 +1949,15 @@ class EditBoardFrame(GameplayFrame):
 
         # Update the tile info with the new values
         GameplayFrame.tile_info[self.grid_index][1] = name
+        color = color.lower()
+
+        if color== "dark grey": color = "dark_grey"
+
+        self.gui.gameplay_frame.tile_colors[self.grid_index][1] = color
         self.gui.gameplay_frame.tile_colors[self.grid_index][0] = color
         self.gui.gameplay_frame.modify_tile_color(color,self.grid_index)
+        self.gui.gameplay_frame.display_single_tile_colors(self.canvas,color,self.grid_index)
+        print("the grid_index is: ",self.grid_index)
         GameplayFrame.tile_info[self.grid_index][2] = price
         GameplayFrame.tile_info[self.grid_index][3] = rent
 
