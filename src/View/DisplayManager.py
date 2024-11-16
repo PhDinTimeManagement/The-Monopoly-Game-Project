@@ -1756,6 +1756,16 @@ class EditBoardFrame(GameplayFrame):
             "Blue","Brown","Cyan","Dark Grey","Green","Grey","Orange","Pink","Purple","Red","Yellow"
         ]
 
+    @staticmethod
+    def load_changes_in_gameboard(board):
+        for i in [1, 2, 4, 6, 7, 9, 11, 13, 14, 16, 17, 19]:
+            name = GameplayFrame.tile_info[i][1]
+            price = GameplayFrame.tile_info[i][2]
+            rent = GameplayFrame.tile_info[i][3]
+            board.set_tile_name(name)
+            board.set_price(price)
+            board.set_rent(rent)
+
     def setup_edit_board_frame(self, frame):
         canvas = self.clear_widgets_create_canvas_set_background(frame, self.edit_board_background)
         self.current_frame = frame
