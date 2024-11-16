@@ -58,12 +58,15 @@ class DisplayManager:
         self.error_labels[idx].place(x=x_position, y=y_position)
         self.active_widgets.append(self.error_labels[idx])  # Track the label for later removal
 
+
 # noinspection DuplicatedCode
 class GameplayFrame(DisplayManager):
 
     # Gameboard tiles 9-tuple will get loaded in by the Controller
     #  [type, name, price, rent, owner, nameObj, priceObj, rentObj, ownerObj]
     tile_info = []
+    # Gameboard tiles colors empty list, will get loaded in by the Controller
+    tile_colors = []
 
     def __init__(self, gui):
         super().__init__(gui)
@@ -102,8 +105,6 @@ class GameplayFrame(DisplayManager):
             (tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/dice/results/dice_top_down_result_4.png")), 4)
         ]
 
-        # Gameboard tiles colors empty list, will get loaded in by the Controller
-        self.tile_colors = []
 
         # Tile color coordinates from anchor (reference point) "NW" corner
         self.__tile_color_coord = [
@@ -165,7 +166,7 @@ class GameplayFrame(DisplayManager):
             tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/player4.png")),
             tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/player5.png")),
             tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/player6.png"))
-            ]
+        ]
         self.placeholder_coords = [
             [730, 865],
             [810, 915],
@@ -198,7 +199,7 @@ class GameplayFrame(DisplayManager):
         self.player_turn = 0
         self.player_highlighter_ID = []
 
-# ------------------------------------# Game Play Frame #------------------------------------#
+    # ------------------------------------# Game Play Frame #------------------------------------#
     @staticmethod
     def set_appropriate_text_dimension(name, price, rent, owner):
         name_size = 16
@@ -240,11 +241,11 @@ class GameplayFrame(DisplayManager):
         return text_rotate
 
     def set_color(self, pos, color):
-        self.tile_colors[pos][0] = color
+        GameplayFrame.tile_colors[pos][0] = color
 
     def get_color_coord(self, pos):
         return self.__tile_color_coord[pos]
-                                                                        #an array
+        #an array
     def jail_roll_animation(self,canvas,roll_dice_x_pos, roll_dice_y_pos,dice_image_position):
 
         def during_roll(j):
@@ -298,7 +299,7 @@ class GameplayFrame(DisplayManager):
             font=("Comic Sans MS", 22, "bold"),
             fill="#000000",
             tags="total_dice_result_text",
-        )
+            )
         self.gui.after(1000, lambda: canvas.delete("total_dice_result_text"))
         #self.gui.after(2000, lambda: time.sleep(2))
 
@@ -353,7 +354,7 @@ class GameplayFrame(DisplayManager):
                 font=("Comic Sans MS", 22, "bold"),
                 fill="#000000",
                 tags="total_dice_result_text",
-            )
+                )
             self.gui.after(1000,lambda : canvas.delete("total_dice_result_text"))
 
         # Clear any previous result text before starting a new roll
@@ -411,7 +412,7 @@ class GameplayFrame(DisplayManager):
         y_pos = self.starting_y_pos
         for i in range(0, len(self.player_info)):
             image_id = canvas.create_image(self.right_x_border - 40, y_pos, anchor="center",
-                                            image=self.player_image[i])
+                                           image=self.player_image[i])
             y_pos += self.player_positional_increment
             self.player_highlighter_ID.append(image_id)
         return canvas
@@ -448,7 +449,7 @@ class GameplayFrame(DisplayManager):
 
     def show_not_enough_money(self, canvas):
         self.no_money_ID = canvas.create_text(self.yes_x_pos, self.yes_y_pos, anchor="center", text="NOT ENOUGH\nMONEY",
-                           font= ("Comic Sans MS", 20, "bold"), fill="#000000", justify="center")
+                                              font= ("Comic Sans MS", 20, "bold"), fill="#000000", justify="center")
 
     def delete_not_enough_money(self, canvas):
         canvas.delete(self.no_money_ID)
@@ -587,9 +588,9 @@ class GameplayFrame(DisplayManager):
 
     # from the gameboard information loads the appropriate colors in the game frame
     def load_tile_colors(self):
-        print("The length is: ", len(self.tile_colors))
+        print("The length is: ", len(GameplayFrame.tile_colors))
         for i in range(0,20):
-            color = self.tile_colors[i][0]
+            color = GameplayFrame.tile_colors[i][0]
             if color:
                 self.modify_tile_color(color, i)
 
@@ -598,7 +599,7 @@ class GameplayFrame(DisplayManager):
         if color_coord:  # if None (meaning at that position there is a tile that has no color) doesn't execute
             x_pos = color_coord[0]
             y_pos = color_coord[1]
-            tile_color = self.tile_colors[coords][1]
+            tile_color = GameplayFrame.tile_colors[coords][1]
             canvas.create_image(x_pos, y_pos, anchor="nw", image=tile_color)
 
     # gets the information from the lists above and display all the tiles colors
@@ -654,43 +655,43 @@ class GameplayFrame(DisplayManager):
             # displays text based on tile type
             if tile_type == "property":
                 GameplayFrame.tile_info[i][5] = canvas.create_text(name_x_pos, name_y_pos, text=tile_name,
-                                                          font=("Comic Sans MS", text_name_size, "bold"),
-                                                          fill="#000000", angle=text_rotate)
+                                                                   font=("Comic Sans MS", text_name_size, "bold"),
+                                                                   fill="#000000", angle=text_rotate)
                 tile_price = f"{tile_price} HKD"
                 GameplayFrame.tile_info[i][6] = canvas.create_text(price_x_pos, price_y_pos, text=tile_price,
-                                                          font=("Comic Sans MS", text_price_size), fill="#000000",
-                                                          angle=text_rotate)
+                                                                   font=("Comic Sans MS", text_price_size), fill="#000000",
+                                                                   angle=text_rotate)
                 GameplayFrame.tile_info[i][7] = canvas.create_text(rent_x_pos, rent_y_pos, text=tile_rent,
-                                                          font=("Comic Sans MS", text_rent_size), fill="#000000",
-                                                          angle=text_rotate)
+                                                                   font=("Comic Sans MS", text_rent_size), fill="#000000",
+                                                                   angle=text_rotate)
                 GameplayFrame.tile_info[i][8] = canvas.create_text(owner_x_pos, owner_y_pos, text=tile_owner,
-                                                          font=("Comic Sans MS", text_owner_size), fill="#000000",
-                                                          angle=text_rotate)
+                                                                   font=("Comic Sans MS", text_owner_size), fill="#000000",
+                                                                   angle=text_rotate)
 
             elif tile_type == "go":
                 tile_price = f"Collect\n{tile_price} HKD"
                 GameplayFrame.tile_info[i][6] = canvas.create_text(price_x_pos, price_y_pos, text=tile_price,
-                                                          font=("Comic Sans MS", 18, "bold"), fill="#000000",
-                                                          justify="center")
+                                                                   font=("Comic Sans MS", 18, "bold"), fill="#000000",
+                                                                   justify="center")
 
             elif tile_type == "free_parking":
                 tile_name = tile_name.replace(" ", "\n")
                 GameplayFrame.tile_info[i][6] = canvas.create_text(name_x_pos, name_y_pos, text=tile_name,
-                                                          font=("Comic Sans MS", 20, "bold"), fill="#000000",
-                                                          justify="center")
+                                                                   font=("Comic Sans MS", 20, "bold"), fill="#000000",
+                                                                   justify="center")
 
             elif tile_type == "chance":
                 GameplayFrame.tile_info[i][6] = canvas.create_text(name_x_pos, name_y_pos, text=tile_name,
-                                                          font=("Comic Sans MS", 20, "bold"), fill="#000000")
+                                                                   font=("Comic Sans MS", 20, "bold"), fill="#000000")
 
             elif tile_type == "income_tax":
                 tile_name = tile_name.replace(" ", "\n")
                 GameplayFrame.tile_info[i][6] = canvas.create_text(name_x_pos, name_y_pos, text=tile_name,
-                                                          font=("Comic Sans MS", 20, "bold"), fill="#000000",
-                                                          justify="center")
+                                                                   font=("Comic Sans MS", 20, "bold"), fill="#000000",
+                                                                   justify="center")
                 tile_price = f"{tile_price} %"
                 GameplayFrame.tile_info[i][7] = canvas.create_text(price_x_pos, price_y_pos, text=tile_price,
-                                                          font=("Comic Sans MS", 16), fill="#000000")
+                                                                   font=("Comic Sans MS", 16), fill="#000000")
 
     # called to set up the entire gameplay_frame
     def setup_new_gameplay_frame(self, frame):
@@ -751,7 +752,7 @@ class GameplayFrame(DisplayManager):
         image_color_path = os.path.join(assets_base_path, color_path)
 
         #modifies the list at the appropriate position with the new tile color reference
-        self.tile_colors[tile_position][1] = tk.PhotoImage(file=image_color_path)
+        GameplayFrame.tile_colors[tile_position][1] = tk.PhotoImage(file=image_color_path)
 
 
 class NewGameFrame(DisplayManager):
@@ -1766,6 +1767,7 @@ class EditBoardFrame(GameplayFrame):
             board.set_price(price)
             board.set_rent(rent)
 
+
     def setup_edit_board_frame(self, frame):
         canvas = self.clear_widgets_create_canvas_set_background(frame, self.edit_board_background)
         self.current_frame = frame
@@ -1776,7 +1778,6 @@ class EditBoardFrame(GameplayFrame):
         back_click_area, canvas, back_id = self.create_button(canvas, 50, 50, self.back_arrow_photo)
 
         # Display all the colors in the Edit Board Frame
-        self.gui.gameplay_frame.display_tile_colors(canvas)
         self.gui.gameplay_frame.display_tile_colors(canvas)
         canvas.tag_bind(back_click_area, "<Button-1>", lambda e: self.gui.show_frame("new_game"))
         canvas.tag_bind(reset_click_area, "<Button-1>", lambda e: self.remove_entries())
@@ -1833,7 +1834,7 @@ class EditBoardFrame(GameplayFrame):
             state="readonly",
         )
         self.color_entry.place(x=self.gui.image_width * 1 / 2 + 180, y=self.gui.image_height * 1 / 4 + 165, width=400,height=30)
-        self.color_entry.set(self.gui.gameplay_frame.tile_colors[self.grid_index][0])
+        self.color_entry.set(GameplayFrame.tile_colors[self.grid_index][0])
         self.clear.append(self.color_entry)
 
         # Place Price input box image on the canvas
@@ -1964,8 +1965,7 @@ class EditBoardFrame(GameplayFrame):
 
         if color== "dark grey": color = "dark_grey"
 
-        self.gui.gameplay_frame.tile_colors[self.grid_index][1] = color
-        self.gui.gameplay_frame.tile_colors[self.grid_index][0] = color
+        GameplayFrame.tile_colors[self.grid_index][0] = color
         self.gui.gameplay_frame.modify_tile_color(color,self.grid_index)
         self.gui.gameplay_frame.display_single_tile_colors(self.canvas,color,self.grid_index)
         print("the grid_index is: ",self.grid_index)
