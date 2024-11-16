@@ -38,7 +38,7 @@ class DisplayManager:
     def calc_button_dim(button_image):
         return button_image.width(), button_image.height()
 
-    def show_msg(self, frame, idx, msg, is_error=False, x_position=None, y_position=None):
+    def show_msg(self, frame, msg, idx=None, is_error=False, x_position=None, y_position=None):
         if x_position is None:
             x_position = 325
         if y_position is None:
@@ -603,6 +603,18 @@ class GameplayFrame(DisplayManager):
                 tile_color = self.tile_colors[i][1]
                 canvas.create_image(x_pos, y_pos, anchor="nw", image=tile_color)
 
+    def display_single_tile_colors(self,canvas,color,coords):
+        self.modify_tile_color(color,coords)
+        color_coord = self.__tile_color_coord[coords]
+        if color_coord:
+            x_pos = color_coord[0]
+            y_pos = color_coord[1]
+            tile_color = self.tile_colors[coords][1]
+            canvas.create_image(x_pos, y_pos, anchor="nw", image=tile_color)
+
+
+
+
     # from the info in the gameboard, displays it on the gameboard
     def display_tile_info(self, canvas):
         for i in range(0, 20):
@@ -874,7 +886,7 @@ class NewGameFrame(DisplayManager):
     def generate_random_name(self, canvas, idx):
         # Ensure that all previous player names (up to idx-1) have been entered
         if any(not self.gui.input_handler.players_names[i] for i in range(idx)):
-            self.show_msg(canvas, idx, "* All previous player names must be entered first.", is_error=True)
+            self.show_msg(canvas, "* All previous player names must be entered first.", idx, is_error=True)
             return
 
         # Generate a random name
@@ -889,10 +901,10 @@ class NewGameFrame(DisplayManager):
             self.show_insert_entry(canvas, idx, name=player_name)
 
             # Show a hint message to prompt the user to press Enter if they want to save manually
-            self.show_msg(canvas, idx, "* You can modify the name and press <Return> to save.", is_error=False)
+            self.show_msg(canvas, "* You can modify the name and press <Return> to save.", idx, is_error=False)
         else:
             # Show error if the name is invalid or duplicate
-            self.show_msg(canvas, idx, "* Generated name is invalid or duplicate.", is_error=True)
+            self.show_msg(canvas, "* Generated name is invalid or duplicate.", idx, is_error=True)
 
     def show_insert_entry(self, canvas, idx, x_position=None, y_position=None, name=None):
         if name:
@@ -963,17 +975,17 @@ class NewGameFrame(DisplayManager):
 
         # Check if the name hasn't changed from the current one
         if self.gui.input_handler.players_names[idx] == player_name:
-            self.show_msg(canvas, idx, "* Name did not change.", is_error=False)
+            self.show_msg(canvas, "* Name did not change.", idx, is_error=False)
             return
 
         # Check if the name is the same as another player
         if player_name in self.gui.input_handler.get_all_player_names():
-            self.show_msg(canvas, idx, "* Name cannot be the same as another player.", is_error=True)
+            self.show_msg(canvas, "* Name cannot be the same as another player.", idx, is_error=True)
             return
 
         # Check if the previous player name has been entered (except for the first player)
         if idx > 0 and not self.gui.input_handler.players_names[idx - 1]:
-            self.show_msg(canvas, idx, "* Previous player name must be entered first.", is_error=True)
+            self.show_msg(canvas, "* Previous player name must be entered first.", idx, is_error=True)
             return
 
         # Check if the name is valid, if so, store it
@@ -999,7 +1011,7 @@ class NewGameFrame(DisplayManager):
                 anchor="w"
             )
         else:
-            self.show_msg(canvas, idx, "* Name must be 1-20 characters.", is_error=True)
+            self.show_msg(canvas, "* Name must be 1-20 characters.", idx, is_error=True)
             entry.delete(0, tk.END)
 
     def check_and_start_game(self, input_handler):
@@ -1009,7 +1021,7 @@ class NewGameFrame(DisplayManager):
         # Check for at least two valid player names
         if len([name for name in player_names if name]) < 2:
             # Show error message below play button if fewer than 2 players
-            self.show_msg(self.gui.frames["new_game"], 0, "* At least two players are required to start the game.",
+            self.show_msg(self.gui.frames["new_game"], "* At least two players are required to start the game.", 0,
                           is_error=True, x_position=self.gui.image_width - 550, y_position=722)
             return False
         # If all checks pass, transition to the GameBoard frame
@@ -1716,6 +1728,7 @@ class EditBoardFrame(GameplayFrame):
         self.canvas = None
         self.price_text_id = None
         self.rent_text_id = None
+        self.color_entry = None
 
         self.place_names = [
             # Default places
@@ -1726,6 +1739,10 @@ class EditBoardFrame(GameplayFrame):
             "Kwun Tong", "Sham Shui Po", "Tsim Sha Tsui", "Causeway Bay",
             "North Point", "Aberdeen", "Cheung Chau", "Kowloon Tong",
             "Sham Shui Po", "Lamma Island", "Lantau Island"
+        ]
+
+        self.colors = [
+            "Blue","Brown","Cyan","Dark Grey","Green","Grey","Orange","Pink","Purple","Red","Yellow"
         ]
 
     def setup_edit_board_frame(self, frame):
@@ -1743,7 +1760,7 @@ class EditBoardFrame(GameplayFrame):
         canvas.tag_bind(back_click_area, "<Button-1>", lambda e: self.gui.show_frame("new_game"))
         canvas.tag_bind(reset_click_area, "<Button-1>", lambda e: self.remove_entries())
         canvas.tag_bind(confirm_click_area, "<Button-1>", lambda e: self.process_user_input())
-        canvas.tag_bind(save_board_profile_click_area, "<Button-1>", lambda e: self.gui.show_frame("save_board"))
+        canvas.tag_bind(save_board_profile_click_area, "<Button-1>", lambda e: self.handle_save_board_click)
 
         game_board_area = canvas.create_rectangle(27, 144, 836, 954, outline="", fill="", tags="game_board")
         canvas.tag_bind("game_board", '<Button-1>', self.on_game_board_click)
@@ -1770,6 +1787,7 @@ class EditBoardFrame(GameplayFrame):
     def check_inside_grid(self, x, y, top_left_x, top_left_y, bottom_right_x, bottom_right_y):
         return top_left_x <= x <= bottom_right_x and top_left_y <= y <= bottom_right_y
 
+
     def create_input_entries(self):
         # Clear any previous entries to avoid overlapping entries on multiple clicks
         self.remove_entries()
@@ -1781,10 +1799,21 @@ class EditBoardFrame(GameplayFrame):
             font=("Comic Sans MS", 20),
             state="readonly",
         )
-        self.name_entry.place(x=self.gui.image_width * 1 / 2 + 180, y=self.gui.image_height * 1 / 4 + 40, width=400,
-                              height=30)
+        self.name_entry.place(x=self.gui.image_width * 1 / 2 + 180, y=self.gui.image_height * 1 / 4 + 40, width=400, height=30)
         self.name_entry.set(GameplayFrame.tile_info[self.grid_index][1])
         self.clear.append(self.name_entry)
+
+        #Drop down for color
+
+        self.color_entry = ttk.Combobox(
+            self.canvas,
+            values=self.colors,
+            font=("Comic Sans MS", 20),
+            state="readonly",
+        )
+        self.color_entry.place(x=self.gui.image_width * 1 / 2 + 180, y=self.gui.image_height * 1 / 4 + 165, width=400,height=30)
+        self.color_entry.set(self.gui.gameplay_frame.tile_colors[self.grid_index][0])
+        self.clear.append(self.color_entry)
 
         # Place Price input box image on the canvas
         price_image_x = self.gui.image_width * 3 / 4 + 60
@@ -1892,6 +1921,8 @@ class EditBoardFrame(GameplayFrame):
         # Get the current name from the dropdown
         name = self.name_entry.get()
 
+        color = self.color_entry.get()
+
         # Check if the price entry is active; if not, use the displayed text
         try:
             price = self.price_entry.get() if self.price_entry else self.canvas.itemcget(self.price_text_id, "text")
@@ -1908,6 +1939,8 @@ class EditBoardFrame(GameplayFrame):
 
         # Update the tile info with the new values
         GameplayFrame.tile_info[self.grid_index][1] = name
+        self.gui.gameplay_frame.tile_colors[self.grid_index][0] = color
+        self.gui.gameplay_frame.modify_tile_color(color,self.grid_index)
         GameplayFrame.tile_info[self.grid_index][2] = price
         GameplayFrame.tile_info[self.grid_index][3] = rent
 
@@ -1946,6 +1979,61 @@ class EditBoardFrame(GameplayFrame):
             elif tile_type == "income_tax":
                 canvas.tag_bind(GameplayFrame.tile_info[i][6], '<Button-1>', self.on_game_board_click)
                 canvas.tag_bind(GameplayFrame.tile_info[i][7], '<Button-1>', self.on_game_board_click)
+
+
+    def handle_save_board_click(self):
+        errors, suggestions = self.validate_input()
+
+        # Clear any previous error messages
+        if errors:
+            for error in errors:
+                # With postion specified to display
+                self.show_msg(self.current_frame, error, is_error=True)
+            return
+
+        for suggestion in suggestions:
+            self.show_msg(self.current_frame, suggestion, is_error=False)
+
+        # If no errors or suggestions, save the board profile
+        # self.gui.save_frame("save_board") # Use it later
+        print("Board Profile Saved")
+
+
+
+    def validate_input(self):
+        errors = []
+        suggestions = []
+
+        # Check of the name is duplicated
+        current_name = self.name_entry.get()
+        # Loop through
+        existing_names = [tile[1] for tile in GameplayFrame.tile_info]
+
+        if current_name in existing_names:
+            errors.append(f"Property name {current_name} is duplicated. Please reselect.")
+
+        # Check if the price and rent is a positive integer
+        try:
+            price = int(self.price_entry.get()) if self.price_entry else int(self.canvas.itemcget(self.price_text_id, "text"))
+            if price < 0:
+                errors.append("Price must be a positive integer.")
+        except:
+            errors.append("Price must be a valid integer.")
+
+        # Check if the rent is a positive integer
+        try:
+            rent = int(self.rent_entry.get()) if self.rent_entry else int(self.canvas.itemcget(self.rent_text_id, "text"))
+            if rent < 0:
+                errors.append("Rent must be a positive integer.")
+        except:
+            errors.append("Rent must be a valid integer.")
+
+        # Give Suggestions if Rent is higher than Price
+        if "price" in locals() and "rent" in locals() and price < rent:
+            suggestions.append("Consider setting the rent lower than the price.")
+
+        return errors, suggestions
+
 
 #------------------------------------# This is used for debugging, DONT DELETE #------------------------------------#
     def show_coordinates(self, event):
