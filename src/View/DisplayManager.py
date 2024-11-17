@@ -1701,10 +1701,10 @@ class EditBoardFrame(GameplayFrame):
         self.name_entry = ttk.Combobox(
             self.canvas,  # Attach to existing canvas
             values=self.place_names,
-            font=("Comic Sans MS", 20),
+            font=("Comic Sans MS", 18),
             state="readonly",
         )
-        self.name_entry.place(x=self.gui.image_width * 1 / 2 + 180, y=self.gui.image_height * 1 / 4 + 40, width=400, height=30)
+        self.name_entry.place(x=self.gui.image_width * 1 / 2 + 180, y=self.gui.image_height * 1 / 4 + 70, width=510, height=30)
         self.name_entry.set(GameplayFrame.tile_info[self.grid_index][1])
         self.clear.append(self.name_entry)
 
@@ -1713,16 +1713,16 @@ class EditBoardFrame(GameplayFrame):
         self.color_entry = ttk.Combobox(
             self.canvas,
             values=self.colors,
-            font=("Comic Sans MS", 20),
+            font=("Comic Sans MS", 18),
             state="readonly",
         )
-        self.color_entry.place(x=self.gui.image_width * 1 / 2 + 180, y=self.gui.image_height * 1 / 4 + 165, width=400,height=30)
+        self.color_entry.place(x=self.gui.image_width * 1 / 2 + 180, y=self.gui.image_height * 1 / 4 + 200, width=510,height=30)
         self.color_entry.set(GameplayFrame.tile_colors[self.grid_index][0])
         self.clear.append(self.color_entry)
 
         # Place Price input box image on the canvas
         price_image_x = self.gui.image_width * 3 / 4 + 60
-        price_image_y = self.gui.image_height * 1 / 2 + 75
+        price_image_y = self.gui.image_height * 1 / 2 + 110
         self.price_image_id = self.canvas.create_image(price_image_x, price_image_y, image=self.price_input_box_image, anchor="center")
 
         # Display Price Text or Input Entry
@@ -1736,7 +1736,7 @@ class EditBoardFrame(GameplayFrame):
 
         # Place Rent input box image on the canvas
         rent_image_x = self.gui.image_width * 3 / 4 + 60
-        rent_image_y = self.gui.image_height * 1 / 2 + 205
+        rent_image_y = self.gui.image_height * 1 / 2 + 240
         self.rent_image_id = self.canvas.create_image(rent_image_x, rent_image_y, image=self.rent_input_box_image, anchor="center")
 
         # Display Rent Text or Input Entry
@@ -1770,9 +1770,9 @@ class EditBoardFrame(GameplayFrame):
         GameplayFrame.tile_info[self.grid_index][2] = new_price
         self.price_entry.destroy()
         self.price_text_id = self.canvas.create_text(
-            1188, 570, text=new_price, font=("Comic Sans MS", 18), fill="#333333", justify="left"
+            1188, 600, text=new_price, font=("Comic Sans MS", 18), fill="#333333", justify="left"
         )
-        self.canvas.tag_bind(self.price_text_id, "<Button-1>", lambda e: self.show_price_entry(1188, 570))
+        self.canvas.tag_bind(self.price_text_id, "<Button-1>", lambda e: self.show_price_entry(1188, 600))
 
     def show_rent_entry(self, x, y):
         # Remove the existing text and create an entry for editing
@@ -1797,9 +1797,9 @@ class EditBoardFrame(GameplayFrame):
         GameplayFrame.tile_info[self.grid_index][3] = new_rent
         self.rent_entry.destroy()
         self.rent_text_id = self.canvas.create_text(
-            1188, 695, text=new_rent, font=("Comic Sans MS", 18), fill="#333333",
+            1188, 730, text=new_rent, font=("Comic Sans MS", 18), fill="#333333",
         )
-        self.canvas.tag_bind(self.rent_text_id, "<Button-1>", lambda e: self.show_rent_entry(1188, 695))
+        self.canvas.tag_bind(self.rent_text_id, "<Button-1>", lambda e: self.show_rent_entry(1188, 730))
 
     def remove_entries(self):
         # Destroy all widgets in the clear list
