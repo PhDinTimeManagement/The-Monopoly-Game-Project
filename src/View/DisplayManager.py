@@ -1924,7 +1924,7 @@ class EditBoardFrame(GameplayFrame):
         # Check if the price and rent is a positive integer
         try:
             price = int(self.price_entry.get()) if self.price_entry else int(self.canvas.itemcget(self.price_text_id, "text"))
-            if price < 0:
+            if price < 0 or price is None:
                 errors.append("Price must be a positive integer.")
         except:
             errors.append("Price must be a valid integer.")
@@ -1932,7 +1932,7 @@ class EditBoardFrame(GameplayFrame):
         # Check if the rent is a positive integer
         try:
             rent = int(self.rent_entry.get()) if self.rent_entry else int(self.canvas.itemcget(self.rent_text_id, "text"))
-            if rent < 0:
+            if rent < 0 or rent is None:
                 errors.append("Rent must be a positive integer.")
         except:
             errors.append("Rent must be a valid integer.")
@@ -1943,27 +1943,26 @@ class EditBoardFrame(GameplayFrame):
 
         return errors, suggestions
 
+
+
 #------------------------------------# This is used for debugging, DONT DELETE #------------------------------------#
-    
-    def show_coordinates(self, event):
-        # Get click coordinates
-        x, y = event.x, event.y
-
-        # Determine if the click is inside a grid using check_click_grid
-        grid_index = self.check_click_grid(x, y)
-        in_grid = grid_index != -1
-
-        # Print the coordinates and grid status
-        print(f"Clicked at: ({x}, {y}) - In Grid: {in_grid}")
-
-        # Display the coordinates and grid status on the canvas
-        # Clear previous text if it exists
-        self.canvas.delete("coord_text")
-
-        # Show the new coordinates and grid status
-        status_text = f"({x}, {y}) - In Grid: {in_grid}"
-        if in_grid:
-            status_text += f" (Grid Index: {grid_index})"  # Show grid index if within a grid
-        self.canvas.create_text(x, y, text=status_text, anchor="nw", tags="coord_text", fill="red")
-
-
+    # def show_coordinates(self, event):
+    #     # Get click coordinates
+    #     x, y = event.x, event.y
+    #
+    #     # Determine if the click is inside a grid using check_click_grid
+    #     grid_index = self.check_click_grid(x, y)
+    #     in_grid = grid_index != -1
+    #
+    #     # Print the coordinates and grid status
+    #     print(f"Clicked at: ({x}, {y}) - In Grid: {in_grid}")
+    #
+    #     # Display the coordinates and grid status on the canvas
+    #     # Clear previous text if it exists
+    #     self.canvas.delete("coord_text")
+    #
+    #     # Show the new coordinates and grid status
+    #     status_text = f"({x}, {y}) - In Grid: {in_grid}"
+    #     if in_grid:
+    #         status_text += f" (Grid Index: {grid_index})"  # Show grid index if within a grid
+    #     self.canvas.create_text(x, y, text=status_text, anchor="nw", tags="coord_text", fill="red")
