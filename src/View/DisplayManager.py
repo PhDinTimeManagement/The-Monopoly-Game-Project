@@ -65,7 +65,11 @@ class DisplayManager:
     # DO NOT DELETE
     def clear_active_widgets(self):
         for widget in self.active_widgets:
-            widget.place_forget()
+            try:
+                if widget.winfo_ismapped():  # Check if the widget is currently visible
+                    widget.place_forget()  # Hide the widget
+            except tk.TclError:
+                continue
         self.active_widgets.clear()  # Reset active widgets list
 
 # noinspection DuplicatedCode
@@ -1691,12 +1695,12 @@ class EditBoardFrame(GameplayFrame):
         self.display_tile_info(canvas)
         self.bind_text(canvas)
 
-        edit_board_clickable_areas = [save_board_profile_click_area,apply_changes_click_area,back_click_area]
+        edit_board_clickable_areas = [save_board_profile_click_area,apply_changes_click_area,back_click_area,reset_click_area]
         return canvas, edit_board_clickable_areas
 
     def on_game_board_click(self, event):
         # Clear any previous entries
-        self.clear_active_widgets()
+        self.clear_active_widgets() #TODO check this later
         self.remove_entries()
 
         x = event.x
@@ -1962,7 +1966,8 @@ class EditBoardFrame(GameplayFrame):
 
     # This method need to be chained once the <Apply Changes> and <Save Board Profile> button is clicked
     def verify_unique_property_names(self):
-        property_names = [GameplayFrame.tile_info[i][1] for i in range(len(GameplayFrame.tile_info))]
+        property_position = [1, 2, 4, 6, 7, 9, 11, 13, 14, 16, 17, 19]
+        property_names = [GameplayFrame.tile_info[i][1] for i in property_position]
         duplicates = [name for name in property_names if property_names.count(name) > 1 and name != ""]
 
         if duplicates:
