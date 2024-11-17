@@ -547,7 +547,7 @@ class GameController:
             self.all_players = self.player_list.copy()  # maintains a record copy of all players obj to keep updating the view even after they are broke
 
             # passes all info to view to build the board
-            EditBoardFrame.load_changes_in_gameboard(self.board)
+            # EditBoardFrame.load_changes_in_gameboard(self.board) MOVED TO APPLY CHANGES
             self.pass_player_information_to_view()
 
             self.gui.show_game_play_frame()  # builds gameplay frame when it has all necessary information
