@@ -76,7 +76,7 @@ class GUI(tk.Tk):
     def show_edit_board_frame(self):
         frame = tk.Frame(self)
         self.frames["edit_board"] = frame
-        self.edit_board_canvas = self.edit_board_frame.setup_edit_board_frame(frame)
+        self.edit_board_canvas, self.edit_board_click_areas = self.edit_board_frame.setup_edit_board_frame(frame)
 
     # Load the previous game record
     def show_load_game_frame(self):
@@ -98,7 +98,7 @@ class GUI(tk.Tk):
     def show_save_board_frame(self):
         frame = tk.Frame(self)
         self.frames["save_board"] = frame
-        self.save_board_frame, self.save_board_click_areas = self.save_board_frame.setup_save_frame(frame)
+        self.save_board_canvas, self.save_board_click_areas = self.save_board_frame.setup_save_frame(frame)
 
     # Enter the main game board
     def show_game_play_frame(self):

@@ -31,19 +31,18 @@ class GameController:
         # self.gui.new_game_canvas.tag_bind(self.gui.new_game_clickable_areas[0], "<Button-1>", lambda e: self.button_play(False))
         # self.gui.new_game_canvas.tag_bind(self.gui.new_game_clickable_areas[1], "<Button-1>", lambda e: self.new_game_load_board_button())
 
-        # TODO same function is also called in play_button IS NECESSARY?
         self.pass_gameboard_info_to_view()
-        self.gui.show_edit_board_frame()
 
         #bind the load game button here
         self.bind_load_game()
 
     def bind_play_and_edit_gameboard_buttons(self):
-        # binding the buttons
+        # binding the buttons in new game(insert player) frame
         self.gui.new_game_canvas.tag_bind(self.gui.new_game_clickable_areas[0], "<Button-1>",
                                           lambda e: self.button_play(False))
         self.gui.new_game_canvas.tag_bind(self.gui.new_game_clickable_areas[1], "<Button-1>",
                                           lambda e: self.new_game_load_board_button())
+        self.bind_edit_board_button()
     #To clear all the data when loading ot starting a new game
     def clear_all_data(self):
         self.player_list.clear()
@@ -217,6 +216,11 @@ class GameController:
     def unbind_delete_button(self):
         self.gui.save_game_canvas.tag_unbind(self.gui.save_delete_click_areas[1], "<Button-1>")
 
+    def unbind_delete_board_button(self):
+        self.gui.save_board_canvas.tag_bind(self.gui.save_board_click_areas[1], "<Button-1>")
+
+    def unbind_save_board_button(self):
+        self.gui.save_board_canvas.tag_bind(self.gui.save_board_click_areas[0], "<Button-1>")
 
     # ----------------------------------------------#
 
@@ -252,6 +256,8 @@ class GameController:
         self.show_load_board_button()
         self.gui.load_board_canvas.tag_bind(self.gui.load_board_click_areas[0], "<Button-1>",
                                             lambda e: self.load_board_button(idx))
+    def bind_edit_board_button(self):
+        self.gui.new_game_canvas.tag_bind(self.gui.new_game_clickable_areas[2], "<Button-1>", lambda e:self.edit_board_function())
 
     def bind_load_game(self):
         self.gui.canvas.tag_bind(self.gui.load_game_click_area, "<Button-1>",
@@ -297,13 +303,18 @@ class GameController:
     def bind_save_button(self):
         #self.gui.save_game_canvas.tag_bind(self.gui.save_delete_click_areas[0], "<Button-1>",
                                              #lambda e: self.show_save_game(save_game_name))
-        self.show_save_quit_image()
+        #self.show_save_quit_image()
         self.gui.save_game_canvas.tag_bind(self.gui.save_delete_click_areas[0], "<Button-1>",
                                            lambda e: self.open_enter_name_file_frame())
 
     def bind_enter_name_save_button(self):
         self.gui.enter_name_canvas.tag_bind(self.gui.enter_file_name_frame.color_save_button,"<Button-1>",
                                             lambda e: self.show_save_game())
+
+    def bind_enter_save_game_name_frame_back_button(self):
+        self.gui.enter_name_canvas.tag_bind(self.gui.enter_file_name_frame.enter_back_button, "<Button-1>",
+                                            lambda e: self.gui.enter_file_name_frame.back_to_save_game_frame())
+
     def bind_delete_button(self):
         self.gui.save_game_canvas.tag_bind(self.gui.save_delete_click_areas[1], "<Button-1>",
                                           lambda e: self.gui.save_game_frame.delete_data(self.gui.save_game_canvas))
@@ -314,6 +325,99 @@ class GameController:
     def bind_home_button(self):
         self.gui.save_game_canvas.tag_bind(self.gui.save_delete_click_areas[3], "<Button-1>",
                                            lambda e: self.home_button())
+
+    def bind_edit_board_back_button(self):
+        self.gui.edit_board_canvas.tag_bind(self.gui.edit_board_click_areas[2], "<Button-1>",
+                                            lambda e: self.edit_back_button())
+    def bind_apply_changes_button(self):
+        self.gui.edit_board_canvas.tag_bind(self.gui.edit_board_click_areas[1], "<Button-1>",
+                                            lambda e: self.apply_changes_button())
+
+    def bind_save_board_profile_button(self):
+        self.gui.edit_board_canvas.tag_bind(self.gui.edit_board_click_areas[0], "<Button-1>",
+                                            lambda e: self.save_board_profile_button())
+
+    def bind_save_board_button(self):
+        self.gui.save_board_canvas.tag_bind(self.gui.save_board_click_areas[0], "<Button-1>",
+                                           lambda e: self.open_board_enter_name_file_frame())
+
+    def bind_delete_board_button(self):
+        self.gui.save_board_canvas.tag_bind(self.gui.save_board_click_areas[1], "<Button-1>",
+                                            lambda e: self.gui.save_board_frame.delete_data(self.gui.save_board_canvas))
+    # def bind_save_board_back_button(self):
+    #     self.gui.save_board_canvas.tag_bind(self.gui.save_board_click_areas[0], "<Button-1>",
+    #                                         lambda e: self.back_to_game_play_frame())
+    def bind_back_to_edit_board_button(self):
+        self.gui.save_board_canvas.tag_bind(self.gui.save_board_click_areas[2], "<Button-1>",
+                                            lambda e: self.back_to_edit_board_frame())
+
+    def bind_home_button_in_save_board(self):
+        self.gui.save_board_canvas.tag_bind(self.gui.save_board_click_areas[3], "<Button-1>",
+                                            lambda e: self.home_in_edit_board())
+
+    def bind_enter_board_name_save_button(self):
+        self.gui.enter_name_canvas.tag_bind(self.gui.enter_file_name_frame.color_save_button, "<Button-1>",
+                                            lambda e: self.show_saved_board_name())
+    def bind_enter_name_frame_back_button(self):
+        self.gui.enter_name_canvas.tag_bind(self.gui.enter_file_name_frame.enter_back_button, "<Button-1>",
+                                            lambda e: self.enter_board_name_back_button())
+
+    #----------- Edit Game Board Button ---------#
+
+    def edit_back_button(self):
+        # self.board =  Gameboard()
+        # self.pass_gameboard_info_to_view() #pass all the modifications of board after the gameplay_frame is reinitialized
+        self.gui.show_frame("new_game")
+
+    def apply_changes_button(self):
+        if self.gui.edit_board_frame.handle_save_board_click():
+            self.gui.edit_board_frame.load_changes_in_gameboard(self.board)
+            self.gui.show_frame("new_game")
+
+    def save_board_profile_button(self):
+        for i,slots in enumerate(self.gui.save_board_click_areas[4:]):
+            self.gui.save_board_canvas.tag_bind(slots, "<Button-1>",
+                            lambda e, idx=i: self.select_saved_board_slot(self.gui.save_board_canvas, idx))
+        self.bind_back_to_edit_board_button()
+        self.bind_home_button_in_save_board()
+        self.gui.show_frame("save_board")
+
+    #------------ Save Board Button --------------#
+
+    def select_saved_board_slot(self,canvas,idx):
+        self.gui.save_board_frame.select_saved_slot(canvas, idx)
+        self.bind_delete_board_button()
+        self.bind_save_board_button()
+
+    def back_to_edit_board_frame(self):
+        self.gui.save_board_frame.back_button(self.gui.save_board_canvas, "edit_board")
+        self.unbind_save_board_button()
+        self.unbind_delete_button()
+
+    #go back to new Game when pressed home in save board
+    def home_in_edit_board(self):
+        self.gui.save_board_frame.back_button(self.gui.save_board_canvas, "new_game")
+        self.unbind_save_board_button()
+        self.unbind_delete_button()
+
+    # logic from binding and showing the buttons in enter name file
+    def open_board_enter_name_file_frame(self):
+        self.bind_enter_board_name_save_button()
+        self.bind_enter_name_frame_back_button()
+        self.gui.show_frame("enter_name")
+
+    #------------ Enter Board Name Button ---------#
+    def show_saved_board_name(self):
+        user_input = self.gui.enter_file_name_frame.name_entry.get().strip() #get the entry in the text box
+        if self.input_handler.valid_current_game_name(user_input): #if the name is valid
+            self.save_gameboard(user_input) #save it to the folder
+            self.gui.enter_file_name_frame.clear_all_info()
+            self.gui.save_board_frame.save_board_data(self.gui.save_board_canvas) #go back to save game frame and show the name
+        else:
+            self.gui.enter_file_name_frame.wrong_save_name(self.gui.enter_name_canvas)
+
+    def enter_board_name_back_button(self):
+        self.gui.show_frame("save_board")
 
     #------------ Main Frame Button --------------#
 
@@ -335,6 +439,10 @@ class GameController:
     def load_and_start_game_button(self,idx):
         save_name = self.gui.load_game_frame.load_data(idx)
         self.clear_all_data()
+
+        #clear all the selections on the slot after pressing load and play
+        self.unbind_load_and_play_button()
+        self.gui.load_game_frame.clear_selected_slots(self.gui.load_game_canvas)
         self.load_game(save_name)
         self.pass_gameboard_info_to_view()
         self.button_play(True)
@@ -401,13 +509,24 @@ class GameController:
     # logic from binding and showing the buttons in enter name file
     def open_enter_name_file_frame(self):
         self.bind_enter_name_save_button()
+        self.bind_enter_save_game_name_frame_back_button()
         self.gui.show_frame("enter_name")
 
     # ------------ New Game Frame ----------------#
 
+    #Bind the edit board button with its functions
+    def edit_board_function(self):
+        self.gui.show_edit_board_frame()
+        self.bind_edit_board_back_button()
+        self.bind_save_board_profile_button()
+        self.bind_apply_changes_button()
+        self.gui.show_frame("edit_board")
+
     #Bind the load game board button to initialize the clicks in the load gameboard frame
     def new_game_load_board_button(self):
         self.gui.load_board_frame.show_save_file(self.gui.load_board_canvas)
+        #show edit board frame on click
+        self.gui.show_edit_board_frame()
         self.gui.show_frame("load_board")
         self.bind_load_board_back_button()
         #bind all the slots in load board page
@@ -719,6 +838,19 @@ class GameController:
         print("Not Buying")
         # TODO <Show did not buy property>
 
+    # ------------ Enter File Name Frame Button ----------------#
+    def show_save_game(self):
+        user_input = self.gui.enter_file_name_frame.name_entry.get().strip() #get the entry in the text box
+        if self.input_handler.valid_current_game_name(user_input): #if the name is valid
+            self.save_game(user_input) #save it to the folder
+            self.gui.enter_file_name_frame.clear_all_info()
+            self.gui.save_game_frame.save_data(self.gui.save_game_canvas) #go back to save game frame and show the name
+        else:
+            self.gui.enter_file_name_frame.wrong_save_name(self.gui.enter_name_canvas)
+
+    # -------------------- Save and load Logics ----------------#
+    # noinspection PyTypeChecker
+
     def save_gameboard(self, save_name):
         # gets current directory in which the program is running
         save_directory = os.path.dirname(os.path.abspath(__file__))
@@ -740,18 +872,6 @@ class GameController:
             message = "Game saved successfully.\n"
         return f"{message1}\n{message}"
 
-    # ------------ Enter File Name Frame Button ----------------#
-    def show_save_game(self):
-        user_input = self.gui.enter_file_name_frame.name_entry.get().strip() #get the entry in the text box
-        if self.input_handler.valid_current_game_name(user_input): #if the name is valid
-            self.save_game(user_input) #save it to the folder
-            self.gui.enter_file_name_frame.clear_all_info()
-            self.gui.save_game_frame.save_data(self.gui.save_game_canvas) #go back to save game frame and show the name
-        else:
-            self.gui.enter_file_name_frame.wrong_save_name(self.gui.enter_name_canvas)
-
-    # -------------------- Save and load Logics ----------------#
-    # noinspection PyTypeChecker
     def save_game(self, save_name):
         # gets current directory in which the program is running
         save_directory = os.path.dirname(os.path.abspath(__file__))

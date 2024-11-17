@@ -839,10 +839,10 @@ class NewGameFrame(DisplayManager):
         canvas.tag_bind(edit_board_clickable_area, "<Button-1>",
                         lambda e: self.gui.show_frame("edit_board"))  # Placeholder action
 
-        canvas.tag_bind(load_button_clickable_area, "<Button-1>",
-                        lambda e: self.gui.show_frame("load_board")) #TODO unbind this later
+        # canvas.tag_bind(load_button_clickable_area, "<Button-1>",
+        #                 lambda e: self.gui.show_frame("load_board")) #TODO unbind this later
 
-        new_game_clickable_areas = [play_button_clickable_area, load_button_clickable_area]
+        new_game_clickable_areas = [play_button_clickable_area, load_button_clickable_area,edit_board_clickable_area]
 
         return canvas, new_game_clickable_areas
 
@@ -1388,6 +1388,10 @@ class SaveFrame(DisplayManager):
         self.gui.show_frame("save_game")
         self.show_save_file(canvas)
 
+    def save_board_data(self,canvas):
+        self.gui.show_frame("save_board")
+        self.show_save_file(canvas)
+
     def delete_data(self, canvas):
         if self.gui.selected_saved_game_slot < len(self.display_text):
             filepath = os.path.join(self.save_base_path, self.display_text[self.gui.selected_saved_game_slot][2])
@@ -1654,23 +1658,29 @@ class EditBoardFrame(GameplayFrame):
         self.current_frame = frame
         self.canvas = canvas
         reset_changes_y = self.gui.image_height * 3/5 - 39
+
+        game_board_area = canvas.create_rectangle(27, 144, 836, 954, outline="", fill="", tags="game_board")
+        canvas.tag_bind("game_board", '<Button-1>', self.on_game_board_click)
+
+        confirm_click_area, canvas, confirm_id = self.create_button(canvas, self.gui.image_width * 11 / 14,self.gui.image_height * 9 / 10 - 20,self.confirm_button_image)
         apply_changes_click_area, canvas, apply_id = self.create_button(canvas, self.gui.image_width * 2/7, reset_changes_y - 110, self.apply_changes_button_image)
         reset_click_area, canvas, cancel_id = self.create_button(canvas, self.gui.image_width * 2/7 , reset_changes_y , self.reset_changes_button_image)
-        save_board_profile_click_area, canvas, save_board_id = self.create_button(canvas, self.gui.image_width * 2/7 , reset_changes_y + 110, self.save_board_profile_button_image)
-        confirm_click_area, canvas, confirm_id = self.create_button(canvas, self.gui.image_width * 11/14, self.gui.image_height * 9/10 - 20, self.confirm_button_image)
+        save_board_profile_click_area, canvas, save_board_id = self.create_button(self.canvas, self.gui.image_width * 2/7 , reset_changes_y + 110, self.save_board_profile_button_image)
         back_click_area, canvas, back_id = self.create_button(canvas, 50, 50, self.back_arrow_photo)
 
         # Display all the colors in the Edit Board Frame
         self.gui.gameplay_frame.display_tile_colors(canvas)
-        canvas.tag_bind(back_click_area, "<Button-1>", lambda e: self.gui.show_frame("new_game"))
-        canvas.tag_bind(reset_click_area, "<Button-1>", lambda e: self.remove_entries())
-        canvas.tag_bind(confirm_click_area, "<Button-1>", lambda e: self.process_user_input())
-        canvas.tag_bind(save_board_profile_click_area, "<Button-1>", lambda e: self.handle_save_board_click())
 
-        game_board_area = canvas.create_rectangle(27, 144, 836, 954, outline="", fill="", tags="game_board")
-        canvas.tag_bind("game_board", '<Button-1>', self.on_game_board_click)
+        #canvas.tag_bind(back_click_area, "<Button-1>", lambda e: self.gui.show_frame("new_game")) #TODO move to controller, after back, reinitialize board
+        #canvas.tag_bind(reset_click_area, "<Button-1>", lambda e: self.remove_entries())
+        canvas.tag_bind(confirm_click_area, "<Button-1>", lambda e: self.process_user_input())
+        #canvas.tag_bind(save_board_profile_click_area, "<Button-1>", lambda e:  self.gui.show_frame("new_game")) #TODO go to save board frame
+
         self.display_tile_info(canvas)
         self.bind_text(canvas)
+
+        edit_board_clickable_areas = [save_board_profile_click_area,apply_changes_click_area,back_click_area]
+        return canvas, edit_board_clickable_areas
 
     def on_game_board_click(self, event):
         self.remove_entries()
@@ -1849,10 +1859,10 @@ class EditBoardFrame(GameplayFrame):
 
         if color== "dark grey": color = "dark_grey"
 
+        #Update the user modifications into the array
         GameplayFrame.tile_colors[self.grid_index][0] = color
         self.gui.gameplay_frame.modify_tile_color(color,self.grid_index)
         self.gui.gameplay_frame.display_single_tile_colors(self.canvas,color,self.grid_index)
-        print("the grid_index is: ",self.grid_index)
         GameplayFrame.tile_info[self.grid_index][2] = price
         GameplayFrame.tile_info[self.grid_index][3] = rent
 
@@ -1900,7 +1910,7 @@ class EditBoardFrame(GameplayFrame):
             for error in errors:
                 # With postion specified to display
                 self.show_msg(self.current_frame, error, is_error=True)
-            return
+            return False
 
         for suggestion in suggestions:
             self.show_msg(self.current_frame, suggestion, is_error=False)
@@ -1908,6 +1918,7 @@ class EditBoardFrame(GameplayFrame):
         # If no errors or suggestions, save the board profile
         # self.gui.save_frame("save_board") # Use it later
         print("Board Profile Saved")
+        return True
 
     def validate_input(self):
         errors = []
