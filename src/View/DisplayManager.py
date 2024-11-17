@@ -1629,7 +1629,7 @@ class EditBoardFrame(GameplayFrame):
         # Update on 11.17, read it, and delete it
         # Highlight it because it may be useful for the <Reset> Button
         # By original, I mean last time the board was saved
-        self.original_tile_info = {}  # Dictionary to store original attributes
+        self.last_time_tile_info = {}  # Dictionary to store original attributes
         self.modify_success = True  # Tracks if the last modification was successful
 
         self.place_names = [
@@ -1668,7 +1668,7 @@ class EditBoardFrame(GameplayFrame):
         # Update on 11.17, read it, and delete it
         # Save the original property attributes for each grid
         for i in range(len(GameplayFrame.tile_info)):
-            self.original_tile_info[i] = {
+            self.last_time_tile_info[i] = {
                 "name": GameplayFrame.tile_info[i][1],
                 "color": GameplayFrame.tile_colors[i][0],
                 "price": GameplayFrame.tile_info[i][2],
@@ -1763,7 +1763,7 @@ class EditBoardFrame(GameplayFrame):
         else:
             self.price_text_id = self.canvas.create_text(
                 # Display the original price value
-                price_image_x, price_image_y, text=self.original_tile_info[self.grid_index]["price"],
+                price_image_x, price_image_y, text=self.last_time_tile_info[self.grid_index]["price"],
                 font=("Comic Sans MS", 20), fill="#333333", width=50
             )
 
@@ -1786,7 +1786,7 @@ class EditBoardFrame(GameplayFrame):
         else:
             self.rent_text_id = self.canvas.create_text(
                 # Display the original rent value
-                rent_image_x, rent_image_y, text=self.original_tile_info[self.grid_index]["rent"],
+                rent_image_x, rent_image_y, text=self.last_time_tile_info[self.grid_index]["rent"],
                 font=("Comic Sans MS", 20), fill="#333333", width=50
             )
         # Bind click event to show editable entry box on click
@@ -1803,7 +1803,7 @@ class EditBoardFrame(GameplayFrame):
         if self.modify_success:
             self.price_entry.insert(0, GameplayFrame.tile_info[self.grid_index][2])
         else:
-            self.price_entry.insert(0, self.original_tile_info[self.grid_index]["price"])
+            self.price_entry.insert(0, self.last_time_tile_info[self.grid_index]["price"])
 
         self.price_entry.place(x=x - 80, y=y - 15, width=160, height=30)
         self.price_entry.focus_set()
@@ -1835,7 +1835,7 @@ class EditBoardFrame(GameplayFrame):
         if self.modify_success:
             self.rent_entry.insert(0, GameplayFrame.tile_info[self.grid_index][3])
         else:
-            self.rent_entry.insert(0, self.original_tile_info[self.grid_index]["rent"])
+            self.rent_entry.insert(0, self.last_time_tile_info[self.grid_index]["rent"])
 
         # self.rent_entry.insert(0, GameplayFrame.tile_info[self.grid_index][3])
         self.rent_entry.place(x=x - 80, y=y - 15, width=160, height=30)
@@ -1920,8 +1920,8 @@ class EditBoardFrame(GameplayFrame):
         # Mark this modification as successful
         self.modify_success = True
 
-        # Also update the original tile info
-        self.original_tile_info[self.grid_index] = {
+        # Also update the last time tile info
+        self.last_time_tile_info[self.grid_index] = {
             "name": name,
             "color": color,
             "price": price,
