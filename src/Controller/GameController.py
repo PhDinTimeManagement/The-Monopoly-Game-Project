@@ -1,5 +1,5 @@
 # GameController.py
-
+import copy
 import json
 import os.path
 
@@ -8,6 +8,7 @@ from src.Model.Player import *
 from src.Model.GameLogic import GameLogic
 from datetime import datetime
 from src.View.GUI import *
+from copy import deepcopy
 
 
 class GameController:
@@ -31,7 +32,7 @@ class GameController:
         # self.gui.new_game_canvas.tag_bind(self.gui.new_game_clickable_areas[0], "<Button-1>", lambda e: self.button_play(False))
         # self.gui.new_game_canvas.tag_bind(self.gui.new_game_clickable_areas[1], "<Button-1>", lambda e: self.new_game_load_board_button())
 
-        self.pass_gameboard_info_to_view()
+        self.pass_gameboard_info_to_view()  #TODO is this necessary??
 
         #bind the load game button here
         self.bind_load_game()
@@ -410,9 +411,13 @@ class GameController:
     def show_saved_board_name(self):
         user_input = self.gui.enter_file_name_frame.name_entry.get().strip() #get the entry in the text box
         if self.input_handler.valid_current_game_name(user_input): #if the name is valid
+            last_loaded_board = copy.deepcopy(self.board)
+            EditBoardFrame.load_changes_in_gameboard(self.board)
             self.save_gameboard(user_input) #save it to the folder
             self.gui.enter_file_name_frame.clear_all_info()
             self.gui.save_board_frame.save_board_data(self.gui.save_board_canvas) #go back to save game frame and show the name
+            self.board = copy.deepcopy(last_loaded_board) # saving a board layout doesn't necessarily mean you want to load it and play with it, this addresses that issue
+            self.pass_gameboard_info_to_view()
         else:
             self.gui.enter_file_name_frame.wrong_save_name(self.gui.enter_name_canvas)
 
@@ -459,8 +464,11 @@ class GameController:
         self.bind_load_board_button(idx)
 
     def load_board_button(self,idx):
-        save_name = self.gui.load_board_frame.load_data(idx)
-        self.load_gameboard(save_name)
+        if idx == 5: # default board is 5 because it's appended last
+            self.board = Gameboard()
+        else:
+            save_name = self.gui.load_board_frame.load_data(idx)
+            self.load_gameboard(save_name)
         self.pass_gameboard_info_to_view()
         self.load_board_back_button()
 
@@ -516,6 +524,7 @@ class GameController:
 
     #Bind the edit board button with its functions
     def edit_board_function(self):
+        self.pass_gameboard_info_to_view()
         self.gui.show_edit_board_frame()
         self.bind_edit_board_back_button()
         self.bind_save_board_profile_button()
@@ -548,6 +557,7 @@ class GameController:
 
             # passes all info to view to build the board
             # EditBoardFrame.load_changes_in_gameboard(self.board) MOVED TO APPLY CHANGES
+            self.pass_gameboard_info_to_view()
             self.pass_player_information_to_view()
 
             self.gui.show_game_play_frame()  # builds gameplay frame when it has all necessary information

@@ -1112,49 +1112,35 @@ class LoadFrame(DisplayManager):
     def __init__(self, gui):
         super().__init__(gui)
 
+        self.saved_game_slot_position = None
+        self.saved_game_slot_positions = []
         self.button_id = None
         self.offset = 0
-        self.save_slots = []
         self.slot_item_ids = [] # Track item IDs for slots
         self.load_button_x, self.load_button_y = self.gui.image_width // 2, 835
         # Load Game frame images
         self.load_frame_background = None
-        self.saved_slot1_image = tk.PhotoImage(
-            file=os.path.join(assets_base_path, "load_frame/saved_game_slot1.png"))
-        self.saved_slot2_image = tk.PhotoImage(
-            file=os.path.join(assets_base_path, "load_frame/saved_game_slot2.png"))
-        self.saved_slot3_image = tk.PhotoImage(
-            file=os.path.join(assets_base_path, "load_frame/saved_game_slot3.png"))
-        self.saved_slot4_image = tk.PhotoImage(
-            file=os.path.join(assets_base_path, "load_frame/saved_game_slot4.png"))
-        self.saved_slot5_image = tk.PhotoImage(
-            file=os.path.join(assets_base_path, "load_frame/saved_game_slot5.png"))
+        self.saved_slot_image = tk.PhotoImage(file=os.path.join(assets_base_path, "load_frame/saved_game_slot.png"))
         self.selected_save_slot_image = tk.PhotoImage(
             file=os.path.join(assets_base_path, "load_frame/selected_saved_slot.png"))
         self.button_image = None
         self.display_text = []
         self.save_base_path = None
         # Saved game slot selection image positions
-        self.saved_game_slot_positions = [
-            (self.gui.image_width // 2, 370 + self.offset),
-            (self.gui.image_width // 2, 450 + self.offset),
-            (self.gui.image_width // 2, 530 + self.offset),
-            (self.gui.image_width // 2, 610 + self.offset),
-            (self.gui.image_width // 2, 690 + self.offset)
-        ]
 
     # ------------------------------------# Load Game Frame #------------------------------------#
 
     def setup_load_frame(self, frame):
         canvas = self.clear_widgets_create_canvas_set_background(frame, self.load_frame_background)
 
-        # Saved game slot images
-        self.save_slots = [
-            self.saved_slot1_image,
-            self.saved_slot2_image,
-            self.saved_slot3_image,
-            self.saved_slot4_image,
-            self.saved_slot5_image
+        x_save_pos = self.gui.image_width // 2
+
+        self.saved_game_slot_positions = [
+            (x_save_pos, 370 + self.offset),
+            (x_save_pos, 450 + self.offset),
+            (x_save_pos, 530 + self.offset),
+            (x_save_pos, 610 + self.offset),
+            (x_save_pos, 690 + self.offset)
         ]
 
         load_and_play_clickable_area, canvas, self.button_id = self.create_button(canvas, self.load_button_x, self.load_button_y, self.button_image)
@@ -1167,9 +1153,9 @@ class LoadFrame(DisplayManager):
         load_game_clickable_area = [load_and_play_clickable_area,back_button]
 
         # Display saved game slots
-        for i, slot_image in enumerate(self.save_slots):
+        for i in range(0, 5):
             slot_x, slot_y = self.saved_game_slot_positions[i]  # Unpack coordinates
-            clickable_area, canvas, slot_id = self.create_button(canvas, slot_x, slot_y, slot_image)
+            clickable_area, canvas, slot_id = self.create_button(canvas, slot_x, slot_y, self.saved_slot_image)
 
             self.slot_item_ids.append(slot_id)
             load_game_clickable_area.append(clickable_area)
@@ -1180,7 +1166,7 @@ class LoadFrame(DisplayManager):
 
     def clear_selected_slots(self,canvas):
         for i, slot_id in enumerate(self.slot_item_ids):
-            canvas.itemconfig(slot_id, image=self.save_slots[i])
+            canvas.itemconfig(slot_id, image=self.saved_slot_image)
 
     #---------- Show and Hide of the load and play button ----------#
 
@@ -1238,6 +1224,7 @@ class LoadGameFrame(LoadFrame):
         self.load_frame_background = tk.PhotoImage(file=os.path.join(assets_base_path, "load_frame/load_game_frame_background.png"))
         self.save_base_path = os.path.join(os.path.dirname(__file__), "../../saves/games")
 
+
 class LoadBoardFrame(LoadFrame):
     def __init__(self, gui):
         super().__init__(gui)
@@ -1245,6 +1232,21 @@ class LoadBoardFrame(LoadFrame):
         self.load_frame_background = tk.PhotoImage(file=os.path.join(assets_base_path, "load_frame/load_board_frame_background.png"))
         self.save_base_path = os.path.join(os.path.dirname(__file__), "../../saves/gameboard_setups")
         self.offset = 80 # adds space for an extra slot
+
+    def create_default_board_button(self, canvas):
+        default_board_button_clickable_area, canvas, default_board_button_id = self.create_button(canvas, self.gui.image_width // 2, 370, self.saved_slot_image)
+        default_board_text = canvas.create_text(self.gui.image_width // 3, 370,
+                                                text="Default Board", anchor="center", font=("Comic Sans MS", 16), fill="#000000")
+        self.slot_item_ids.append(default_board_button_id)
+        canvas.tag_bind(default_board_text, "<Button-1>",
+                        lambda e, idx=5: self.select_saved_slot(canvas, idx))
+        return default_board_button_clickable_area
+
+    def setup_load_frame(self, frame):
+        canvas, clickable_area = super().setup_load_frame(frame)
+        default_board_clickable_area = self.create_default_board_button(canvas)
+        clickable_area.append(default_board_clickable_area)
+        return canvas, clickable_area
 
 
 class SaveFrame(DisplayManager):
@@ -1561,6 +1563,7 @@ class InfoPageFrame(DisplayManager):
         canvas.tag_bind(back_button_clickable_area, "<Button-1>", lambda e: self.gui.show_frame("main_menu"))
 
         return canvas
+
 
 class EditBoardFrame(GameplayFrame):
     def __init__(self, gui):
