@@ -1626,6 +1626,12 @@ class EditBoardFrame(GameplayFrame):
         self.color_entry = None
         self.message_label = None
 
+        # Update on 11.17, read it, and delete it
+        # Highlight it because it may be useful for the <Reset> Button
+        # By original, I mean last time the board was saved
+        self.original_tile_info = {}  # Dictionary to store original attributes
+        self.modify_success = True  # Tracks if the last modification was successful
+
         self.place_names = [
             # Default places
             "Central", "Wan Chai", "Stanley", "Shek O", "Mong Kok",
@@ -1659,6 +1665,16 @@ class EditBoardFrame(GameplayFrame):
         self.canvas = canvas
         reset_changes_y = self.gui.image_height * 3/5 - 39
 
+        # Update on 11.17, read it, and delete it
+        # Save the original property attributes for each grid
+        for i in range(len(GameplayFrame.tile_info)):
+            self.original_tile_info[i] = {
+                "name": GameplayFrame.tile_info[i][1],
+                "color": GameplayFrame.tile_colors[i][0],
+                "price": GameplayFrame.tile_info[i][2],
+                "rent": GameplayFrame.tile_info[i][3]
+            }
+
         game_board_area = canvas.create_rectangle(27, 144, 836, 954, outline="", fill="", tags="game_board")
         canvas.tag_bind("game_board", '<Button-1>', self.on_game_board_click)
 
@@ -1685,14 +1701,13 @@ class EditBoardFrame(GameplayFrame):
     def on_game_board_click(self, event):
         # Clear any previous entries
         self.clear_active_widgets()
-
         self.remove_entries()
 
         x = event.x
         y = event.y
         self.grid_index = self.check_click_grid(x, y)
         if self.grid_index != -1:
-            # print(GameplayFrame.tile_info[self.grid_index])
+            # print(GameplayFrame.tile_info[self.grid_index]) # Debugging
             self.create_input_entries()
 
     def check_click_grid(self, x, y):
@@ -1723,7 +1738,6 @@ class EditBoardFrame(GameplayFrame):
         self.clear.append(self.name_entry)
 
         #Drop down for color
-
         self.color_entry = ttk.Combobox(
             self.canvas,
             values=self.colors,
@@ -1740,10 +1754,19 @@ class EditBoardFrame(GameplayFrame):
         self.price_image_id = self.canvas.create_image(price_image_x, price_image_y, image=self.price_input_box_image, anchor="center")
 
         # Display Price Text or Input Entry
-        self.price_text_id = self.canvas.create_text(
-            price_image_x, price_image_y, text=GameplayFrame.tile_info[self.grid_index][2],
-            font=("Comic Sans MS", 20), fill="#333333", width=50
-        )
+        if self.modify_success:
+            self.price_text_id = self.canvas.create_text(
+                # Display the modified price value
+                price_image_x, price_image_y, text=GameplayFrame.tile_info[self.grid_index][2],
+                font=("Comic Sans MS", 20), fill="#333333", width=50
+            )
+        else:
+            self.price_text_id = self.canvas.create_text(
+                # Display the original price value
+                price_image_x, price_image_y, text=self.original_tile_info[self.grid_index]["price"],
+                font=("Comic Sans MS", 20), fill="#333333", width=50
+            )
+
         # Bind click event to show editable entry box on click
         self.canvas.tag_bind(self.price_text_id, "<Button-1>",
                              lambda e: self.show_price_entry(price_image_x, price_image_y))
@@ -1754,10 +1777,18 @@ class EditBoardFrame(GameplayFrame):
         self.rent_image_id = self.canvas.create_image(rent_image_x, rent_image_y, image=self.rent_input_box_image, anchor="center")
 
         # Display Rent Text or Input Entry
-        self.rent_text_id = self.canvas.create_text(
-            rent_image_x, rent_image_y, text=GameplayFrame.tile_info[self.grid_index][3],
-            font=("Comic Sans MS", 20), fill="#333333", width=50
-        )
+        if self.modify_success:
+            self.rent_text_id = self.canvas.create_text(
+                # Display the modified rent value
+                rent_image_x, rent_image_y, text=GameplayFrame.tile_info[self.grid_index][3],
+                font=("Comic Sans MS", 20), fill="#333333", width=50
+            )
+        else:
+            self.rent_text_id = self.canvas.create_text(
+                # Display the original rent value
+                rent_image_x, rent_image_y, text=self.original_tile_info[self.grid_index]["rent"],
+                font=("Comic Sans MS", 20), fill="#333333", width=50
+            )
         # Bind click event to show editable entry box on click
         self.canvas.tag_bind(self.rent_text_id, "<Button-1>",
                              lambda e: self.show_rent_entry(rent_image_x, rent_image_y))
@@ -1768,7 +1799,12 @@ class EditBoardFrame(GameplayFrame):
         self.price_entry = tk.Entry(
             self.canvas, font=("Comic Sans MS", 20), width=20, bd=0, bg="#D3D7D8", fg="#000000", highlightthickness=0
         )
-        self.price_entry.insert(0, GameplayFrame.tile_info[self.grid_index][2])
+
+        if self.modify_success:
+            self.price_entry.insert(0, GameplayFrame.tile_info[self.grid_index][2])
+        else:
+            self.price_entry.insert(0, self.original_tile_info[self.grid_index]["price"])
+
         self.price_entry.place(x=x - 80, y=y - 15, width=160, height=30)
         self.price_entry.focus_set()
 
@@ -1795,7 +1831,13 @@ class EditBoardFrame(GameplayFrame):
         self.rent_entry = tk.Entry( #D2D7D8, CDCDCE, C6C8CD
             self.canvas, font=("Comic Sans MS", 20), width=20, bd=0, bg="#D3D7D8", fg="#000000", highlightthickness=0
         )
-        self.rent_entry.insert(0, GameplayFrame.tile_info[self.grid_index][3])
+
+        if self.modify_success:
+            self.rent_entry.insert(0, GameplayFrame.tile_info[self.grid_index][3])
+        else:
+            self.rent_entry.insert(0, self.original_tile_info[self.grid_index]["rent"])
+
+        # self.rent_entry.insert(0, GameplayFrame.tile_info[self.grid_index][3])
         self.rent_entry.place(x=x - 80, y=y - 15, width=160, height=30)
         self.rent_entry.focus_set()
 
@@ -1854,6 +1896,7 @@ class EditBoardFrame(GameplayFrame):
             self.show_msg(self.current_frame, "* Price and Rent must be valid integers.",
                           idx=0, is_error=True,
                           x_position=self.gui.image_width * 1 / 2 + 180, y_position=self.gui.image_height * 9 / 10 + 15)
+            self.modify_success = False
             return
 
         # Check if the price is lower than the rent (However, this is a suggestion)
@@ -1868,10 +1911,22 @@ class EditBoardFrame(GameplayFrame):
 
         #Update the user modifications into the array
         GameplayFrame.tile_colors[self.grid_index][0] = color
-        self.gui.gameplay_frame.modify_tile_color(color,self.grid_index)
-        self.gui.gameplay_frame.display_single_tile_colors(self.canvas,color,self.grid_index)
         GameplayFrame.tile_info[self.grid_index][2] = price
         GameplayFrame.tile_info[self.grid_index][3] = rent
+
+        self.gui.gameplay_frame.modify_tile_color(color, self.grid_index)
+        self.gui.gameplay_frame.display_single_tile_colors(self.canvas, color, self.grid_index)
+
+        # Mark this modification as successful
+        self.modify_success = True
+
+        # Also update the original tile info
+        self.original_tile_info[self.grid_index] = {
+            "name": name,
+            "color": color,
+            "price": price,
+            "rent": rent
+        }
 
         # Destroy all the input boxes, canvas, dropdown menu
         self.remove_entries()
