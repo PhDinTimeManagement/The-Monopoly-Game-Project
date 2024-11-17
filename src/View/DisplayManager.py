@@ -1113,6 +1113,7 @@ class LoadFrame(DisplayManager):
         super().__init__(gui)
 
         self.button_id = None
+        self.offset = 0
         self.save_slots = []
         self.slot_item_ids = [] # Track item IDs for slots
         self.load_button_x, self.load_button_y = self.gui.image_width // 2, 835
@@ -1135,11 +1136,11 @@ class LoadFrame(DisplayManager):
         self.save_base_path = None
         # Saved game slot selection image positions
         self.saved_game_slot_positions = [
-            (self.gui.image_width // 2, 370),
-            (self.gui.image_width // 2, 452),
-            (self.gui.image_width // 2, 534),
-            (self.gui.image_width // 2, 616),
-            (self.gui.image_width // 2, 698)
+            (self.gui.image_width // 2, 370 + self.offset),
+            (self.gui.image_width // 2, 450 + self.offset),
+            (self.gui.image_width // 2, 530 + self.offset),
+            (self.gui.image_width // 2, 610 + self.offset),
+            (self.gui.image_width // 2, 690 + self.offset)
         ]
 
     # ------------------------------------# Load Game Frame #------------------------------------#
@@ -1237,21 +1238,13 @@ class LoadGameFrame(LoadFrame):
         self.load_frame_background = tk.PhotoImage(file=os.path.join(assets_base_path, "load_frame/load_game_frame_background.png"))
         self.save_base_path = os.path.join(os.path.dirname(__file__), "../../saves/games")
 
-
-class LoadGameboardFrame(LoadFrame):
-    def __init__(self, gui):
-        super()._init_(gui)
-        self.button_image = tk.PhotoImage(file=os.path.join(assets_base_path, "load_frame/load_and_play_button.png"))
-        self.load_frame_background = tk.PhotoImage(file=os.path.join(assets_base_path, "load_frame/load_game_frame_background.png"))
-        self.save_base_path = os.path.join(os.path.dirname(__file__), "../../saves/games")
-
-
 class LoadBoardFrame(LoadFrame):
     def __init__(self, gui):
         super().__init__(gui)
         self.button_image = tk.PhotoImage(file=os.path.join(assets_base_path, "load_frame/load_board_button.png"))
         self.load_frame_background = tk.PhotoImage(file=os.path.join(assets_base_path, "load_frame/load_board_frame_background.png"))
         self.save_base_path = os.path.join(os.path.dirname(__file__), "../../saves/gameboard_setups")
+        self.offset = 80 # adds space for an extra slot
 
 
 class SaveFrame(DisplayManager):
@@ -1280,10 +1273,10 @@ class SaveFrame(DisplayManager):
         # Saved game slot selection image positions
         self.saved_game_slot_positions = [
             (self.gui.image_width // 2, 370),
-            (self.gui.image_width // 2, 452),
-            (self.gui.image_width // 2, 534),
-            (self.gui.image_width // 2, 616),
-            (self.gui.image_width // 2, 698)
+            (self.gui.image_width // 2, 450),
+            (self.gui.image_width // 2, 530),
+            (self.gui.image_width // 2, 610),
+            (self.gui.image_width // 2, 690)
         ]
 
         # Saved game slot images
