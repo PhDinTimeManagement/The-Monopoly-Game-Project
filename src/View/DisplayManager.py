@@ -22,11 +22,11 @@ class DisplayManager:
 
     #gets image bounding box and sets that as clickable area
     @staticmethod
-    def create_button(canvas, x_pos, y_pos, button_image, anchor = "center", tag = "all_buttons"):
+    def create_button(canvas, x_pos, y_pos, button_image, anchor = "center"):
         image_id = canvas.create_image(x_pos, y_pos, anchor= anchor, image=button_image)
         click_coords = canvas.bbox(image_id)
         button_click_area = canvas.create_rectangle(click_coords[0], click_coords[1], click_coords[2], click_coords[3],
-                                                    outline="", fill="", tags= tag)
+                                                    outline="", fill="")
         return button_click_area, canvas, image_id
 
     def clear_widgets_create_canvas_set_background(self, frame, background):
@@ -65,11 +65,7 @@ class DisplayManager:
     # DO NOT DELETE
     def clear_active_widgets(self):
         for widget in self.active_widgets:
-            try:
-                if widget.winfo_ismapped():  # Check if the widget is currently visible
-                    widget.place_forget()  # Hide the widget
-            except tk.TclError:
-                continue
+            widget.place_forget()
         self.active_widgets.clear()  # Reset active widgets list
 
 # noinspection DuplicatedCode
@@ -850,7 +846,7 @@ class NewGameFrame(DisplayManager):
         # canvas.tag_bind(load_button_clickable_area, "<Button-1>",
         #                 lambda e: self.gui.show_frame("load_board")) #TODO unbind this later
 
-        new_game_clickable_areas = [play_button_clickable_area, load_button_clickable_area,edit_board_clickable_area]
+        new_game_clickable_areas = [play_button_clickable_area, load_button_clickable_area, edit_board_clickable_area]
 
         return canvas, new_game_clickable_areas
 
@@ -1114,12 +1110,12 @@ class LoadFrame(DisplayManager):
     def __init__(self, gui):
         super().__init__(gui)
 
-        self.saved_game_slot_position = None
         self.saved_game_slot_positions = []
+        self.starting_pos_player_boxes = 340
         self.button_id = None
         self.offset = 0
+        self.load_button_offset = 0
         self.slot_item_ids = [] # Track item IDs for slots
-        self.load_button_x, self.load_button_y = self.gui.image_width // 2, 835
         # Load Game frame images
         self.load_frame_background = None
         self.saved_slot_image = tk.PhotoImage(file=os.path.join(assets_base_path, "load_frame/saved_game_slot.png"))
@@ -1138,21 +1134,22 @@ class LoadFrame(DisplayManager):
         x_save_pos = self.gui.image_width // 2
 
         self.saved_game_slot_positions = [
-            (x_save_pos, 370 + self.offset),
-            (x_save_pos, 450 + self.offset),
-            (x_save_pos, 530 + self.offset),
-            (x_save_pos, 610 + self.offset),
-            (x_save_pos, 690 + self.offset)
+            (x_save_pos, self.starting_pos_player_boxes + self.offset),
+            (x_save_pos, self.starting_pos_player_boxes + self.offset + 80 * 1),
+            (x_save_pos, self.starting_pos_player_boxes + self.offset + 80 * 2),
+            (x_save_pos, self.starting_pos_player_boxes + self.offset + 80 * 3),
+            (x_save_pos, self.starting_pos_player_boxes + self.offset + 80 * 4)
         ]
 
-        load_and_play_clickable_area, canvas, self.button_id = self.create_button(canvas, self.load_button_x, self.load_button_y, self.button_image)
+        self.load_button_x, self.load_button_y = self.gui.image_width // 2, 835 + self.load_button_offset
+        load_clickable_area, canvas, self.button_id = self.create_button(canvas, self.load_button_x, self.load_button_y, self.button_image)
 
         #hide the load_play image
         self.hide_load_image(canvas)
 
         #An array to store all the clickable area in an array
         back_button = canvas.create_image(50, 50, image=self.back_arrow_image)
-        load_game_clickable_area = [load_and_play_clickable_area,back_button]
+        load_game_clickable_area = [load_clickable_area, back_button]
 
         # Display save name and date
         self.show_save_file(canvas)
@@ -1160,11 +1157,10 @@ class LoadFrame(DisplayManager):
         # Display saved game slots
         for i in range(0, 5):
             slot_x, slot_y = self.saved_game_slot_positions[i]  # Unpack coordinates
-            clickable_area, canvas, slot_id = self.create_button(canvas, slot_x, slot_y, self.saved_slot_image, "center", "load_button")
+            clickable_area, canvas, slot_id = self.create_button(canvas, slot_x, slot_y, self.saved_slot_image)
             self.slot_item_ids.append(slot_id)
             load_game_clickable_area.append(clickable_area)
-            canvas.tag_bind(slot_id, "<Button-1>", lambda e, idx= i: self.select_saved_slot(canvas, idx))
-        canvas.lift("load_button")
+
 
         return canvas, load_game_clickable_area
 
@@ -1189,6 +1185,7 @@ class LoadFrame(DisplayManager):
         # Update only the selected slot with the highlight image
         canvas.itemconfig(self.slot_item_ids[idx], image=self.selected_save_slot_image)
         self.gui.selected_saved_game_slot = idx
+        self.show_load_image(canvas)
 
         return canvas
 
@@ -1216,8 +1213,8 @@ class LoadFrame(DisplayManager):
                 text2=canvas.create_text(self.gui.image_width * 19 // 30, self.saved_game_slot_positions[i][1], text=file_info[i][1], anchor="center",
                                    font=("Comic Sans MS", 16), fill="#000000")
                 self.display_text.append([text1,text2,file_info[i][0]])
-                canvas.tag_bind(text1, "<Button-1>", lambda e: None)
-                canvas.tag_bind(text2, "<Button-1>", lambda e: None)
+                canvas.tag_bind(text1, "<Button-1>", lambda e, idx= i: self.select_saved_slot(canvas, idx))
+                canvas.tag_bind(text2, "<Button-1>", lambda e, idx= i: self.select_saved_slot(canvas, idx))
 
 
 class LoadGameFrame(LoadFrame):
@@ -1226,7 +1223,7 @@ class LoadGameFrame(LoadFrame):
         self.button_image = tk.PhotoImage(file=os.path.join(assets_base_path, "load_frame/load_and_play_button.png"))
         self.load_frame_background = tk.PhotoImage(file=os.path.join(assets_base_path, "load_frame/load_game_frame_background.png"))
         self.save_base_path = os.path.join(os.path.dirname(__file__), "../../saves/games")
-
+        self.offset = 30
 
 class LoadBoardFrame(LoadFrame):
     def __init__(self, gui):
@@ -1235,11 +1232,12 @@ class LoadBoardFrame(LoadFrame):
         self.load_frame_background = tk.PhotoImage(file=os.path.join(assets_base_path, "load_frame/load_board_frame_background.png"))
         self.save_base_path = os.path.join(os.path.dirname(__file__), "../../saves/gameboard_setups")
         self.offset = 80 # adds space for an extra slot
+        self.load_button_offset = 20
 
     def create_default_board_button(self, canvas):
-        default_board_text = canvas.create_text(self.gui.image_width // 3, 370,
+        default_board_text = canvas.create_text(self.gui.image_width // 3, self.starting_pos_player_boxes,
                                                 text="Default Board", anchor="center", font=("Comic Sans MS", 16), fill="#000000")
-        default_board_button_clickable_area, canvas, default_board_button_id = self.create_button(canvas, self.gui.image_width // 2, 370, self.saved_slot_image)
+        default_board_button_clickable_area, canvas, default_board_button_id = self.create_button(canvas, self.gui.image_width // 2, self.starting_pos_player_boxes, self.saved_slot_image)
         self.slot_item_ids.append(default_board_button_id)
         canvas.tag_bind(default_board_text, "<Button-1>",
                         lambda e, idx=5: self.select_saved_slot(canvas, idx))
@@ -1699,12 +1697,12 @@ class EditBoardFrame(GameplayFrame):
         self.display_tile_info(canvas)
         self.bind_text(canvas)
 
-        edit_board_clickable_areas = [save_board_profile_click_area,apply_changes_click_area,back_click_area,reset_click_area]
+        edit_board_clickable_areas = [save_board_profile_click_area,apply_changes_click_area,back_click_area]
         return canvas, edit_board_clickable_areas
 
     def on_game_board_click(self, event):
         # Clear any previous entries
-        self.clear_active_widgets() #TODO check this later
+        self.clear_active_widgets()
         self.remove_entries()
 
         x = event.x
@@ -1882,7 +1880,7 @@ class EditBoardFrame(GameplayFrame):
 
         self.canvas.delete(self.price_image_id)
         self.canvas.delete(self.rent_image_id)
-        
+
     def process_user_input(self):
         # Clear any previous message
         self.clear_active_widgets()
@@ -1970,8 +1968,7 @@ class EditBoardFrame(GameplayFrame):
 
     # This method need to be chained once the <Apply Changes> and <Save Board Profile> button is clicked
     def verify_unique_property_names(self):
-        property_position = [1, 2, 4, 6, 7, 9, 11, 13, 14, 16, 17, 19]
-        property_names = [GameplayFrame.tile_info[i][1] for i in property_position]
+        property_names = [GameplayFrame.tile_info[i][1] for i in range(len(GameplayFrame.tile_info))]
         duplicates = [name for name in property_names if property_names.count(name) > 1 and name != ""]
 
         if duplicates:
