@@ -1691,6 +1691,7 @@ class EditBoardFrame(GameplayFrame):
         #canvas.tag_bind(reset_click_area, "<Button-1>", lambda e: self.remove_entries())
         canvas.tag_bind(confirm_click_area, "<Button-1>", lambda e: self.process_user_input())
         #canvas.tag_bind(save_board_profile_click_area, "<Button-1>", lambda e:  self.gui.show_frame("new_game")) #TODO go to save board frame
+        # canvas.tag_bind(apply_changes_click_area, "<Button-1>", lambda e: self.apply_changes())
 
         self.display_tile_info(canvas)
         self.bind_text(canvas)
@@ -1964,7 +1965,19 @@ class EditBoardFrame(GameplayFrame):
                 canvas.tag_bind(GameplayFrame.tile_info[i][6], '<Button-1>', self.on_game_board_click)
                 canvas.tag_bind(GameplayFrame.tile_info[i][7], '<Button-1>', self.on_game_board_click)
 
+    # This method need to be chained once the <Apply Changes> and <Save Board Profile> button is clicked
+    def verify_unique_property_names(self):
+        property_names = [GameplayFrame.tile_info[i][1] for i in range(len(GameplayFrame.tile_info))]
+        duplicates = [name for name in property_names if property_names.count(name) > 1 and name != ""]
 
+        if duplicates:
+            # Display error message
+            duplicate_message = f"Duplicate property names found: {', '.join(set(duplicates))}"
+            self.show_msg(self.current_frame, duplicate_message, idx=0, is_error=True,
+                          x_position=self.gui.image_width * 1 / 2 + 180, y_position=self.gui.image_height * 9 / 10 + 15)
+            return False
+
+        return True
 
 #------------------------------------# This is used for debugging, DONT DELETE #------------------------------------#
     # def show_coordinates(self, event):
