@@ -22,11 +22,11 @@ class DisplayManager:
 
     #gets image bounding box and sets that as clickable area
     @staticmethod
-    def create_button(canvas, x_pos, y_pos, button_image, anchor = "center"):
+    def create_button(canvas, x_pos, y_pos, button_image, anchor = "center", tag = "all_buttons"):
         image_id = canvas.create_image(x_pos, y_pos, anchor= anchor, image=button_image)
         click_coords = canvas.bbox(image_id)
         button_click_area = canvas.create_rectangle(click_coords[0], click_coords[1], click_coords[2], click_coords[3],
-                                                    outline="", fill="")
+                                                    outline="", fill="", tags= tag)
         return button_click_area, canvas, image_id
 
     def clear_widgets_create_canvas_set_background(self, frame, background):
@@ -1150,15 +1150,17 @@ class LoadFrame(DisplayManager):
         back_button = canvas.create_image(50, 50, image=self.back_arrow_image)
         load_game_clickable_area = [load_and_play_clickable_area,back_button]
 
+        # Display save name and date
+        self.show_save_file(canvas)
+
         # Display saved game slots
         for i in range(0, 5):
             slot_x, slot_y = self.saved_game_slot_positions[i]  # Unpack coordinates
-            clickable_area, canvas, slot_id = self.create_button(canvas, slot_x, slot_y, self.saved_slot_image)
-
+            clickable_area, canvas, slot_id = self.create_button(canvas, slot_x, slot_y, self.saved_slot_image, "center", "load_button")
             self.slot_item_ids.append(slot_id)
             load_game_clickable_area.append(clickable_area)
-
-        self.show_save_file(canvas)
+            canvas.tag_bind(slot_id, "<Button-1>", lambda e, idx= i: self.select_saved_slot(canvas, idx))
+        canvas.lift("load_button")
 
         return canvas, load_game_clickable_area
 
@@ -1198,9 +1200,10 @@ class LoadFrame(DisplayManager):
 
         file_info = []
         for filename in os.listdir(self.save_base_path):
+            load_name = filename.replace(".json", "")
             last_modified_time = os.path.getmtime(os.path.join(self.save_base_path, filename))
             last_modified_time_str = time.ctime(last_modified_time)
-            file_info.append((filename, last_modified_time_str))
+            file_info.append((load_name, last_modified_time_str))
 
         for i in range(5):
             if i < len(file_info):
@@ -1209,10 +1212,8 @@ class LoadFrame(DisplayManager):
                 text2=canvas.create_text(self.gui.image_width * 19 // 30, self.saved_game_slot_positions[i][1], text=file_info[i][1], anchor="center",
                                    font=("Comic Sans MS", 16), fill="#000000")
                 self.display_text.append([text1,text2,file_info[i][0]])
-                canvas.tag_bind(text1, "<Button-1>",
-                                lambda e, idx=i: self.select_saved_slot(canvas, idx))
-                canvas.tag_bind(text2, "<Button-1>",
-                                lambda e, idx=i: self.select_saved_slot(canvas, idx))
+                canvas.tag_bind(text1, "<Button-1>", lambda e: None)
+                canvas.tag_bind(text2, "<Button-1>", lambda e: None)
 
 
 class LoadGameFrame(LoadFrame):
@@ -1232,9 +1233,9 @@ class LoadBoardFrame(LoadFrame):
         self.offset = 80 # adds space for an extra slot
 
     def create_default_board_button(self, canvas):
-        default_board_button_clickable_area, canvas, default_board_button_id = self.create_button(canvas, self.gui.image_width // 2, 370, self.saved_slot_image)
         default_board_text = canvas.create_text(self.gui.image_width // 3, 370,
                                                 text="Default Board", anchor="center", font=("Comic Sans MS", 16), fill="#000000")
+        default_board_button_clickable_area, canvas, default_board_button_id = self.create_button(canvas, self.gui.image_width // 2, 370, self.saved_slot_image)
         self.slot_item_ids.append(default_board_button_id)
         canvas.tag_bind(default_board_text, "<Button-1>",
                         lambda e, idx=5: self.select_saved_slot(canvas, idx))
@@ -1318,6 +1319,9 @@ class SaveFrame(DisplayManager):
 
         #canvas.tag_bind(home_button, "<Button-1>", lambda e: self.gui.show_frame("main_menu"))
 
+        # Display save files name and date
+        self.show_save_file(canvas)
+
         # Display saved game slots
         for i, slot_image in enumerate(self.save_slots):
             slot_x, slot_y = self.saved_game_slot_positions[i]  # Unpack coordinates
@@ -1326,7 +1330,6 @@ class SaveFrame(DisplayManager):
             self.slot_item_ids.append(slot_id)
             save_delete_click_area.append(clickable_area)
 
-        self.show_save_file(canvas)
 
         return canvas, save_delete_click_area  # return to GUI, and the Controller will do operations on it
 
@@ -1399,9 +1402,10 @@ class SaveFrame(DisplayManager):
 
         file_info = []
         for filename in os.listdir(self.save_base_path):
+            save_name = filename.replace(".json", "")
             last_modified_time = os.path.getmtime(os.path.join(self.save_base_path, filename))
             last_modified_time_str = time.ctime(last_modified_time)
-            file_info.append((filename, last_modified_time_str))
+            file_info.append((save_name, last_modified_time_str))
 
         for i in range(5):
             if i < len(file_info):
