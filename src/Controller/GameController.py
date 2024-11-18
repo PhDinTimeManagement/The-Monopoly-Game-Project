@@ -170,6 +170,9 @@ class GameController:
         self.gui.gameplay_frame.hide_yes_image(self.gui.game_canvas)
         # bind 'buy'
 
+    def hide_hint(self, hint_IDs):
+        self.gui.gameplay_frame.remove_hint(self.gui.game_canvas, hint_IDs)
+
     def hide_buy_hint(self):
         self.gui.gameplay_frame.hide_buy_hint(self.gui.game_canvas)
 
@@ -244,6 +247,11 @@ class GameController:
 
     def show_yes_buy_image(self):
         self.gui.gameplay_frame.show_yes_image(self.gui.game_canvas)  # show the buy(yes) image
+
+    def show_hint(self, hint):
+        canvas, hint_IDs = self.gui.gameplay_frame.show_hint(self.gui.game_canvas, hint)
+        self.gui.update()
+        self.gui.after(2000, self.hide_hint(hint_IDs))
 
     def show_buy_tile_hint(self):
         self.gui.gameplay_frame.show_buy_tile_hint(self.gui.game_canvas)
@@ -685,7 +693,9 @@ class GameController:
                     action = "not_buy"
             else:
                 action = "rent"
-            tile.player_landed(player_this_turn, action, Property.get_owner_obj(self.player_list, tile.get_owner()))
+            hint = tile.player_landed(player_this_turn, action, Property.get_owner_obj(self.player_list, tile.get_owner()))
+            if hint is not None:
+                self.show_hint(hint)
             self.unbind_yes_buy_button() #unbind and hide the yes_buy_button
             self.unbind_no_buy_button() #unbind and the hide the no_buy_button
             self.hide_buy_hint()
@@ -700,14 +710,16 @@ class GameController:
             tile.player_landed(player_this_turn, self.board.get_jail_tile())
             # TODO jail animation
         elif tile_type == "income_tax":
-            tile.player_landed(player_this_turn)
+            hint = tile.player_landed(player_this_turn)
+            self.show_hint(hint)
             # TODO tax animation
             pass
         elif tile_type == "free_parking":
             # TODO parking animation
             pass
-        else:
-            tile.player_landed(player_this_turn)
+        else: # chance
+            hint = tile.player_landed(player_this_turn)
+            self.show_hint(hint)
         self.update_all_game_info()
 
     """This function is called after pressing the 'Roll' button in the game window."""

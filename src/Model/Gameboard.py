@@ -121,15 +121,17 @@ class Property(Tile):
             rent_amount = player.get_current_money()  # if not gets all the player can give
         player.remove_money(self.get_rent())    # removes from the player total what is owed
         owner.add_money(rent_amount)  # all money available is added to the owner
-        message = f"{player.get_name()} payed {rent_amount} HKD to {owner.get_name()}"
+        message = f"You payed {rent_amount} HKD in rent"
         return player.get_current_money(), message   # current player amount is returned (only for testing)
 
     # noinspection PyMethodOverriding
     def player_landed(self, player, action, owner):
         if action == "buy":
             self.buy(player)
+            return None
         elif action == "rent":
-            self.pay_rent(player, owner)
+            void, message = self.pay_rent(player, owner)
+            return message
         else:
             return None
 
@@ -214,10 +216,12 @@ class Chance(Tile):
         if good_chance:
             amount = int(random.random() * 21) * 10
             player.add_money(amount)
+            hint = f"You won {amount} HDK"
         else:
             amount = int(random.random() * 31) * 10
             player.remove_money(amount)
-        return None
+            hint = f"You lost {amount} HDK"
+        return hint
 
 
 class IncomeTax(Tile):
@@ -241,7 +245,8 @@ class IncomeTax(Tile):
     def player_landed(self, player):
         tax_amount = self.calculate_tax(player)
         player.remove_money(tax_amount)
-        return None
+        hint = f"You payed {tax_amount} HKD in taxes"
+        return hint
 
 
 class FreeParking(Tile):

@@ -90,6 +90,7 @@ class GameplayFrame(DisplayManager):
         self.no_image = tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/no.png"))
         self.buy_tile_image = tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/buy_tile_hint.png"))
         self.insuff_balance_image = tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/insufficient_balance_hint.png"))
+        self.hint_box_image = tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/hint_box.png"))
         self.player_info_ID = []
 
         # Dice animation frames
@@ -201,7 +202,7 @@ class GameplayFrame(DisplayManager):
         self.no_y_pos = self.gui.image_height * 4 / 5 - 20
         self.board_center_x = self.gui.image_width * 2 / 7
         self.insuff_balance_y_pos = self.yes_y_pos
-        self.buy_hint_y_pos = self.insuff_balance_y_pos - 80
+        self.hint_y_pos = self.insuff_balance_y_pos - 80
 
         # Player INFO Coordinates
         self.starting_y_pos = 200
@@ -385,8 +386,20 @@ class GameplayFrame(DisplayManager):
     def save_quit(self):
         self.gui.show_frame("save_game")
 
+    def show_hint(self, canvas, hint):
+        hint_image_id = canvas.create_image(self.board_center_x, self.hint_y_pos, anchor="center",
+                                            image=self.hint_box_image, tags= "hint_box")
+        text_id = canvas.create_text(self.board_center_x, self.hint_y_pos, text=hint, font=("Comic Sans MS", 22, "bold"),
+                                     fill="#000000", tags="hint_box")
+        return canvas, [hint_image_id, text_id]
+
+    @staticmethod
+    def remove_hint(canvas, hint_IDs):
+        canvas.delete(hint_IDs[0])
+        canvas.delete(hint_IDs[1])
+
     def create_buy_tile_hint(self, canvas):
-        buy_tile_hint_image_id = canvas.create_image(self.board_center_x, self.buy_hint_y_pos, anchor="center",
+        buy_tile_hint_image_id = canvas.create_image(self.board_center_x, self.hint_y_pos, anchor="center",
                                                      image=self.buy_tile_image)
         return canvas, buy_tile_hint_image_id
 
@@ -581,7 +594,7 @@ class GameplayFrame(DisplayManager):
 #----------------Handles showing the button image in the canvas----------------#
 
     def show_buy_tile_hint(self, canvas):
-        canvas.coords(self.buy_hint_id, self.board_center_x, self.buy_hint_y_pos)
+        canvas.coords(self.buy_hint_id, self.board_center_x, self.hint_y_pos)
 
     def show_insuff_balance_hint(self, canvas):
         canvas.coords(self.insuff_balance_id, self.board_center_x, self.insuff_balance_y_pos)
