@@ -24,6 +24,9 @@ class GameController:
         self.click_var = tk.StringVar()
         self.new_name_frame = self.gui.new_game_frame
 
+        self.temp_tile_info = None
+        self.temp_color_info = None
+
         #store the function related to all the buttons to an array for better initialization in button_play
         self.function_array = [self.roll_dice,self.buy_button,self.no_buy_button]
 
@@ -31,8 +34,6 @@ class GameController:
         self.bind_play_and_edit_gameboard_buttons()
         # self.gui.new_game_canvas.tag_bind(self.gui.new_game_clickable_areas[0], "<Button-1>", lambda e: self.button_play(False))
         # self.gui.new_game_canvas.tag_bind(self.gui.new_game_clickable_areas[1], "<Button-1>", lambda e: self.new_game_load_board_button())
-
-        self.pass_gameboard_info_to_view()  #TODO is this necessary??
 
         #bind the load game button here
         self.bind_load_game()
@@ -188,6 +189,9 @@ class GameController:
     def hide_save_quit_image(self):
         self.gui.gameplay_frame.hide_save_quit_image(self.gui.game_canvas)
 
+    def unbind_edit_board_back_button(self):
+        self.gui.edit_board_canvas.tag_bind(self.gui.edit_board_click_areas[2], "<Button-1>")
+
     def unbind_load_board_button(self):
         self.hide_load_board_image()
         self.gui.load_board_canvas.tag_unbind(self.gui.load_board_click_areas[0],"<Button-1>")
@@ -248,10 +252,10 @@ class GameController:
     def show_yes_buy_image(self):
         self.gui.gameplay_frame.show_yes_image(self.gui.game_canvas)  # show the buy(yes) image
 
-    def show_hint(self, hint):
-        canvas, hint_IDs = self.gui.gameplay_frame.show_hint(self.gui.game_canvas, hint)
+    def show_hint(self, hint,msec,word_size):
+        canvas, hint_IDs = self.gui.gameplay_frame.show_hint(self.gui.game_canvas, hint,word_size)
         self.gui.update()
-        self.gui.after(2000, self.hide_hint(hint_IDs))
+        self.gui.after(msec, self.hide_hint(hint_IDs))
 
     def show_buy_tile_hint(self):
         self.gui.gameplay_frame.show_buy_tile_hint(self.gui.game_canvas)
@@ -353,6 +357,9 @@ class GameController:
     def bind_apply_changes_button(self):
         self.gui.edit_board_canvas.tag_bind(self.gui.edit_board_click_areas[1], "<Button-1>",
                                             lambda e: self.apply_changes_button())
+    def bind_reset_board(self):
+        self.gui.edit_board_canvas.tag_bind(self.gui.edit_board_click_areas[3], "<Button-1>",
+                                            lambda e: self.reset_changes_button())
 
     def bind_save_board_profile_button(self):
         self.gui.edit_board_canvas.tag_bind(self.gui.edit_board_click_areas[0], "<Button-1>",
@@ -388,10 +395,11 @@ class GameController:
     def edit_back_button(self):
         # self.board =  Gameboard()
         # self.pass_gameboard_info_to_view() #pass all the modifications of board after the gameplay_frame is reinitialized
+        self.reset_gameboard_info()
         self.gui.show_frame("new_game")
 
     def apply_changes_button(self):
-        if self.gui.edit_board_frame.handle_save_board_click():
+        if self.gui.edit_board_frame.verify_unique_property_names():
             self.gui.edit_board_frame.load_changes_in_gameboard(self.board)
             self.gui.show_frame("new_game")
 
@@ -402,6 +410,22 @@ class GameController:
         self.bind_back_to_edit_board_button()
         self.bind_home_button_in_save_board()
         self.gui.show_frame("save_board")
+
+    #re-set info of the gameboard
+    def reset_gameboard_info(self):
+        GameplayFrame.tile_info = [row[:] for row in self.temp_tile_info]
+        GameplayFrame.tile_colors = [row[:] for row in self.temp_color_info]
+        EditBoardFrame.load_changes_in_gameboard(self.board)
+
+    #reset the board to the ones that is loaded from load board, discard all changes
+    def reset_changes_button(self):
+        self.reset_gameboard_info()
+
+        #Intentially put here so that the page does not transition from the same page to the same one. Prevent buttons malfunctioning
+        self.gui.show_frame("new_game")
+
+        self.edit_board_function() #This line "refreshes" the edit board page
+
 
     #------------ Save Board Button --------------#
 
@@ -435,9 +459,10 @@ class GameController:
             EditBoardFrame.load_changes_in_gameboard(self.board)
             self.save_gameboard(user_input) #save it to the folder
             self.gui.enter_file_name_frame.clear_all_info()
-            self.gui.save_board_frame.save_board_data(self.gui.save_board_canvas) #go back to save game frame and show the name
             self.board = copy.deepcopy(last_loaded_board) # saving a board layout doesn't necessarily mean you want to load it and play with it, this addresses that issue
             self.pass_gameboard_info_to_view()
+            self.gui.save_board_frame.delete_data(self.gui.save_board_canvas) #Delete the file selected in the selected file slot
+            self.gui.save_board_frame.save_board_data(self.gui.save_board_canvas) #go back to save board frame and show the name
         else:
             self.gui.enter_file_name_frame.wrong_save_name(self.gui.enter_name_canvas)
 
@@ -544,18 +569,20 @@ class GameController:
 
     #Bind the edit board button with its functions
     def edit_board_function(self):
-        self.pass_gameboard_info_to_view()
+        self.pass_gameboard_info_to_view() #pass the board info to view first before copying the info for backup
+        # make a copy of the loaded gameboard for resetting
+        self.temp_tile_info = [row[:] for row in GameplayFrame.tile_info]
+        self.temp_color_info = [row[:] for row in GameplayFrame.tile_colors]
         self.gui.show_edit_board_frame()
         self.bind_edit_board_back_button()
         self.bind_save_board_profile_button()
         self.bind_apply_changes_button()
+        self.bind_reset_board()
         self.gui.show_frame("edit_board")
 
     #Bind the load game board button to initialize the clicks in the load gameboard frame
     def new_game_load_board_button(self):
         self.gui.load_board_frame.show_save_file(self.gui.load_board_canvas)
-        #show edit board frame on click
-        self.gui.show_edit_board_frame()
         self.gui.show_frame("load_board")
         self.bind_load_board_back_button()
         #bind all the slots in load board page
@@ -695,7 +722,7 @@ class GameController:
                 action = "rent"
             hint = tile.player_landed(player_this_turn, action, Property.get_owner_obj(self.player_list, tile.get_owner()))
             if hint is not None:
-                self.show_hint(hint)
+                self.show_hint(hint,2000,22)
             self.unbind_yes_buy_button() #unbind and hide the yes_buy_button
             self.unbind_no_buy_button() #unbind and the hide the no_buy_button
             self.hide_buy_hint()
@@ -711,7 +738,7 @@ class GameController:
             # TODO jail animation
         elif tile_type == "income_tax":
             hint = tile.player_landed(player_this_turn)
-            self.show_hint(hint)
+            self.show_hint(hint,2000,22)
             # TODO tax animation
             pass
         elif tile_type == "free_parking":
@@ -719,7 +746,7 @@ class GameController:
             pass
         else: # chance
             hint = tile.player_landed(player_this_turn)
-            self.show_hint(hint)
+            self.show_hint(hint,2000,22)
         self.update_all_game_info()
 
     """This function is called after pressing the 'Roll' button in the game window."""
@@ -822,38 +849,47 @@ class GameController:
             self.gui.game_canvas,x_position, y_position,dice_results,
             )
 
-        self.gui.after(3250, lambda: self.update_all_game_info())
+        #for better display sequence and smoothness. Will not update player status when in jail third round and before the fine is paid
+        if action[0] != "show_pay_fine" :
+            self.gui.after(3250, lambda: self.update_all_game_info())
 
         self.gui.after(3250, lambda: on_jail_dice_roll())
 
         def on_jail_dice_roll():
-            message = f"Out of Jail.\nPlayer move {action[2] + action[3]}"
+            message = f"Out of Jail. Player move {action[2] + action[3]}"
             if action[0] == "show_pay_fine":
                 self.bind_pay_fine_button(player_this_turn) #bind and show the pay_fine button
                 self.gui.wait_variable(self.click_var)  # wait for pay fine button to be clicked
                 #TODO display fine paid
                 if action[1] is not None:
                     print("Fine paid. Move on")
-                    self.gui.gameplay_frame.message_for_jail_roll(self.gui.game_canvas, message, y_position,
-                                                                  sum(action[2:4]))
+                    self.show_hint(message,1000,22)
+                    #self.gui.gameplay_frame.message_for_jail_roll(self.gui.game_canvas, message, y_position,
+                                                                  #sum(action[2:4]))
+                    self.gui.gameplay_frame.player_movement(self.gui.game_canvas,
+                                                            self.player_list.index(player_this_turn), 5,
+                                                            action[1].get_tile_position())
+                    print("Land and complete")
                     self.land_and_complete_round(action[1], player_this_turn)
                     # TODO <show moving animation>
                 else:
-                    message = None #player broke by paying fine
-                    self.gui.gameplay_frame.message_for_jail_roll(self.gui.game_canvas, message, y_position,
-                                                                  sum(action[2:4]))
+                    message = f"Player rolled {action[2] + action[3]}" #player broke by paying fine
+                    self.show_hint(message,1000,22)
+                    #self.gui.gameplay_frame.message_for_jail_roll(self.gui.game_canvas, message, y_position,
+                                                                  #sum(action[2:4]))
             elif action[0] == "move":
                 # TODO <show animation for player moving>
                 print("Out of Jail, Move on")
                 self.gui.gameplay_frame.player_movement(self.gui.game_canvas, self.player_list.index(player_this_turn), 5, action[1].get_tile_position())
-                self.gui.gameplay_frame.message_for_jail_roll(self.gui.game_canvas, message, y_position,
-                                                              sum(action[2:4]))
+                self.show_hint(message,1000,22)
+                #self.gui.gameplay_frame.message_for_jail_roll(self.gui.game_canvas, message, y_position,
+                                                              #sum(action[2:4]))
                 self.land_and_complete_round(action[1], player_this_turn)
             elif action[0] == 'not_move':
                 message = "Stay in Jail"
-                self.gui.gameplay_frame.message_for_jail_roll(self.gui.game_canvas, message, y_position,
-                                                              sum(action[2:4]))
-
+                self.show_hint(message,1000,22)
+                #self.gui.gameplay_frame.message_for_jail_roll(self.gui.game_canvas, message, y_position,
+                                                              #sum(action[2:4]))
 
             self.update_all_game_info()
             self.gui.after(50,lambda:self.determine_next_round(player_this_turn))
@@ -862,6 +898,8 @@ class GameController:
     def pay_fine(self, player_this_turn):
         # pay_fine_logic
         GameLogic.pay_fine(self.game_logic, player_this_turn)
+        pay_fine_message = f"Pay Fine {self.game_logic.get_fine()} HKD"
+        self.show_hint(pay_fine_message, 1000, 22)
         self.update_all_game_info()
         self.click_var.set("pay_fine")
         print("Paying fine")
@@ -883,6 +921,8 @@ class GameController:
         if self.input_handler.valid_current_game_name(user_input): #if the name is valid
             self.save_game(user_input) #save it to the folder
             self.gui.enter_file_name_frame.clear_all_info()
+            self.gui.save_game_frame.delete_data(
+                self.gui.save_game_canvas)  # Delete the file selected in the selected file slot
             self.gui.save_game_frame.save_data(self.gui.save_game_canvas) #go back to save game frame and show the name
         else:
             self.gui.enter_file_name_frame.wrong_save_name(self.gui.enter_name_canvas)

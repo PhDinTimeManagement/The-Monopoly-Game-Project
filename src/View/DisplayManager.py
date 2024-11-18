@@ -65,7 +65,11 @@ class DisplayManager:
     # DO NOT DELETE
     def clear_active_widgets(self):
         for widget in self.active_widgets:
-            widget.place_forget()
+            try:
+                if widget.winfo_ismapped():  # Check if the widget is currently visible
+                    widget.place_forget()  # Hide the widget
+            except tk.TclError:
+                continue
         self.active_widgets.clear()  # Reset active widgets list
 
 # noinspection DuplicatedCode
@@ -306,18 +310,18 @@ class GameplayFrame(DisplayManager):
 
         display_two_rolls(0)
 
-    def message_for_jail_roll(self,canvas,message,roll_dice_y_pos,total_dice):
-        # Display the total dice result on the canvas
-        print("printing status")
-        canvas.create_text(
-            0.28458 * self.gui.image_width, roll_dice_y_pos + 30,
-            text=f"Total Dice is {total_dice}. {message}",
-            font=("Comic Sans MS", 22, "bold"),
-            fill="#000000",
-            tags="total_dice_result_text",
-            )
-        self.gui.after(1000, lambda: canvas.delete("total_dice_result_text"))
-        #self.gui.after(2000, lambda: time.sleep(2))
+    # def message_for_jail_roll(self,canvas,message,roll_dice_y_pos,total_dice):
+    #     # Display the total dice result on the canvas
+    #     print("printing status")
+    #     canvas.create_text(
+    #         0.28458 * self.gui.image_width, roll_dice_y_pos + 30,
+    #         text=f"Total Dice is {total_dice}. {message}",
+    #         font=("Comic Sans MS", 22, "bold"),
+    #         fill="#000000",
+    #         tags="total_dice_result_text",
+    #         )
+    #     self.gui.after(1000, lambda: canvas.delete("total_dice_result_text"))
+    #     #self.gui.after(2000, lambda: time.sleep(2))
 
 
 
@@ -386,10 +390,10 @@ class GameplayFrame(DisplayManager):
     def save_quit(self):
         self.gui.show_frame("save_game")
 
-    def show_hint(self, canvas, hint):
+    def show_hint(self, canvas, hint,word_size):
         hint_image_id = canvas.create_image(self.board_center_x, self.hint_y_pos, anchor="center",
                                             image=self.hint_box_image, tags= "hint_box")
-        text_id = canvas.create_text(self.board_center_x, self.hint_y_pos, text=hint, font=("Comic Sans MS", 22, "bold"),
+        text_id = canvas.create_text(self.board_center_x, self.hint_y_pos, text=hint, font=("Comic Sans MS", word_size, "bold"),
                                      fill="#000000", tags="hint_box")
         return canvas, [hint_image_id, text_id]
 
@@ -1730,7 +1734,7 @@ class EditBoardFrame(GameplayFrame):
         self.display_tile_info(canvas)
         self.bind_text(canvas)
 
-        edit_board_clickable_areas = [save_board_profile_click_area,apply_changes_click_area,back_click_area]
+        edit_board_clickable_areas = [save_board_profile_click_area,apply_changes_click_area,back_click_area,reset_click_area]
         return canvas, edit_board_clickable_areas
 
     def on_game_board_click(self, event):
@@ -2001,7 +2005,8 @@ class EditBoardFrame(GameplayFrame):
 
     # This method need to be chained once the <Apply Changes> and <Save Board Profile> button is clicked
     def verify_unique_property_names(self):
-        property_names = [GameplayFrame.tile_info[i][1] for i in range(len(GameplayFrame.tile_info))]
+        property_position = [1, 2, 4, 6, 7, 9, 11, 13, 14, 16, 17, 19]
+        property_names = [GameplayFrame.tile_info[i][1] for i in property_position]
         duplicates = [name for name in property_names if property_names.count(name) > 1 and name != ""]
 
         if duplicates:
