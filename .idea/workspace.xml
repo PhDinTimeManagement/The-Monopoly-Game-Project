@@ -332,6 +332,7 @@
       <workItem from="1731778803708" duration="1746000" />
       <workItem from="1731841565392" duration="7132000" />
       <workItem from="1731854392437" duration="8923000" />
+      <workItem from="1731899100240" duration="358000" />
     </task>
     <task id="LOCAL-00001" summary="gameboard functions">
       <created>1729259402457</created>
@@ -388,14 +389,6 @@
       <option name="presentableId" value="LOCAL-00008" />
       <option name="project" value="LOCAL" />
       <updated>1730113203511</updated>
-    </task>
-    <task id="LOCAL-00022" summary="restored GameController">
-      <option name="closed" value="true" />
-      <created>1730997953416</created>
-      <option name="number" value="00022" />
-      <option name="presentableId" value="LOCAL-00022" />
-      <option name="project" value="LOCAL" />
-      <updated>1730997953416</updated>
     </task>
     <task id="LOCAL-00023" summary="displayed info on board">
       <option name="closed" value="true" />
@@ -717,7 +710,15 @@
       <option name="project" value="LOCAL" />
       <updated>1731870873697</updated>
     </task>
-    <option name="localTasksCounter" value="63" />
+    <task id="LOCAL-00063" summary="maintenance">
+      <option name="closed" value="true" />
+      <created>1731899361931</created>
+      <option name="number" value="00063" />
+      <option name="presentableId" value="LOCAL-00063" />
+      <option name="project" value="LOCAL" />
+      <updated>1731899361931</updated>
+    </task>
+    <option name="localTasksCounter" value="64" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -784,11 +785,6 @@
           <url>file://$PROJECT_DIR$/Source Code/Source Code/Model/Gameboard.py</url>
           <line>33</line>
           <option name="timeStamp" value="1" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/src/View/DisplayManager.py</url>
-          <line>1186</line>
-          <option name="timeStamp" value="89" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
