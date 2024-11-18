@@ -1425,7 +1425,7 @@ class SaveFrame(DisplayManager):
 
     def delete_data(self, canvas):
         if self.gui.selected_saved_game_slot < len(self.display_text):
-            filepath = os.path.join(self.save_base_path, self.display_text[self.gui.selected_saved_game_slot][2])
+            filepath = os.path.join(self.save_base_path, self.display_text[self.gui.selected_saved_game_slot][2]+".json")
             os.remove(filepath)
         self.show_save_file(canvas)
 
