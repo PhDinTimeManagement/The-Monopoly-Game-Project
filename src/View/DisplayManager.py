@@ -88,6 +88,8 @@ class GameplayFrame(DisplayManager):
         self.pay_fine_image = tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/pay_fine.png"))
         self.yes_image = tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/yes.png"))
         self.no_image = tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/no.png"))
+        self.buy_tile_image = tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/buy_tile_hint.png"))
+        self.insuff_balance_image = tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/insufficient_balance_hint.png"))
         self.player_info_ID = []
 
         # Dice animation frames
@@ -197,6 +199,9 @@ class GameplayFrame(DisplayManager):
         self.yes_y_pos = self.gui.image_height * 4 / 5 - 20
         self.no_x_pos = self.gui.image_width * 3 / 14
         self.no_y_pos = self.gui.image_height * 4 / 5 - 20
+        self.board_center_x = self.gui.image_width * 2 / 7
+        self.insuff_balance_y_pos = self.yes_y_pos
+        self.buy_hint_y_pos = self.insuff_balance_y_pos - 80
 
         # Player INFO Coordinates
         self.starting_y_pos = 200
@@ -380,6 +385,16 @@ class GameplayFrame(DisplayManager):
     def save_quit(self):
         self.gui.show_frame("save_game")
 
+    def create_buy_tile_hint(self, canvas):
+        buy_tile_hint_image_id = canvas.create_image(self.board_center_x, self.buy_hint_y_pos, anchor="center",
+                                                     image=self.buy_tile_image)
+        return canvas, buy_tile_hint_image_id
+
+    def create_insuff_balance_hint(self, canvas):
+        insuff_balance_hint_image_id = canvas.create_image(self.board_center_x, self.insuff_balance_y_pos, anchor="center",
+                                                           image=self.insuff_balance_image)
+        return canvas, insuff_balance_hint_image_id
+
     def show_pay_fine_button(self, canvas):
         pay_fine_click_area, canvas, pay_fine_image_id = self.create_button(canvas, self.pay_fine_x_pos, self.pay_fine_y_pos, self.pay_fine_image)
         return pay_fine_click_area, canvas, pay_fine_image_id
@@ -447,13 +462,6 @@ class GameplayFrame(DisplayManager):
         canvas.create_text(self.roll_dice_x_pos, self.half_screen_y + 50 , anchor="center", text=winner_message,
                            font= ("Comic Sans MS", 20, "bold"), fill="#000000", justify="center")
 
-    def show_not_enough_money(self, canvas):
-        self.no_money_ID = canvas.create_text(self.yes_x_pos, self.yes_y_pos, anchor="center", text="NOT ENOUGH\nMONEY",
-                                              font= ("Comic Sans MS", 20, "bold"), fill="#000000", justify="center")
-
-    def delete_not_enough_money(self, canvas):
-        canvas.delete(self.no_money_ID)
-
     def create_player_placeholders(self, canvas):
         for i in range(0, len(self.player_info)):
             placeholder_id = canvas.create_image(self.placeholder_coords[i][0], self.placeholder_coords[i][1], image= self.player_image[i])
@@ -488,13 +496,13 @@ class GameplayFrame(DisplayManager):
                 self.player_move_vertical(canvas, placeholder_id, "up")
             elif 10 <= curr_pos < 15:
                 self.player_move_horizontal(canvas, placeholder_id, "right")
-            elif 15 <= curr_pos < 19:
+            elif 15 <= curr_pos <= 19:
                 self.player_move_vertical(canvas, placeholder_id, "down")
             else:
                 index = self.player_image_ID.index(placeholder_id)
                 canvas.coords(placeholder_id, self.placeholder_coords[index][0], self.placeholder_coords[index][1])
-                curr_pos = 0
-                final_pos -= 19
+                curr_pos = -1
+                final_pos -= 20
             curr_pos += 1
 
         if final_pos == 15: #go to jail tile, moves player to jail
@@ -549,6 +557,12 @@ class GameplayFrame(DisplayManager):
             self.player_info_ID.append(tot_prop_id)
 
     #----------Handles hiding the button IMAGE in the canvas----------#
+    def hide_buy_hint(self, canvas):
+        canvas.coords(self.buy_hint_id, -100, -100)
+
+    def hide_insuff_balance_hint(self, canvas):
+        canvas.coords(self.insuff_balance_id, -100, -100)
+
     def hide_yes_image(self,canvas):
         canvas.coords(self.yes_image_id,-100,-100)
 
@@ -564,10 +578,13 @@ class GameplayFrame(DisplayManager):
     def hide_save_quit_image(self,canvas):
         canvas.coords(self.save_quit_image_id,-100,-100)
 
-    #------------------------------------------------------------------#
+#----------------Handles showing the button image in the canvas----------------#
 
+    def show_buy_tile_hint(self, canvas):
+        canvas.coords(self.buy_hint_id, self.board_center_x, self.buy_hint_y_pos)
 
-    #----------Handles showing the button image in the canvas----------#
+    def show_insuff_balance_hint(self, canvas):
+        canvas.coords(self.insuff_balance_id, self.board_center_x, self.insuff_balance_y_pos)
 
     def show_yes_image(self,canvas):
         canvas.coords(self.yes_image_id,self.yes_x_pos, self.yes_y_pos)
@@ -732,6 +749,9 @@ class GameplayFrame(DisplayManager):
         #return the id so that image can be hidden and shown
         yes_click_area,canvas, self.yes_image_id = self.show_yes_button(canvas)
         no_click_area, canvas, self.no_image_id = self.show_no_button(canvas)
+
+        canvas, self.buy_hint_id = self.create_buy_tile_hint(canvas)
+        canvas, self.insuff_balance_id = self.create_insuff_balance_hint(canvas)
 
         click_area = [roll_dice_click_area, yes_click_area, no_click_area, pay_fine_click_area, save_quit_click_area] #TODO place other click area for other buttons
         return canvas, click_area

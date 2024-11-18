@@ -170,6 +170,12 @@ class GameController:
         self.gui.gameplay_frame.hide_yes_image(self.gui.game_canvas)
         # bind 'buy'
 
+    def hide_buy_hint(self):
+        self.gui.gameplay_frame.hide_buy_hint(self.gui.game_canvas)
+
+    def hide_insuff_balance_hint(self):
+        self.gui.gameplay_frame.hide_insuff_balance_hint(self.gui.game_canvas)
+
     def hide_no_buy_image(self):
         self.gui.gameplay_frame.hide_no_image(self.gui.game_canvas)
 
@@ -238,6 +244,12 @@ class GameController:
 
     def show_yes_buy_image(self):
         self.gui.gameplay_frame.show_yes_image(self.gui.game_canvas)  # show the buy(yes) image
+
+    def show_buy_tile_hint(self):
+        self.gui.gameplay_frame.show_buy_tile_hint(self.gui.game_canvas)
+
+    def show_insuff_balance_hint(self):
+        self.gui.gameplay_frame.show_insuff_balance_hint(self.gui.game_canvas)
 
     def show_no_buy_image(self):
         self.gui.gameplay_frame.show_no_image(self.gui.game_canvas)  # show the no_buy(no) image
@@ -580,6 +592,8 @@ class GameController:
             self.hide_yes_buy_image()
             self.hide_no_buy_image()
             self.hide_pay_fine_image()
+            self.hide_buy_hint()
+            self.hide_insuff_balance_hint()
             # bind the buttons
             self.bind_save_quit_button()
 
@@ -652,11 +666,13 @@ class GameController:
             if tile.get_owner() is None:
                 can_buy = tile.can_buy(player_this_turn)
                 print("buy(Yes) or not buy(No)")
-                self.gui.after(1250, lambda: self.bind_no_buy_button()) #show and bind the no(buy) button
+                self.gui.after(1250, lambda: self.show_buy_tile_hint())
                 if can_buy:
                     self.gui.after(1250, lambda: self.bind_yes_buy_button()) #show and bind the yes(buy) button
+                    self.gui.after(1250, lambda: self.bind_no_buy_button())  # show and bind the no(buy) button
                 else:
-                    self.gui.after(1250, lambda: self.gui.gameplay_frame.show_not_enough_money(self.gui.game_canvas))
+                    self.gui.after(1250, lambda: self.show_insuff_balance_hint())
+                    self.gui.after(2500, lambda: self.no_buy_button())
                 self.gui.wait_variable(self.click_var)  # waits for the click_var to update before allowing execution
                 if self.click_var.get() == "buy":
                     if can_buy:
@@ -667,12 +683,13 @@ class GameController:
                         action = "not_buy"
                 elif self.click_var.get() == "not_buy":
                     action = "not_buy"
-                self.gui.gameplay_frame.delete_not_enough_money(self.gui.game_canvas)
             else:
                 action = "rent"
             tile.player_landed(player_this_turn, action, Property.get_owner_obj(self.player_list, tile.get_owner()))
             self.unbind_yes_buy_button() #unbind and hide the yes_buy_button
             self.unbind_no_buy_button() #unbind and the hide the no_buy_button
+            self.hide_buy_hint()
+            self.hide_insuff_balance_hint()
         elif tile_type == "jail":
             # TODO update view just visiting
             pass
