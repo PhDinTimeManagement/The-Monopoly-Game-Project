@@ -404,12 +404,13 @@ class GameController:
             self.gui.show_frame("new_game")
 
     def save_board_profile_button(self):
-        for i,slots in enumerate(self.gui.save_board_click_areas[4:]):
-            self.gui.save_board_canvas.tag_bind(slots, "<Button-1>",
-                            lambda e, idx=i: self.select_saved_board_slot(self.gui.save_board_canvas, idx))
-        self.bind_back_to_edit_board_button()
-        self.bind_home_button_in_save_board()
-        self.gui.show_frame("save_board")
+        if self.gui.edit_board_frame.verify_unique_property_names():
+            for i,slots in enumerate(self.gui.save_board_click_areas[4:]):
+                self.gui.save_board_canvas.tag_bind(slots, "<Button-1>",
+                                lambda e, idx=i: self.select_saved_board_slot(self.gui.save_board_canvas, idx))
+            self.bind_back_to_edit_board_button()
+            self.bind_home_button_in_save_board()
+            self.gui.show_frame("save_board")
 
     #re-set info of the gameboard
     def reset_gameboard_info(self):

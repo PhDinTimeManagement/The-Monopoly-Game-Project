@@ -1,6 +1,7 @@
 import tkinter as tk
 import os
 import time
+import platform
 from tkinter import ttk
 
 # Base path for assets
@@ -299,10 +300,18 @@ class GameplayFrame(DisplayManager):
 
         def display_two_rolls(i):
             canvas.delete("total_dice_result_text")
+            system_name = platform.system()
+            if system_name == "Windows":
+                time_to_show_dice = 500
+            elif system_name == "Darwin":
+                time_to_show_dice = 700
+            else:
+                time_to_show_dice = 500
+
             if i < 2:
                 during_roll(0)
 
-                self.gui.after(500, lambda: show_dice_result(i))
+                self.gui.after(time_to_show_dice, lambda: show_dice_result(i))
 
                 self.gui.after(1500, lambda: display_two_rolls(i+1)) #wait 1 second before the second roll
             else:
@@ -2011,9 +2020,10 @@ class EditBoardFrame(GameplayFrame):
 
         if duplicates:
             # Display error message
-            duplicate_message = f"Duplicate property names found: {', '.join(set(duplicates))}"
+            duplicate_message = f"* Duplicate property names found: {', '.join(set(duplicates))}"
             self.show_msg(self.current_frame, duplicate_message, idx=0, is_error=True,
-                          x_position=self.gui.image_width * 1 / 2 + 180, y_position=self.gui.image_height * 9 / 10 + 15)
+                          x_position=self.gui.image_width * 30 / 1512 + 138, y_position=self.gui.image_height * 148 / 982 + 138)
+
             return False
 
         return True
