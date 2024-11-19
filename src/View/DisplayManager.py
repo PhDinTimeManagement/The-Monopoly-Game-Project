@@ -1271,6 +1271,7 @@ class LoadGameFrame(LoadFrame):
         self.save_base_path = os.path.join(os.path.dirname(__file__), "../../saves/games")
         self.offset = 30
 
+
 class LoadBoardFrame(LoadFrame):
     def __init__(self, gui):
         super().__init__(gui)
