@@ -45,6 +45,7 @@ class GameController:
         self.gui.new_game_canvas.tag_bind(self.gui.new_game_clickable_areas[1], "<Button-1>",
                                           lambda e: self.new_game_load_board_button())
         self.bind_edit_board_button()
+
     #To clear all the data when loading ot starting a new game
     def clear_all_data(self):
         self.player_list.clear()
@@ -189,8 +190,8 @@ class GameController:
     def hide_save_quit_image(self):
         self.gui.gameplay_frame.hide_save_quit_image(self.gui.game_canvas)
 
-    def unbind_edit_board_back_button(self):
-        self.gui.edit_board_canvas.tag_bind(self.gui.edit_board_click_areas[2], "<Button-1>")
+    # def unbind_edit_board_back_button(self):
+    #     self.gui.edit_board_canvas.tag_bind(self.gui.edit_board_click_areas[2], "<Button-1>")
 
     def unbind_load_board_button(self):
         self.hide_load_board_image()
@@ -216,9 +217,9 @@ class GameController:
         self.hide_pay_fine_image()
         self.gui.game_canvas.tag_unbind(self.gui.game_frame_click_areas[3], "<Button-1>")
 
-    def unbind_in_jail_roll_button(self):
-        self.hide_roll_image()
-        self.gui.game_canvas.tag_unbind(self.gui.game_frame_click_areas[0], "<Button-1>")
+    # def unbind_in_jail_roll_button(self):
+    #     self.hide_roll_image()
+    #     self.gui.game_canvas.tag_unbind(self.gui.game_frame_click_areas[0], "<Button-1>")
 
     def unbind_save_quit_button(self):
         self.hide_save_quit_image()
@@ -230,8 +231,8 @@ class GameController:
     def unbind_delete_button(self):
         self.gui.save_game_canvas.tag_unbind(self.gui.save_delete_click_areas[1], "<Button-1>")
 
-    def unbind_delete_board_button(self):
-        self.gui.save_board_canvas.tag_bind(self.gui.save_board_click_areas[1], "<Button-1>")
+    # def unbind_delete_board_button(self):
+    #     self.gui.save_board_canvas.tag_bind(self.gui.save_board_click_areas[1], "<Button-1>")
 
     def unbind_save_board_button(self):
         self.gui.save_board_canvas.tag_bind(self.gui.save_board_click_areas[0], "<Button-1>")
@@ -589,6 +590,8 @@ class GameController:
         #bind all the slots in load board page
         for i, slots in enumerate(self.gui.load_board_click_areas[2:]):
             self.gui.load_board_canvas.tag_bind(slots, "<Button-1>",lambda e, idx=i: self.select_load_board_slot(idx))
+
+
     """ This function is called after the 'Play' button is clicked in the game """
 
     def button_play(self, from_load):
@@ -640,12 +643,11 @@ class GameController:
                     self.bind_pay_fine_button(player_this_turn)
             else:
                 self.bind_roll_button(player_this_turn)
-            # TODO <display highlight player_this_turn ONLY.>
             self.gui.new_game_frame.clear_all_player_data(
                 self.gui.new_game_canvas)  # clear all the player names in the frame and all the hints
             # self.gui.new_game_frame.
 
-    # ------------ Game Play Frame Button ----------------#
+    # ------------ Game Play Frame Button ----------------# TODO right now
 
     #logic handling when the save_quit_button is clicked
     def save_quit_button(self):
@@ -684,7 +686,6 @@ class GameController:
             else:
                 print(action[1].get_name(), "is in Jail, and have no money to pay fine") #TODO del
         elif action[0] == "pay_fine_and_jail_roll":
-            # TODO <display jail_roll and pay fine>
             self.bind_in_jail_roll_button(action[1])
             self.bind_pay_fine_button(action[1])
             print("\nNext round, click roll\n")  # TODO del later
@@ -729,21 +730,16 @@ class GameController:
             self.hide_buy_hint()
             self.hide_insuff_balance_hint()
         elif tile_type == "jail":
-            # TODO update view just visiting
             pass
         elif tile_type == "go":
-            # TODO update view
             pass
         elif tile_type == "go_to_jail":
             tile.player_landed(player_this_turn, self.board.get_jail_tile())
-            # TODO jail animation
         elif tile_type == "income_tax":
             hint = tile.player_landed(player_this_turn)
             self.show_hint(hint,2000,22)
-            # TODO tax animation
             pass
         elif tile_type == "free_parking":
-            # TODO parking animation
             pass
         else: # chance
             hint = tile.player_landed(player_this_turn)
@@ -861,6 +857,7 @@ class GameController:
             if action[0] == "show_pay_fine":
                 self.bind_pay_fine_button(player_this_turn) #bind and show the pay_fine button
                 self.gui.wait_variable(self.click_var)  # wait for pay fine button to be clicked
+                if self.click_var.get() == "test_pay_fine": GameLogic.pay_fine(self.game_logic, player_this_turn) #for unit testing
                 #TODO display fine paid
                 if action[1] is not None:
                     print("Fine paid. Move on")
@@ -897,7 +894,6 @@ class GameController:
 
 
     def pay_fine(self, player_this_turn):
-        # pay_fine_logic
         GameLogic.pay_fine(self.game_logic, player_this_turn)
         pay_fine_message = f"Pay Fine {self.game_logic.get_fine()} HKD"
         self.show_hint(pay_fine_message, 1000, 22)
@@ -916,7 +912,7 @@ class GameController:
         print("Not Buying")
         # TODO <Show did not buy property>
 
-    # ------------ Enter File Name Frame Button ----------------#
+    # ------------ Enter File Name Frame Button ----------------# TODO
     def show_save_game(self):
         user_input = self.gui.enter_file_name_frame.name_entry.get().strip() #get the entry in the text box
         if self.input_handler.valid_current_game_name(user_input): #if the name is valid
