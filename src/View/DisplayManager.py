@@ -827,12 +827,12 @@ class NewGameFrame(DisplayManager):
         self.new_game_frame_background = tk.PhotoImage(
             file=os.path.join(assets_base_path, "new_game_frame/new_game_frame_background.png"))
         self.player_box_images = [
-            tk.PhotoImage(file=os.path.join(assets_base_path, "new_game_frame/player1_box.png")),
-            tk.PhotoImage(file=os.path.join(assets_base_path, "new_game_frame/player2_box.png")),
-            tk.PhotoImage(file=os.path.join(assets_base_path, "new_game_frame/player3_box.png")),
-            tk.PhotoImage(file=os.path.join(assets_base_path, "new_game_frame/player4_box.png")),
-            tk.PhotoImage(file=os.path.join(assets_base_path, "new_game_frame/player5_box.png")),
-            tk.PhotoImage(file=os.path.join(assets_base_path, "new_game_frame/player6_box.png"))
+            tk.PhotoImage(file=os.path.join(assets_base_path, "new_game_frame/player_box/player1_box.png")),
+            tk.PhotoImage(file=os.path.join(assets_base_path, "new_game_frame/player_box/player2_box.png")),
+            tk.PhotoImage(file=os.path.join(assets_base_path, "new_game_frame/player_box/player3_box.png")),
+            tk.PhotoImage(file=os.path.join(assets_base_path, "new_game_frame/player_box/player4_box.png")),
+            tk.PhotoImage(file=os.path.join(assets_base_path, "new_game_frame/player_box/player5_box.png")),
+            tk.PhotoImage(file=os.path.join(assets_base_path, "new_game_frame/player_box/player6_box.png"))
         ]
         self.player_insert_demo_image = tk.PhotoImage(
             file=os.path.join(assets_base_path, "new_game_frame/player_insert_demo.png"))
