@@ -177,12 +177,12 @@ class GameplayFrame(DisplayManager):
         self.no_money_ID = None
         self.player_image_ID = []
         self.player_image = [
-            tk.PhotoImage(file= os.path.join(assets_base_path, "gameplay_frame/player1.png")),
-            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/player2.png")),
-            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/player3.png")),
-            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/player4.png")),
-            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/player5.png")),
-            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/player6.png"))
+            tk.PhotoImage(file= os.path.join(assets_base_path, "gameplay_frame/player_image/player1.png")),
+            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/player_image/player2.png")),
+            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/player_image/player3.png")),
+            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/player_image/player4.png")),
+            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/player_image/player5.png")),
+            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/player_image/player6.png"))
         ]
         self.placeholder_coords = [
             [730, 865],
@@ -541,8 +541,17 @@ class GameplayFrame(DisplayManager):
         increment = (self.bottom_y_border - starting_pos) / total_players
         self.player_positional_increment = increment
         self.global_increment = increment
+
         name_size = 22
         info_size = 20
+
+        # Load player identifiers
+        player_indentifies = []
+        for i in range(len(self.player_info)):
+            player_indentifies.append(
+                tk.PhotoImage(file=os.path.join(assets_base_path, f"gameplay_frame/player_identifier/player{i+1}_identifier.png"))
+            )
+
         for i in range(0, total_players):
             player_name = self.player_info[i][0]
             player_balance = self.player_info[i][1]
@@ -563,6 +572,10 @@ class GameplayFrame(DisplayManager):
             else:
                 player_position_text = "HAS LOST"
 
+            # Display player identifier
+            identifier_id = canvas.create_image(self.right_x_border, starting_pos,
+                                                    image=player_indentifies[i])
+
             name_id = canvas.create_text(self.right_x_border, starting_pos, text= player_name, anchor="w",
                                          font=("Comic Sans MS", name_size, "bold"), fill="#000000")
 
@@ -576,11 +589,16 @@ class GameplayFrame(DisplayManager):
                                             font=("Comic Sans MS", info_size), fill="#000000")
             tot_prop_id = canvas.create_text(self.left_x_border, starting_pos + 40, text= player_total_properties, anchor="e",
                                              font=("Comic Sans MS", info_size), fill="#000000")
+
+
             starting_pos += increment
             self.player_info_ID.append(name_id)
             self.player_info_ID.append(pos_id)
             self.player_info_ID.append(balance_id)
             self.player_info_ID.append(tot_prop_id)
+
+            # Display player jail status
+            self.player_info_ID.append(identifier_id)
 
     #----------Handles hiding the button IMAGE in the canvas----------#
     def hide_buy_hint(self, canvas):
