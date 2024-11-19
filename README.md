@@ -1,15 +1,14 @@
 # COMP3211 Course Project - Group 1 Deliverables
 
-Welcome to the **Monopoly Hong Kong Special Edition** project repository! 
-This README outlines the structure of the deliverables and provides guidance to navigate the files seamlessly.
+Welcome to the **Monopoly Hong Kong Special Edition** project repository!<br>This README outlines the structure of the deliverables and provides guidance to navigate the files seamlessly.
 
 ## Repository Structure
 
-The project files are organized into a logical structure based on the **course project requirements**. Below is an overview of the directory organization and a brief explanation of each section:
+The project files are organized into a logical structure based on the **course project requirements**.<br>Below is an overview of the directory organization and a brief explanation of each section:
 
 ---
 
-## How to Navigate This Repository
+## Repository Tree Structure
 COMP3211_Course Project_Group1_Deliverables
 
 `|---README.md`
@@ -19,6 +18,8 @@ COMP3211_Course Project_Group1_Deliverables
 `|---Source Code`
 
 	|---Monopoly-Hong-Kong-Special-Edition
+	
+		|---play_game.py
 	
 		|---assets
 		
@@ -59,18 +60,21 @@ COMP3211_Course Project_Group1_Deliverables
 	|---5.1_Presentation Slides.PPT
 	
 	|---5.2_Presentation Recording.mp4
+
+## How to Navigate This Repository
 ### 1. **Start with the Source Code**
    - Navigate to the `Source Code/Monopoly-Hong-Kong-Special-Edition` directory.
-   - Explore the following subdirectories:
-     - **`assets`**: Contains the multimedia files needed for the game.
-     - **`src`**: Houses the core source code for the game logic, user interface, and application.
-     - **`tests`**: Includes unit tests for validating the game model functionality.
+   - The following subdirectories are provided to organize the source code and related resources:
+     - **`play_game.py`**: The main executable file for running the game.
+     - **`assets`**: Contains all multimedia resources, such as images, icons, and animations, used in the game.
+     - **`src`**: Implements the game architecture following the MVC (Model-View-Controller) design pattern.
+     - **`tests`**: Includes unit tests and documentation to validate the game’s functionality and ensure reliability.
 
 ### 2. **Explore the Reports**
    - The `Report` directory contains comprehensive documentation of the project:
-     - **SRS**: Understand the project requirements and scope.
+     - **Software Requirements Specification (SRS)**: Understand the project requirements and scope.
      - **Design Document**: Gain insights into the architecture and design of the system.
-     - **Implementation**: Refer to the manuals, demonstration video, and coverage report for implementation details.
+     - **Implementation**: Refer to the developer manual, user manual, demonstration video, and requirement coverage report for implementation details.
 
 ### 3. **Review the Presentation**
    - The `5_Presentation Slides and Recording` folder contains:
