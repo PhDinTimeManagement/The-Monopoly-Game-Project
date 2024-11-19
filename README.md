@@ -1,15 +1,40 @@
 # COMP3211 Course Project - Group 1 Deliverables
 
-Welcome to the **Monopoly Hong Kong Special Edition** project repository! This README outlines the structure of the deliverables and provides guidance to navigate the files seamlessly.
+Welcome to the **Monopoly Hong Kong Special Edition** project repository! 
+This README outlines the structure of the deliverables and provides guidance to navigate the files seamlessly.
 
 ## Repository Structure
 
-The project files are organized into a logical structure based on the course project requirements. Below is an overview of the directory organization and a brief explanation of each section:
+The project files are organized into a logical structure based on the **course project requirements**. Below is an overview of the directory organization and a brief explanation of each section:
 
 ---
 
 ## How to Navigate This Repository
-
+COMP3211_Course Project_Group1_Deliverables
+|---README.md
+|---COMP3211 Course Project Description 2024.pdf
+|---Source Code
+	|---Monopoly-Hong-Kong-Special-Edition
+		|---assets
+			|...
+		|---src
+			|...
+		|---tests
+			|...
+			|...4_Unit Tests for the Game Model
+|---Report
+	|---1_Software Requirements Specification (SRS)
+		|---1_Software Requirements Specification.pdf
+	|---2_Design Document
+		|---2_Design Document.pdf
+	|---3_Implementation
+		|---3.1_Developer Manual.pdf
+		|---3.2_User Manual.pdf
+		|---3.3_Video.mp4
+		|---3.4_Requirements Coverage Report.pdf
+|---5_Presentation Slides and Recording
+	|---5.1_Presentation Slides.PPT
+	|---5.2_Presentation Recording.mp4
 ### 1. **Start with the Source Code**
    - Navigate to the `Source Code/Monopoly-Hong-Kong-Special-Edition` directory.
    - Explore the following subdirectories:
