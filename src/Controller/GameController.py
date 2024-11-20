@@ -45,6 +45,7 @@ class GameController:
         self.gui.new_game_canvas.tag_bind(self.gui.new_game_clickable_areas[1], "<Button-1>",
                                           lambda e: self.new_game_load_board_button())
         self.bind_edit_board_button()
+
     #To clear all the data when loading ot starting a new game
     def clear_all_data(self):
         self.player_list.clear()
@@ -281,6 +282,7 @@ class GameController:
         self.show_load_board_button()
         self.gui.load_board_canvas.tag_bind(self.gui.load_board_click_areas[0], "<Button-1>",
                                             lambda e: self.load_board_button(idx))
+
     def bind_edit_board_button(self):
         self.gui.new_game_canvas.tag_bind(self.gui.new_game_clickable_areas[2], "<Button-1>", lambda e:self.edit_board_function())
 
@@ -291,6 +293,7 @@ class GameController:
     def bind_load_game_back_button(self):
         self.gui.load_game_canvas.tag_bind(self.gui.load_game_click_areas[1], "<Button-1>",
                                            lambda e: self.load_game_back_button() )
+
     def bind_load_board_back_button(self):
         self.gui.load_board_canvas.tag_bind(self.gui.load_board_click_areas[1], "<Button-1>",
                                             lambda e: self.load_board_back_button())
@@ -343,6 +346,7 @@ class GameController:
     def bind_delete_button(self):
         self.gui.save_game_canvas.tag_bind(self.gui.save_delete_click_areas[1], "<Button-1>",
                                           lambda e: self.gui.save_game_frame.delete_data(self.gui.save_game_canvas))
+
     def bind_back_button(self):
         self.gui.save_game_canvas.tag_bind(self.gui.save_delete_click_areas[2], "<Button-1>",
                                            lambda e: self. back_to_game_play_frame())
@@ -354,9 +358,11 @@ class GameController:
     def bind_edit_board_back_button(self):
         self.gui.edit_board_canvas.tag_bind(self.gui.edit_board_click_areas[2], "<Button-1>",
                                             lambda e: self.edit_back_button())
+
     def bind_apply_changes_button(self):
         self.gui.edit_board_canvas.tag_bind(self.gui.edit_board_click_areas[1], "<Button-1>",
                                             lambda e: self.apply_changes_button())
+
     def bind_reset_board(self):
         self.gui.edit_board_canvas.tag_bind(self.gui.edit_board_click_areas[3], "<Button-1>",
                                             lambda e: self.reset_changes_button())
@@ -386,6 +392,7 @@ class GameController:
     def bind_enter_board_name_save_button(self):
         self.gui.enter_name_canvas.tag_bind(self.gui.enter_file_name_frame.color_save_button, "<Button-1>",
                                             lambda e: self.show_saved_board_name())
+
     def bind_enter_name_frame_back_button(self):
         self.gui.enter_name_canvas.tag_bind(self.gui.enter_file_name_frame.enter_back_button, "<Button-1>",
                                             lambda e: self.enter_board_name_back_button())

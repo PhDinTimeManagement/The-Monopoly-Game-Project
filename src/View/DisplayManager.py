@@ -267,6 +267,7 @@ class GameplayFrame(DisplayManager):
     def get_color_coord(self, pos):
         return self.__tile_color_coord[pos]
         #an array
+
     def jail_roll_animation(self,canvas,roll_dice_x_pos, roll_dice_y_pos,dice_image_position):
 
         def during_roll(j):
@@ -1270,6 +1271,7 @@ class LoadGameFrame(LoadFrame):
         self.load_frame_background = tk.PhotoImage(file=os.path.join(assets_base_path, "load_frame/load_game_frame_background.png"))
         self.save_base_path = os.path.join(os.path.dirname(__file__), "../../saves/games")
         self.offset = 30
+
 
 class LoadBoardFrame(LoadFrame):
     def __init__(self, gui):

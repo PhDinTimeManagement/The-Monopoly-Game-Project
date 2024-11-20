@@ -165,6 +165,7 @@ class Jail(Tile):
     def player_landed(self, player):
         return None
 
+
 class Go(Tile):
     """Initialize the prize for passing amount"""
     def __init__(self, prize):
