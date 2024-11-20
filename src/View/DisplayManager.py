@@ -184,6 +184,14 @@ class GameplayFrame(DisplayManager):
             tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/player_image/player5.png")),
             tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/player_image/player6.png"))
         ]
+        self.player_identifier = [
+            tk.PhotoImage(file= os.path.join(assets_base_path, "gameplay_frame/player_identifier/player1_identifier.png")),
+            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/player_identifier/player2_identifier.png")),
+            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/player_identifier/player3_identifier.png")),
+            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/player_identifier/player4_identifier.png")),
+            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/player_identifier/player5_identifier.png")),
+            tk.PhotoImage(file=os.path.join(assets_base_path, "gameplay_frame/player_identifier/player6_identifier.png"))
+        ]
         self.placeholder_coords = [
             [730, 865],
             [810, 915],
@@ -214,6 +222,7 @@ class GameplayFrame(DisplayManager):
         self.bottom_y_border = 860
         self.right_x_border = 950
         self.left_x_border = 1430
+        self.highlighter_x_pos = self.right_x_border - 50
         self.player_positional_increment = 0
         self.global_increment = 0
         self.player_turn = 0
@@ -449,11 +458,13 @@ class GameplayFrame(DisplayManager):
         self.display_player_info(canvas)
         self.display_tile_info(canvas)
 
-    def create_player_highlighter(self, canvas):
+    def create_player_highlighter_and_identifier(self, canvas):
         y_pos = self.starting_y_pos
         for i in range(0, len(self.player_info)):
-            image_id = canvas.create_image(self.right_x_border - 40, y_pos, anchor="center",
+            image_id = canvas.create_image(self.highlighter_x_pos, y_pos, anchor="center",
                                            image=self.player_image[i])
+            void_identifier_id = canvas.create_image(self.right_x_border - 15, y_pos, anchor="center",
+                                                     image=self.player_identifier[i])
             y_pos += self.player_positional_increment
             self.player_highlighter_ID.append(image_id)
         return canvas
@@ -469,7 +480,7 @@ class GameplayFrame(DisplayManager):
     def hide_all_player_highlighter(self, canvas):
         for i in range(0, len(self.player_info)):
             coords = canvas.coords(self.player_highlighter_ID[i])
-            if coords[0] == (self.right_x_border - 40):
+            if coords[0] == (self.highlighter_x_pos):
                 canvas.move(self.player_highlighter_ID[i], 1000, 0)
         return canvas
 
@@ -768,7 +779,7 @@ class GameplayFrame(DisplayManager):
         self.display_player_info(canvas)
 
         # PLAYER HIGHLIGHTER
-        canvas = self.create_player_highlighter(canvas)
+        canvas = self.create_player_highlighter_and_identifier(canvas)
         canvas = self.display_appropriate_player_highlighter_on_initialization(canvas)
 
         # PLAYER POSITION ON BOARD and MOVES TO CORRECT TILE IN CASE OF LOADING GAME
@@ -1293,8 +1304,8 @@ class LoadGameFrame(LoadFrame):
 class LoadBoardFrame(LoadFrame):
     def __init__(self, gui):
         super().__init__(gui)
-        self.button_image = tk.PhotoImage(file=os.path.join(assets_base_path, "load_game_frame/load_board_button.png"))
-        self.load_frame_background = tk.PhotoImage(file=os.path.join(assets_base_path, "load_game_frame/load_board_frame_background.png"))
+        self.button_image = tk.PhotoImage(file=os.path.join(assets_base_path, "load_frame/load_board_button.png"))
+        self.load_frame_background = tk.PhotoImage(file=os.path.join(assets_base_path, "load_frame/load_board_frame_background.png"))
         self.save_base_path = os.path.join(os.path.dirname(__file__), "../../saves/gameboard_setups")
         self.offset = 80 # adds space for an extra slot
         self.load_button_offset = 20
