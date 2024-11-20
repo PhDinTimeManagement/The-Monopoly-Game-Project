@@ -1626,7 +1626,7 @@ class InfoPageFrame(DisplayManager):
         canvas = self.clear_widgets_create_canvas_set_background(frame, self.info_frame_background)
 
         # Display the back button to return to the main menu
-        back_button_clickable_area, canvas, self.back_id = self.create_button(canvas,50, 50, self.back_arrow_image)
+        back_button_clickable_area, canvas, self.back_id = self.create_button(canvas,100, 90, self.back_arrow_image)
 
         # Bind the enlarged clickable area to the main menu transition
         canvas.tag_bind(back_button_clickable_area, "<Button-1>", lambda e: self.gui.show_frame("main_menu"))
