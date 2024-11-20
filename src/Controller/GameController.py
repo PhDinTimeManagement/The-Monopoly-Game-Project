@@ -16,6 +16,7 @@ class GameController:
         self.save_name = None
         self.board = Gameboard()
         self.game_logic = GameLogic()
+        # self.game_logic.set_current_round(98) # TODO Del this line later. Only for testing purposes
         self.gui = the_gui
         self.player_list = []
         self.broke_list = []
@@ -190,8 +191,8 @@ class GameController:
     def hide_save_quit_image(self):
         self.gui.gameplay_frame.hide_save_quit_image(self.gui.game_canvas)
 
-    def unbind_edit_board_back_button(self):
-        self.gui.edit_board_canvas.tag_bind(self.gui.edit_board_click_areas[2], "<Button-1>")
+    # def unbind_edit_board_back_button(self):
+    #     self.gui.edit_board_canvas.tag_bind(self.gui.edit_board_click_areas[2], "<Button-1>")
 
     def unbind_load_board_button(self):
         self.hide_load_board_image()
@@ -217,9 +218,9 @@ class GameController:
         self.hide_pay_fine_image()
         self.gui.game_canvas.tag_unbind(self.gui.game_frame_click_areas[3], "<Button-1>")
 
-    def unbind_in_jail_roll_button(self):
-        self.hide_roll_image()
-        self.gui.game_canvas.tag_unbind(self.gui.game_frame_click_areas[0], "<Button-1>")
+    # def unbind_in_jail_roll_button(self):
+    #     self.hide_roll_image()
+    #     self.gui.game_canvas.tag_unbind(self.gui.game_frame_click_areas[0], "<Button-1>")
 
     def unbind_save_quit_button(self):
         self.hide_save_quit_image()
@@ -231,8 +232,8 @@ class GameController:
     def unbind_delete_button(self):
         self.gui.save_game_canvas.tag_unbind(self.gui.save_delete_click_areas[1], "<Button-1>")
 
-    def unbind_delete_board_button(self):
-        self.gui.save_board_canvas.tag_bind(self.gui.save_board_click_areas[1], "<Button-1>")
+    # def unbind_delete_board_button(self):
+    #     self.gui.save_board_canvas.tag_bind(self.gui.save_board_click_areas[1], "<Button-1>")
 
     def unbind_save_board_button(self):
         self.gui.save_board_canvas.tag_bind(self.gui.save_board_click_areas[0], "<Button-1>")
@@ -282,7 +283,6 @@ class GameController:
         self.show_load_board_button()
         self.gui.load_board_canvas.tag_bind(self.gui.load_board_click_areas[0], "<Button-1>",
                                             lambda e: self.load_board_button(idx))
-
     def bind_edit_board_button(self):
         self.gui.new_game_canvas.tag_bind(self.gui.new_game_clickable_areas[2], "<Button-1>", lambda e:self.edit_board_function())
 
@@ -293,7 +293,6 @@ class GameController:
     def bind_load_game_back_button(self):
         self.gui.load_game_canvas.tag_bind(self.gui.load_game_click_areas[1], "<Button-1>",
                                            lambda e: self.load_game_back_button() )
-
     def bind_load_board_back_button(self):
         self.gui.load_board_canvas.tag_bind(self.gui.load_board_click_areas[1], "<Button-1>",
                                             lambda e: self.load_board_back_button())
@@ -346,7 +345,6 @@ class GameController:
     def bind_delete_button(self):
         self.gui.save_game_canvas.tag_bind(self.gui.save_delete_click_areas[1], "<Button-1>",
                                           lambda e: self.gui.save_game_frame.delete_data(self.gui.save_game_canvas))
-
     def bind_back_button(self):
         self.gui.save_game_canvas.tag_bind(self.gui.save_delete_click_areas[2], "<Button-1>",
                                            lambda e: self. back_to_game_play_frame())
@@ -358,11 +356,9 @@ class GameController:
     def bind_edit_board_back_button(self):
         self.gui.edit_board_canvas.tag_bind(self.gui.edit_board_click_areas[2], "<Button-1>",
                                             lambda e: self.edit_back_button())
-
     def bind_apply_changes_button(self):
         self.gui.edit_board_canvas.tag_bind(self.gui.edit_board_click_areas[1], "<Button-1>",
                                             lambda e: self.apply_changes_button())
-
     def bind_reset_board(self):
         self.gui.edit_board_canvas.tag_bind(self.gui.edit_board_click_areas[3], "<Button-1>",
                                             lambda e: self.reset_changes_button())
@@ -392,7 +388,6 @@ class GameController:
     def bind_enter_board_name_save_button(self):
         self.gui.enter_name_canvas.tag_bind(self.gui.enter_file_name_frame.color_save_button, "<Button-1>",
                                             lambda e: self.show_saved_board_name())
-
     def bind_enter_name_frame_back_button(self):
         self.gui.enter_name_canvas.tag_bind(self.gui.enter_file_name_frame.enter_back_button, "<Button-1>",
                                             lambda e: self.enter_board_name_back_button())
@@ -596,6 +591,8 @@ class GameController:
         #bind all the slots in load board page
         for i, slots in enumerate(self.gui.load_board_click_areas[2:]):
             self.gui.load_board_canvas.tag_bind(slots, "<Button-1>",lambda e, idx=i: self.select_load_board_slot(idx))
+
+
     """ This function is called after the 'Play' button is clicked in the game """
 
     def button_play(self, from_load):
@@ -647,12 +644,11 @@ class GameController:
                     self.bind_pay_fine_button(player_this_turn)
             else:
                 self.bind_roll_button(player_this_turn)
-            # TODO <display highlight player_this_turn ONLY.>
             self.gui.new_game_frame.clear_all_player_data(
                 self.gui.new_game_canvas)  # clear all the player names in the frame and all the hints
             # self.gui.new_game_frame.
 
-    # ------------ Game Play Frame Button ----------------#
+    # ------------ Game Play Frame Button ----------------# TODO right now
 
     #logic handling when the save_quit_button is clicked
     def save_quit_button(self):
@@ -676,6 +672,7 @@ class GameController:
             print(action[1])
             self.update_all_game_info()
             self.gui.gameplay_frame.display_winners_on_canvas(self.gui.game_canvas, winners_list)
+            self.gui.after(5000, lambda: self.home_button())
             # wait for click event
             return
 
@@ -691,7 +688,6 @@ class GameController:
             else:
                 print(action[1].get_name(), "is in Jail, and have no money to pay fine") #TODO del
         elif action[0] == "pay_fine_and_jail_roll":
-            # TODO <display jail_roll and pay fine>
             self.bind_in_jail_roll_button(action[1])
             self.bind_pay_fine_button(action[1])
             print("\nNext round, click roll\n")  # TODO del later
@@ -729,6 +725,8 @@ class GameController:
             else:
                 action = "rent"
             hint = tile.player_landed(player_this_turn, action, Property.get_owner_obj(self.player_list, tile.get_owner()))
+            if action == "rent" and tile.get_owner() == player_this_turn.get_name():
+                hint = "Own property, no rent paid"
             if hint is not None:
                 self.show_hint(hint,2000,22)
             self.unbind_yes_buy_button() #unbind and hide the yes_buy_button
@@ -736,21 +734,16 @@ class GameController:
             self.hide_buy_hint()
             self.hide_insuff_balance_hint()
         elif tile_type == "jail":
-            # TODO update view just visiting
             pass
         elif tile_type == "go":
-            # TODO update view
             pass
         elif tile_type == "go_to_jail":
             tile.player_landed(player_this_turn, self.board.get_jail_tile())
-            # TODO jail animation
         elif tile_type == "income_tax":
             hint = tile.player_landed(player_this_turn)
             self.show_hint(hint,2000,22)
-            # TODO tax animation
             pass
         elif tile_type == "free_parking":
-            # TODO parking animation
             pass
         else: # chance
             hint = tile.player_landed(player_this_turn)
@@ -868,6 +861,7 @@ class GameController:
             if action[0] == "show_pay_fine":
                 self.bind_pay_fine_button(player_this_turn) #bind and show the pay_fine button
                 self.gui.wait_variable(self.click_var)  # wait for pay fine button to be clicked
+                if self.click_var.get() == "test_pay_fine": GameLogic.pay_fine(self.game_logic, player_this_turn) #for unit testing
                 #TODO display fine paid
                 if action[1] is not None:
                     print("Fine paid. Move on")
@@ -904,7 +898,6 @@ class GameController:
 
 
     def pay_fine(self, player_this_turn):
-        # pay_fine_logic
         GameLogic.pay_fine(self.game_logic, player_this_turn)
         pay_fine_message = f"Pay Fine {self.game_logic.get_fine()} HKD"
         self.show_hint(pay_fine_message, 1000, 22)
@@ -923,7 +916,7 @@ class GameController:
         print("Not Buying")
         # TODO <Show did not buy property>
 
-    # ------------ Enter File Name Frame Button ----------------#
+    # ------------ Enter File Name Frame Button ----------------# TODO
     def show_save_game(self):
         user_input = self.gui.enter_file_name_frame.name_entry.get().strip() #get the entry in the text box
         if self.input_handler.valid_current_game_name(user_input): #if the name is valid

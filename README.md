@@ -11,11 +11,11 @@ The project files are organized into a logical structure based on the **course p
 ## Repository Tree Structure
 COMP3211_Course Project_Group1_Deliverables
 
-`|---README.md`
+`|---README.md
 
 `|---COMP3211 Course Project Description 2024.pdf`
 
-`|---Source Code`
+`|---Source Code
 
 	|---Monopoly-Hong-Kong-Special-Edition
 	
