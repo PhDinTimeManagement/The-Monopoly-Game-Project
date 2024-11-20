@@ -943,7 +943,7 @@ class NewGameFrame(DisplayManager):
         # Ensure that all previous player names (up to idx-1) have been entered
         if any(not self.gui.input_handler.players_names[i] for i in range(idx)):
             self.show_msg(canvas, "* All previous player names must be entered first.", idx, is_error=True)
-            return
+            return False
 
         # Generate a random name
         player_name = self.gui.input_handler.generate_name()
@@ -958,9 +958,11 @@ class NewGameFrame(DisplayManager):
 
             # Show a hint message to prompt the user to press Enter if they want to save manually
             self.show_msg(canvas, "* You can modify the name and press <Return> to save.", idx, is_error=False)
+            return True
         else:
             # Show error if the name is invalid or duplicate
             self.show_msg(canvas, "* Generated name is invalid or duplicate.", idx, is_error=True)
+            return False
 
     def show_insert_entry(self, canvas, idx, x_position=None, y_position=None, name=None):
         if name:
@@ -1031,27 +1033,29 @@ class NewGameFrame(DisplayManager):
         # Check if the name hasn't changed from the current one
         if self.gui.input_handler.players_names[idx] == player_name:
             self.show_msg(canvas, "* Name did not change.", idx, is_error=False)
-            return
+            return True
 
         # Check if the name is the same as another player
         if player_name in self.gui.input_handler.get_all_player_names():
             self.show_msg(canvas, "* Name cannot be the same as another player.", idx, is_error=True)
-            return
+            return False
 
         # Check if the previous player name has been entered (except for the first player)
         if idx > 0 and not self.gui.input_handler.players_names[idx - 1]:
             self.show_msg(canvas, "* Previous player name must be entered first.", idx, is_error=True)
-            return
+            return False
 
         # Check if the name is valid, if so, store it
         if len(player_name) <= 20 and self.gui.input_handler.validate_and_store_name(idx, player_name):
             # Clear any previous error messages
             if self.error_labels[idx]:
+                print("Hi")
                 self.error_labels[idx].destroy()
                 self.error_labels[idx] = None
 
             # Remove any displayed name text reference and update with the new name
             if self.player_text_refs[idx]:
+                print("Hi Again")
                 canvas.delete(self.player_text_refs[idx])
                 self.player_text_refs[idx] = None
 
@@ -1068,6 +1072,7 @@ class NewGameFrame(DisplayManager):
         else:
             self.show_msg(canvas, "* Name must be 1-20 characters.", idx, is_error=True)
             entry.delete(0, tk.END)
+        return True
 
     def check_and_start_game(self, input_handler):
         # Retrieve all player names
@@ -1105,6 +1110,7 @@ class NewGameFrame(DisplayManager):
         # Create Yes and No buttons in the popup
         yes_button = canvas.create_image(self.gui.image_width // 2 + 150, self.gui.image_height // 2 + 200,
                                          image=self.yes_button_image)
+
         no_button = canvas.create_image(self.gui.image_width // 2 + 440, self.gui.image_height // 2 + 200,
                                         image=self.no_button_image)
 
@@ -1968,7 +1974,6 @@ class EditBoardFrame(GameplayFrame):
 
         price = self.price_entry.get().strip() if self.price_entry and self.price_entry.winfo_exists() else self.canvas.itemcget(self.price_text_id, "text").strip()
         rent = self.rent_entry.get().strip() if self.rent_entry and self.rent_entry.winfo_exists() else self.canvas.itemcget(self.rent_text_id, "text").strip()
-
         # Check if the price and rent are valid non-negative integers (This is an error msg)
         if not price.isdigit() or not rent.isdigit():
             self.show_msg(self.current_frame, "* Price and Rent must be valid integers.",

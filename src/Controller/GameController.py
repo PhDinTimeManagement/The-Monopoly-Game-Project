@@ -16,7 +16,6 @@ class GameController:
         self.save_name = None
         self.board = Gameboard()
         self.game_logic = GameLogic()
-        # self.game_logic.set_current_round(98) # TODO Del this line later. Only for testing purposes
         self.gui = the_gui
         self.player_list = []
         self.broke_list = []
@@ -672,8 +671,7 @@ class GameController:
             print(action[1])
             self.update_all_game_info()
             self.gui.gameplay_frame.display_winners_on_canvas(self.gui.game_canvas, winners_list)
-            self.gui.after(5000, lambda: self.home_button())
-            # wait for click event
+            self.gui.after(5000,lambda: self.home_button())
             return
 
         self.gui.gameplay_frame.highlight_current_player(self.gui.game_canvas, self.game_logic.get_player_turn())
@@ -724,9 +722,11 @@ class GameController:
                     action = "not_buy"
             else:
                 action = "rent"
+
             hint = tile.player_landed(player_this_turn, action, Property.get_owner_obj(self.player_list, tile.get_owner()))
             if action == "rent" and tile.get_owner() == player_this_turn.get_name():
-                hint = "Own property, no rent paid"
+                hint = "Own property. No rent paid"
+
             if hint is not None:
                 self.show_hint(hint,2000,22)
             self.unbind_yes_buy_button() #unbind and hide the yes_buy_button
@@ -1093,5 +1093,5 @@ class SavedGame:
             "broke_list": broke_player_data
         }
 
-    def get_save_name(self):
-        return self.save_name
+    # def get_save_name(self):
+    #     return self.save_name
