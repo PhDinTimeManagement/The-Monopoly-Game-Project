@@ -16,7 +16,6 @@ class GameController:
         self.save_name = None
         self.board = Gameboard()
         self.game_logic = GameLogic()
-        # self.game_logic.set_current_round(98) # TODO Del this line later. Only for testing purposes
         self.gui = the_gui
         self.player_list = []
         self.broke_list = []
@@ -401,12 +400,15 @@ class GameController:
         self.gui.show_frame("new_game")
 
     def apply_changes_button(self):
-        if self.gui.edit_board_frame.verify_unique_property_names():
+        if self.gui.edit_board_frame.verify_unique_property_names_and_changes_applied():
             self.gui.edit_board_frame.load_changes_in_gameboard(self.board)
             self.gui.show_frame("new_game")
+            # Display message to user
+            self.gui.new_game_frame.display_message_respond_to_user_action((
+                f"Changes have been successfully applied to the game board.\nNow Insert Players to start the game!"))
 
     def save_board_profile_button(self):
-        if self.gui.edit_board_frame.verify_unique_property_names():
+        if self.gui.edit_board_frame.verify_unique_property_names_and_changes_applied():
             for i,slots in enumerate(self.gui.save_board_click_areas[4:]):
                 self.gui.save_board_canvas.tag_bind(slots, "<Button-1>",
                                 lambda e, idx=i: self.select_saved_board_slot(self.gui.save_board_canvas, idx))
@@ -519,6 +521,9 @@ class GameController:
             self.load_gameboard(save_name)
         self.pass_gameboard_info_to_view()
         self.load_board_back_button()
+        # Also display the game board name loaded
+        self.gui.new_game_frame.display_message_respond_to_user_action((
+            f"Game board {save_name} has been successfully loaded.\nNow Insert Players to start the game!"))
 
     def load_board_back_button(self):
         self.unbind_load_board_button()
@@ -672,8 +677,7 @@ class GameController:
             print(action[1])
             self.update_all_game_info()
             self.gui.gameplay_frame.display_winners_on_canvas(self.gui.game_canvas, winners_list)
-            self.gui.after(5000, lambda: self.home_button())
-            # wait for click event
+            self.gui.after(5000,lambda: self.home_button())
             return
 
         self.gui.gameplay_frame.highlight_current_player(self.gui.game_canvas, self.game_logic.get_player_turn())
@@ -724,9 +728,11 @@ class GameController:
                     action = "not_buy"
             else:
                 action = "rent"
+
             hint = tile.player_landed(player_this_turn, action, Property.get_owner_obj(self.player_list, tile.get_owner()))
             if action == "rent" and tile.get_owner() == player_this_turn.get_name():
-                hint = "Own property, no rent paid"
+                hint = "Own property. No rent paid"
+
             if hint is not None:
                 self.show_hint(hint,2000,22)
             self.unbind_yes_buy_button() #unbind and hide the yes_buy_button
@@ -1093,5 +1099,5 @@ class SavedGame:
             "broke_list": broke_player_data
         }
 
-    def get_save_name(self):
-        return self.save_name
+    # def get_save_name(self):
+    #     return self.save_name

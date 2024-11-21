@@ -186,24 +186,22 @@ class GameLogic:
             return action, extra_info
 
 
-    #TODO del later after all the message display has been moved to the GUI
-    #Converts the turns_in_jail into visually correct numbers.
-    @staticmethod
-    def _convert_turns_in_jail(number):
-        match number:
-            case 1:
-                return 3
-            case 3:
-                return 1
-            case _:
-                return 2
+    # #TODO del later after all the message display has been moved to the GUI
+    # #Converts the turns_in_jail into visually correct numbers.
+    # @staticmethod
+    # def _convert_turns_in_jail(number):
+    #     match number:
+    #         case 1:
+    #             return 3
+    #         case 3:
+    #             return 1
+    #         case _:
+    #             return 2
 
 
     @staticmethod
     def in_jail_roll(game_logic,player_this_turn, board):
-        print("Player turn in jail is: ", GameLogic._convert_turns_in_jail(player_this_turn.get_in_jail_turns())) #TODO del
         dice_roll1, dice_roll2 = GameLogic.roll_dice()
-        print("Rolled: dice one: (",dice_roll1, ") dice two: (", dice_roll2,") move: (", dice_roll1+dice_roll2,")") #TODO del later
         if (not GameLogic.same_double(dice_roll1, dice_roll2)) and GameLogic.player_third_round(player_this_turn):
             action = ["show_pay_fine", None, dice_roll1, dice_roll2]
             board.tiles[player_this_turn.get_current_position()].free_player(player_this_turn)

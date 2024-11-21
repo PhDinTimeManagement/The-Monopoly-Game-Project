@@ -860,6 +860,8 @@ class NewGameFrame(DisplayManager):
         self.no_button_image = tk.PhotoImage(file=os.path.join(assets_base_path, "new_game_frame/no_button.png"))
         self.trash_button_image = tk.PhotoImage(file=os.path.join(assets_base_path, "new_game_frame/trash_button.png"))
 
+        self.message_label = None # Show messages for user action response
+
     # ------------------------------------# New Game Frame #------------------------------------#
 
     def setup_new_game_page(self, frame, input_handler):
@@ -943,7 +945,7 @@ class NewGameFrame(DisplayManager):
         # Ensure that all previous player names (up to idx-1) have been entered
         if any(not self.gui.input_handler.players_names[i] for i in range(idx)):
             self.show_msg(canvas, "* All previous player names must be entered first.", idx, is_error=True)
-            return
+            return False
 
         # Generate a random name
         player_name = self.gui.input_handler.generate_name()
@@ -958,9 +960,11 @@ class NewGameFrame(DisplayManager):
 
             # Show a hint message to prompt the user to press Enter if they want to save manually
             self.show_msg(canvas, "* You can modify the name and press <Return> to save.", idx, is_error=False)
+            return True
         else:
             # Show error if the name is invalid or duplicate
             self.show_msg(canvas, "* Generated name is invalid or duplicate.", idx, is_error=True)
+            return False
 
     def show_insert_entry(self, canvas, idx, x_position=None, y_position=None, name=None):
         if name:
@@ -1031,27 +1035,29 @@ class NewGameFrame(DisplayManager):
         # Check if the name hasn't changed from the current one
         if self.gui.input_handler.players_names[idx] == player_name:
             self.show_msg(canvas, "* Name did not change.", idx, is_error=False)
-            return
+            return True
 
         # Check if the name is the same as another player
         if player_name in self.gui.input_handler.get_all_player_names():
             self.show_msg(canvas, "* Name cannot be the same as another player.", idx, is_error=True)
-            return
+            return False
 
         # Check if the previous player name has been entered (except for the first player)
         if idx > 0 and not self.gui.input_handler.players_names[idx - 1]:
             self.show_msg(canvas, "* Previous player name must be entered first.", idx, is_error=True)
-            return
+            return False
 
         # Check if the name is valid, if so, store it
         if len(player_name) <= 20 and self.gui.input_handler.validate_and_store_name(idx, player_name):
             # Clear any previous error messages
             if self.error_labels[idx]:
+                print("Hi")
                 self.error_labels[idx].destroy()
                 self.error_labels[idx] = None
 
             # Remove any displayed name text reference and update with the new name
             if self.player_text_refs[idx]:
+                print("Hi Again")
                 canvas.delete(self.player_text_refs[idx])
                 self.player_text_refs[idx] = None
 
@@ -1068,6 +1074,7 @@ class NewGameFrame(DisplayManager):
         else:
             self.show_msg(canvas, "* Name must be 1-20 characters.", idx, is_error=True)
             entry.delete(0, tk.END)
+        return True
 
     def check_and_start_game(self, input_handler):
         # Retrieve all player names
@@ -1105,6 +1112,7 @@ class NewGameFrame(DisplayManager):
         # Create Yes and No buttons in the popup
         yes_button = canvas.create_image(self.gui.image_width // 2 + 150, self.gui.image_height // 2 + 200,
                                          image=self.yes_button_image)
+
         no_button = canvas.create_image(self.gui.image_width // 2 + 440, self.gui.image_height // 2 + 200,
                                         image=self.no_button_image)
 
@@ -1140,6 +1148,28 @@ class NewGameFrame(DisplayManager):
         # Clear all entries for player data
         for idx in range(6):
             self.delete_name(canvas, idx)
+
+    def display_message_respond_to_user_action(self, message, duration=6000, color="green"):
+        # Remove any existing message
+        if self.message_label:
+            self.message_label.destroy()
+
+        # Create a new label to display the message
+        self.message_label = tk.Label(
+            self.gui.new_game_canvas,
+            text=message,
+            font=("Comic Sans MS", 18),
+            fg=color,
+            bg="#F6F7F6",
+            wraplength=1000,
+        )
+
+        self.message_label.place(
+            x=self.gui.image_width / 2 + 63,
+            y=210
+        )
+
+        self.gui.after(duration, self.message_label.destroy)
 
 
 class MainMenuFrame(DisplayManager):
@@ -1637,7 +1667,7 @@ class InfoPageFrame(DisplayManager):
         canvas = self.clear_widgets_create_canvas_set_background(frame, self.info_frame_background)
 
         # Display the back button to return to the main menu
-        back_button_clickable_area, canvas, self.back_id = self.create_button(canvas,50, 50, self.back_arrow_image)
+        back_button_clickable_area, canvas, self.back_id = self.create_button(canvas,100, 90, self.back_arrow_image)
 
         # Bind the enlarged clickable area to the main menu transition
         canvas.tag_bind(back_button_clickable_area, "<Button-1>", lambda e: self.gui.show_frame("main_menu"))
@@ -1718,6 +1748,8 @@ class EditBoardFrame(GameplayFrame):
             "Kwun Tong", "Sham Shui Po", "Tsim Sha Tsui", "Causeway Bay",
             "North Point", "Aberdeen", "Cheung Chau", "Kowloon Tong",
             "Sham Shui Po", "Lamma Island", "Lantau Island"
+            "Hung Hom", "Ho Man Tin", "Jordan", "Kowloon City",
+            "Lai Chi Kok", "Lam Tin", "Lok Fu", "Ma On Shan",
         ]
 
         self.colors = [
@@ -1968,7 +2000,6 @@ class EditBoardFrame(GameplayFrame):
 
         price = self.price_entry.get().strip() if self.price_entry and self.price_entry.winfo_exists() else self.canvas.itemcget(self.price_text_id, "text").strip()
         rent = self.rent_entry.get().strip() if self.rent_entry and self.rent_entry.winfo_exists() else self.canvas.itemcget(self.rent_text_id, "text").strip()
-
         # Check if the price and rent are valid non-negative integers (This is an error msg)
         if not price.isdigit() or not rent.isdigit():
             self.show_msg(self.current_frame, "* Price and Rent must be valid integers.",
@@ -2043,7 +2074,7 @@ class EditBoardFrame(GameplayFrame):
                 canvas.tag_bind(GameplayFrame.tile_info[i][7], '<Button-1>', self.on_game_board_click)
 
     # This method need to be chained once the <Apply Changes> and <Save Board Profile> button is clicked
-    def verify_unique_property_names(self):
+    def verify_unique_property_names_and_changes_applied(self):
         property_position = [1, 2, 4, 6, 7, 9, 11, 13, 14, 16, 17, 19]
         property_names = [GameplayFrame.tile_info[i][1] for i in property_position]
         duplicates = [name for name in property_names if property_names.count(name) > 1 and name != ""]
@@ -2054,6 +2085,26 @@ class EditBoardFrame(GameplayFrame):
             self.show_msg(self.current_frame, duplicate_message, idx=0, is_error=True,
                           x_position=self.gui.image_width * 30 / 1512 + 138, y_position=self.gui.image_height * 148 / 982 + 138)
 
+            return False
+
+        no_changes = True
+        for i in property_position:
+            original = self.last_time_tile_info[i]
+            current = {
+                "name": GameplayFrame.tile_info[i][1],
+                "color": GameplayFrame.tile_colors[i][0],
+                "price": GameplayFrame.tile_info[i][2],
+                "rent": GameplayFrame.tile_info[i][3],
+            }
+            if current == original:  # Compare current attributes with the original
+                no_changes = False
+                break
+
+        # If no changes are detected, display an error message
+        if no_changes:
+            self.show_msg(self.current_frame, "* No property has been changed", idx=0, is_error=True,
+                            x_position=self.gui.image_width * 30 / 1512 + 138,
+                            y_position=self.gui.image_height * 148 / 982 + 138)
             return False
 
         return True
