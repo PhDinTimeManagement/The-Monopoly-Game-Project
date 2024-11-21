@@ -1397,13 +1397,20 @@ class SaveFrame(DisplayManager):
             self.saved_game_image
         ]
 
+        #msg for the home button in save game frame and save board frame respectively
         self.back_to_main_menu_with_home_image = tk.PhotoImage(file=os.path.join(assets_base_path, "save_game_frame/back_to_main_menu_with_home.png"))
         self.back_to_insert_player_with_home_image = tk.PhotoImage(file=os.path.join(assets_base_path, "save_game_frame/back_to_insert_player_with_home.png"))
+
 
 # ------------------------ # buttons position and initialization # ----------------------#
 
         self.delete_button_x, self.delete_button_y = self.gui.image_width // 3, 835
         self.save_button_x, self.save_button_y = self.gui.image_width * 2 // 3, 835
+
+# ------------------------ # Show the Home Button Message # ----------------------- #
+    def show_home_button_message(self,canvas):
+        image_id = canvas.create_image(self.gui.image_width - 170, 50, image=self.back_to_main_menu_with_home_image)
+        return image_id
 
 # ------------------------------------# Load Save Frame #------------------------------------#
 
@@ -1425,8 +1432,10 @@ class SaveFrame(DisplayManager):
         # canvas.tag_bind(back_button, "<Button-1>", lambda e: self.back_button(canvas))
         save_delete_click_area.append(back_button)
 
+        self.show_home_button_message(canvas)
         home_button = canvas.create_image(self.gui.image_width - 50, 50, image=self.home_icon_image)
         save_delete_click_area.append(home_button)
+
 
         #canvas.tag_bind(home_button, "<Button-1>", lambda e: self.gui.show_frame("main_menu"))
 
@@ -1542,12 +1551,17 @@ class SaveGameFrame(SaveFrame):
         self.save_frame_background = tk.PhotoImage(file=os.path.join(assets_base_path, "save_game_frame/save_game_frame_background.png"))
         self.save_base_path = os.path.join(os.path.dirname(__file__), "../../saves/games")
 
+
 class SaveBoardFrame(SaveFrame):
     def __init__(self, gui):
         super().__init__(gui)
 
         self.save_frame_background = tk.PhotoImage(file=os.path.join(assets_base_path, "save_game_frame/save_board_frame_background.png"))
         self.save_base_path = os.path.join(os.path.dirname(__file__), "../../saves/gameboard_setups")
+
+    def show_home_button_message(self,canvas):
+        image_id = canvas.create_image(self.gui.image_width - 170, 50, image=self.back_to_insert_player_with_home_image)
+        return image_id
 
 class EnterNameFrame(SaveGameFrame):
     def __init__(self, gui):

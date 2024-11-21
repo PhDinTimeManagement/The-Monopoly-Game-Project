@@ -514,6 +514,7 @@ class GameController:
         self.bind_load_board_button(idx)
 
     def load_board_button(self,idx):
+        save_name = "Default Gameboard"
         if idx == 5: # default board is 5 because it's appended last
             self.board = Gameboard()
         else:

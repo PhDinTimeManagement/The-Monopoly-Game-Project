@@ -2,7 +2,9 @@ from unittest import TestCase
 
 from src.Controller.GameController import *
 from src.Model.Player import *
+
 from unittest.mock import patch, MagicMock
+
 import tkinter as tk
 
 
@@ -23,6 +25,7 @@ class TestGameController(TestCase):
         cls.controller.save_game("TEST_SAVE4")
 
     def setUp(self):
+        #if the gui object got destroyed, create a new one again
         if TestGameController.is_delete:
             TestGameController.gui = GUI()
             TestGameController.gui.attributes('-alpha', 0)
@@ -188,6 +191,7 @@ class TestGameController(TestCase):
 
     #Test all the flow of entering player names in the new game frame before entering a game
     def test_enter_player_names(self):
+        #initializing variables for testing
         self.assertFalse(TestGameController.gui.new_game_frame.generate_random_name(TestGameController.gui.new_game_canvas,2) )
         self.assertTrue(TestGameController.gui.new_game_frame.generate_random_name(TestGameController.gui.new_game_canvas,0))
         TestGameController.gui.new_game_frame.player_entries[0] = tk.Entry(TestGameController.gui)
@@ -200,21 +204,25 @@ class TestGameController(TestCase):
         TestGameController.gui.new_game_frame.show_insert_entry(TestGameController.gui.new_game_canvas, 0,120,120)
         self.assertTrue(TestGameController.gui.new_game_frame.clicked_boxes[0])
 
+        #Replace name1 with name1
         TestGameController.gui.input_handler.players_names[0] = "name1"
         entry = tk.Entry(TestGameController.gui)
         entry.insert(0,"name1")
         self.assertTrue(TestGameController.gui.new_game_frame.save_player_name(entry,0,TestGameController.gui.new_game_canvas))
 
+        #name1 already exits, cannot duplicate
         TestGameController.gui.input_handler.players_names[0] = "name2"
         TestGameController.gui.input_handler.players_names[1] = "name1"
         entry = tk.Entry(TestGameController.gui)
         entry.insert(0, "name1")
         self.assertFalse(TestGameController.gui.new_game_frame.save_player_name(entry, 0, TestGameController.gui.new_game_canvas))
 
+        #Previous entries are not filled
         entry = tk.Entry(TestGameController.gui)
         entry.insert(0, "name5")
         self.assertFalse(TestGameController.gui.new_game_frame.save_player_name(entry, 3, TestGameController.gui.new_game_canvas))
 
+        #Valid name entered with valid sequence
         TestGameController.gui.input_handler.set_num_players(6)
         entry = tk.Entry(TestGameController.gui)
         TestGameController.gui.new_game_frame.error_labels[0] = tk.Label(TestGameController.gui)
@@ -224,6 +232,7 @@ class TestGameController(TestCase):
         self.assertEqual(TestGameController.gui.new_game_frame.error_labels[0],None)
         self.assertEqual(TestGameController.gui.new_game_frame.error_labels[0],None)
 
+        #Test going back from Insert Player Frame to Main Menu
         # Create Yes and No buttons in the popup
         yes_button = TestGameController.gui.new_game_canvas.create_image(self.gui.image_width // 2 + 150, self.gui.image_height // 2 + 200)
         no_button = TestGameController.gui.new_game_canvas.create_image(self.gui.image_width // 2 + 440, self.gui.image_height // 2 + 200)
