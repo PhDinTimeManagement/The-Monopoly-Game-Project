@@ -860,6 +860,8 @@ class NewGameFrame(DisplayManager):
         self.no_button_image = tk.PhotoImage(file=os.path.join(assets_base_path, "new_game_frame/no_button.png"))
         self.trash_button_image = tk.PhotoImage(file=os.path.join(assets_base_path, "new_game_frame/trash_button.png"))
 
+        self.message_label = None # Show messages for user action response
+
     # ------------------------------------# New Game Frame #------------------------------------#
 
     def setup_new_game_page(self, frame, input_handler):
@@ -1140,6 +1142,28 @@ class NewGameFrame(DisplayManager):
         # Clear all entries for player data
         for idx in range(6):
             self.delete_name(canvas, idx)
+
+    def display_message_respond_to_user_action(self, message, duration=6000, color="green"):
+        # Remove any existing message
+        if self.message_label:
+            self.message_label.destroy()
+
+        # Create a new label to display the message
+        self.message_label = tk.Label(
+            self.gui.new_game_canvas,
+            text=message,
+            font=("Comic Sans MS", 18),
+            fg=color,
+            bg="#F6F7F6",
+            wraplength=1000,
+        )
+
+        self.message_label.place(
+            x=self.gui.image_width / 2 + 63,
+            y=210
+        )
+
+        self.gui.after(duration, self.message_label.destroy)
 
 
 class MainMenuFrame(DisplayManager):

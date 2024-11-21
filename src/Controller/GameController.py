@@ -404,6 +404,9 @@ class GameController:
         if self.gui.edit_board_frame.verify_unique_property_names():
             self.gui.edit_board_frame.load_changes_in_gameboard(self.board)
             self.gui.show_frame("new_game")
+            # Display message to user
+            self.gui.new_game_frame.display_message_respond_to_user_action((
+                f"Changes have been successfully applied to the game board.\nNow Insert Players to start the game!"))
 
     def save_board_profile_button(self):
         if self.gui.edit_board_frame.verify_unique_property_names():
@@ -519,6 +522,9 @@ class GameController:
             self.load_gameboard(save_name)
         self.pass_gameboard_info_to_view()
         self.load_board_back_button()
+        # Also display the game board name loaded
+        self.gui.new_game_frame.display_message_respond_to_user_action((
+            f"Game board {save_name} has been successfully loaded.\nNow Insert Players to start the game!"))
 
     def load_board_back_button(self):
         self.unbind_load_board_button()
