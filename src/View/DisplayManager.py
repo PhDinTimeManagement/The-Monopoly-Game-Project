@@ -1748,6 +1748,8 @@ class EditBoardFrame(GameplayFrame):
             "Kwun Tong", "Sham Shui Po", "Tsim Sha Tsui", "Causeway Bay",
             "North Point", "Aberdeen", "Cheung Chau", "Kowloon Tong",
             "Sham Shui Po", "Lamma Island", "Lantau Island"
+            "Hung Hom", "Ho Man Tin", "Jordan", "Kowloon City",
+            "Lai Chi Kok", "Lam Tin", "Lok Fu", "Ma On Shan",
         ]
 
         self.colors = [
