@@ -2096,7 +2096,7 @@ class EditBoardFrame(GameplayFrame):
                 "price": GameplayFrame.tile_info[i][2],
                 "rent": GameplayFrame.tile_info[i][3],
             }
-            if current != original:  # Compare current attributes with the original
+            if current == original:  # Compare current attributes with the original
                 no_changes = False
                 break
 
