@@ -493,6 +493,10 @@ class GameController:
 
     def load_and_start_game_button(self,idx):
         save_name = self.gui.load_game_frame.load_data(idx)
+        if save_name is None:
+            self.gui.load_game_frame.display_message_respond_to_user_action(self.gui.load_game_canvas,
+                                                                             "* No Game file is selected. Select again", y_axis = 180)
+            return
         self.clear_all_data()
 
         #clear all the selections on the slot after pressing load and play
@@ -519,6 +523,10 @@ class GameController:
             self.board = Gameboard()
         else:
             save_name = self.gui.load_board_frame.load_data(idx)
+            if save_name is None:
+                self.gui.load_board_frame.display_message_respond_to_user_action(self.gui.load_board_canvas,
+                                                                                 "* No Gameboard file is selected. Select again",y_axis = 170)
+                return
             self.load_gameboard(save_name)
         self.pass_gameboard_info_to_view()
         self.load_board_back_button()
@@ -758,18 +766,6 @@ class GameController:
         self.update_all_game_info()
 
     """This function is called after pressing the 'Roll' button in the game window."""
-
-    # def roll_dice(self,player_this_turn):
-    #     self.unbind_roll_button() #unbind the roll button
-    #     dice_roll1, dice_roll2 = GameLogic.roll_dice()
-    #     tile = GameLogic.player_move(dice_roll1 + dice_roll2, player_this_turn, self.board)
-    #     #player_this_turn = self.get_player_list()[self.game_logic.get_player_turn()]
-    #     print("Money: ",player_this_turn.get_current_money())
-    #     print("Square:",player_this_turn.get_current_position())
-    #     print(tile.get_tile_name())
-    #     self.update_all_game_info()
-    #     self.land_and_complete_round(tile, player_this_turn)
-    #     self.determine_next_round(player_this_turn)
 
     def roll_dice(self, player_this_turn):
         self.unbind_roll_button()  # Unbind the roll button

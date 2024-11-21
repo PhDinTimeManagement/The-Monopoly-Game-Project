@@ -11,26 +11,32 @@ import tkinter as tk
 class TestGameController(TestCase):
     is_delete = False
 
+    #Set up all the class variables that the test functions needs to use preemptively.
     @classmethod
     def setUpClass(cls):
         cls.is_delete = False
         cls.gui = GUI()
         cls.gui.attributes('-alpha', 0)
+        # Preemptively set up some save game files
         cls.controller = GameController(cls.gui)
         cls.controller.player_list = [Player("player1"),Player("player2"),Player("player3"),Player("player4")]
         cls.controller.save_game("TEST_SAVE0")
         cls.controller.save_game("TEST_SAVE1")
         cls.controller.save_game("TEST_SAVE2")
-        cls.controller.save_game("TEST_SAVE3")
-        cls.controller.save_game("TEST_SAVE4")
+
+        # Preemptively set up a save board
+        cls.save_name = "TEST_GAMEBOARD_SETUP_SAVE_"
+        cls.controller.save_gameboard(cls.save_name)
+        cls.filepath = '../saves/gameboard_setups/TEST_GAMEBOARD_SETUP_SAVE_.json'
 
     def setUp(self):
-        #if the gui object got destroyed, create a new one again
+        # If the gui object got destroyed, create a new one again
         if TestGameController.is_delete:
             TestGameController.gui = GUI()
             TestGameController.gui.attributes('-alpha', 0)
             TestGameController.is_delete = False
 
+    # Check if the players list can be successfully instantiated and modified in the controller
     def test_set_player_list(self):
         test_controller1 = GameController(TestGameController.gui)
         Player1 = Player("Player 1")
@@ -39,6 +45,7 @@ class TestGameController(TestCase):
         test_controller1.set_player_list([Player1, Player2])
         self.assertListEqual(test_controller1.get_player_list(), player_list)
 
+    # Test if a game instance can be successful saved
     def test_save_game(self):
         test_controller = GameController(TestGameController.gui)
 
@@ -59,7 +66,10 @@ class TestGameController(TestCase):
 
         save_name = "SAVE_LOAD_TEST"
         test_controller.save_game(save_name)
+        filepath = "../saves/games/SAVE_LOAD_TEST.json"
+        self.assertTrue(os.path.isfile(filepath))
 
+    # Test if a game instance can be successfully loaded after saving the file
     def test_load_game(self):
         # runs the save test first to generate the test file in case it's missing
         TestGameController.test_save_game(self)
@@ -79,7 +89,7 @@ class TestGameController(TestCase):
         assert local_controller.get_broke_player_list()[0].get_in_jail_turns() == 2
         self.assertEqual(len(local_controller.board.tiles[5].get_jailed_players()), 1)
 
-    #save a board
+    # Save a board into the gameboard_setups directory
     def test_save_gameboard(self):
         test_controller = GameController(TestGameController.gui)
         tile = test_controller.board.tiles
@@ -91,9 +101,10 @@ class TestGameController(TestCase):
         save_name = "TEST_GAMEBOARD_SETUP_SAVE"
         test_controller.save_gameboard(save_name)
         filepath = '../saves/gameboard_setups/TEST_GAMEBOARD_SETUP_SAVE.json'
+        self.assertTrue(os.path.isfile(filepath))
         os.remove(filepath)
 
-
+    # Simulated an invalid json file read operation
     def test_invalid_game_json_read(self):
         test_controller = GameController(TestGameController.gui)
         invalid_json_string = "{'key': 'value'"
@@ -109,13 +120,13 @@ class TestGameController(TestCase):
 
         os.remove(file_path)
 
-    #Load a not existing board
+    # Load a not existing board
     def test_load_board_does_not_exist(self):
         test_controller = GameController(TestGameController.gui)
         test_controller.load_gameboard()
         self.assertRaises(FileNotFoundError)
 
-    #Test raises error when a json file is corrupted when loading a board
+    # Test raises error when a json file is corrupted when loading a board
     def test_invalid_board_json_read(self):
         test_controller = GameController(TestGameController.gui)
         invalid_json_string = "{'key': 'value'"
@@ -135,6 +146,7 @@ class TestGameController(TestCase):
 
     # ---------- Test for Main Frame ----------#
 
+    # Simulate the functionality when click on the button 'Load Game' in the main page
     def test_load_button(self):
         test_controller = GameController(TestGameController.gui)
         test_controller.load_button()
@@ -143,6 +155,8 @@ class TestGameController(TestCase):
         self.assertTrue(TestGameController.gui.frames["load_game"].winfo_ismapped())
 
     # ---------- Test for Load Game Frame -----------#
+
+    # Simulate the functionality when click on a load game slot in the 'Load Game Frame'
     def test_select_load_game_slot(self):
         test_controller = GameController(TestGameController.gui)
         before = TestGameController.gui.load_game_frame.slot_item_ids
@@ -158,18 +172,28 @@ class TestGameController(TestCase):
                                                              'image')
             , ref)
 
+    # Simulate loading the selected slot and start the game with the save data
     def test_load_and_start_game_button(self):
         test_controller = GameController(TestGameController.gui)
 
+        # Load an existing file
         test_controller.load_and_start_game_button(0)
         TestGameController.gui.update()
         time.sleep(0.1)
         self.assertTrue(TestGameController.gui.frames["gameplay"].winfo_ismapped())
 
-        for i in range(0, 5):
+        #Load a non-existing file
+        TestGameController.gui.show_frame("load_game")
+        test_controller.load_and_start_game_button(4)
+        TestGameController.gui.update()
+        time.sleep(0.1)
+        self.assertFalse(TestGameController.gui.frames["gameplay"].winfo_ismapped())
+
+        for i in range(0, 3):
             filepath = f'../saves/games/TEST_SAVE{i}.json'
             os.remove(filepath)
 
+    # Simulate back from 'Load Game Frame' to home page
     def test_load_game_back_button(self):
         test_controller = GameController(TestGameController.gui)
         test_controller.load_game_back_button()
@@ -177,11 +201,9 @@ class TestGameController(TestCase):
         time.sleep(0.1)
         self.assertTrue(TestGameController.gui.frames["main_menu"].winfo_ismapped())
 
-    # ---------- Test for Load Board Frame ----------#
-
     # ---------- Test for New Game Frame ----------#
 
-    #Test whether the canvas has switched to another page when the load board button is clicked in the new game page
+    # Test whether the canvas has switched to another page when the load board button is clicked in the new game page
     def test_new_game_load_board_button(self):
         test_controller = GameController(TestGameController.gui)
         test_controller.new_game_load_board_button()
@@ -189,7 +211,7 @@ class TestGameController(TestCase):
         time.sleep(0.1)
         self.assertTrue(TestGameController.gui.frames["load_board"].winfo_ismapped())
 
-    #Test all the flow of entering player names in the new game frame before entering a game
+    # Test all the flow of entering player names in the new game frame before entering a game
     def test_enter_player_names(self):
         #initializing variables for testing
         self.assertFalse(TestGameController.gui.new_game_frame.generate_random_name(TestGameController.gui.new_game_canvas,2) )
@@ -247,6 +269,7 @@ class TestGameController(TestCase):
 
     # ---------- Test for Edit Board Frame ----------#
 
+    # Simulate going back from the 'Save Board Frame' to the 'Edit Board Frame'
     def test_back_to_edit_board_frame(self):
         test_controller = GameController(TestGameController.gui)
         test_controller.edit_board_function()
@@ -254,7 +277,7 @@ class TestGameController(TestCase):
         coords = TestGameController.gui.save_board_canvas.coords(TestGameController.gui.save_board_frame.save_button_id)
         self.assertEqual(coords, [-100, -100])
 
-
+    # Simulate pressing the <Back> button in the 'Edit Board Frame', resetting all the changes to the board
     def test_edit_back_button(self):
         test_controller = GameController(TestGameController.gui)
         test_controller.edit_board_function()
@@ -264,6 +287,7 @@ class TestGameController(TestCase):
         self.assertEqual(GameplayFrame.tile_info, test_controller.temp_tile_info)
         self.assertEqual(GameplayFrame.tile_colors, test_controller.temp_color_info)
 
+    # Simulate the changes have been applied to a modified board, and back to the 'New Game (Insert Player) Frame'
     def test_apply_changes_button(self):
         test_controller = GameController(TestGameController.gui)
         GameplayFrame.tile_info.clear()
@@ -278,20 +302,26 @@ class TestGameController(TestCase):
         test_controller.apply_changes_button()
         self.assertEqual(GameplayFrame.tile_info[1][1], "Causeway Bay")
 
+    # Simulating going to the 'Save Board Frame' after modifying the gameboard
     def test_save_board_profile_button(self):
         test_controller = GameController(TestGameController.gui)
         GameplayFrame.tile_info.clear()
         GameplayFrame.tile_colors.clear()
         test_controller.edit_board_function()
+
+        # Case when there is duplicate property name in gameboard
         GameplayFrame.tile_info[2][1] = "Central"
         test_controller.save_board_profile_button()
         TestGameController.gui.update()
         time.sleep(0.1)
         self.assertTrue(TestGameController.gui.frames["edit_board"].winfo_ismapped())
+
+        # Case when the gameboard edit is valid
         GameplayFrame.tile_info[2][1] = "Lamma Island"
         test_controller.save_board_profile_button()
         self.assertEqual(GameplayFrame.tile_info[2][1], "Lamma Island")
 
+    # Simulate resetting all the changes made to the gameboard to the previously loaded (last saved) state
     def test_reset_changes_button(self):
         test_controller = GameController(TestGameController.gui)
         GameplayFrame.tile_info.clear()
@@ -305,23 +335,23 @@ class TestGameController(TestCase):
         self.assertEqual([row[0:1] for row in GameplayFrame.tile_colors],
                          [row[0:1] for row in test_controller.temp_color_info])
 
-    #to simulate the click action on the edit board page
+    # To simulate the click action on the edit board page
     def test_click_in_edit_board(self):
 
-        #set up the gui and the edit page
+        # Set up the gui and the edit page
         test_controller = GameController(TestGameController.gui)
         test_controller.pass_gameboard_info_to_view()
         TestGameController.gui.show_edit_board_frame()
         TestGameController.gui.edit_board_frame.canvas = TestGameController.gui.edit_board_canvas
 
-        #click on non-editable area
+        # Click on non-editable area
         mock_event = MagicMock()
         mock_event.x = 10  # Simulated x coordinate
         mock_event.y = 20  # Simulated y coordinate
         TestGameController.gui.edit_board_frame.on_game_board_click(mock_event)
         self.assertEqual(TestGameController.gui.edit_board_frame.grid_index, -1)
 
-        #click on editable area
+        # Click on editable area
         mock_event.x = 650  # Simulated x coordinate
         mock_event.y = 830  # Simulated y coordinate
         TestGameController.gui.edit_board_frame.on_game_board_click(mock_event)
@@ -329,25 +359,21 @@ class TestGameController(TestCase):
 
 
 
-    #Test edit board functionalities such as change name, color, price and rent of a property square
+    # Test edit board functionalities such as change name, color, price and rent of a property square
     def test_process_user_input(self):
-        # #destroy the previous gui to prevent conflict in initialization
-        # TestGameController.gui.destroy()
-        # set up of gui
-        # TestGameController.gui = GUI()
-        # TestGameController.gui.attributes('-alpha', 0)
+        # Destroy the previous gui to prevent conflict in initialization
         test_controller = GameController(TestGameController.gui)
         test_controller.pass_gameboard_info_to_view()
         TestGameController.gui.show_edit_board_frame()
 
-        #set up of the edit page
+        # Set up of the edit page
         TestGameController.gui.edit_board_frame.canvas = TestGameController.gui.edit_board_canvas
         TestGameController.gui.edit_board_frame.grid_index = 1
         TestGameController.gui.edit_board_frame.create_input_entries()
         TestGameController.gui.edit_board_frame.show_price_entry(200,100)
         TestGameController.gui.edit_board_frame.show_rent_entry(200,200)
 
-        #set up input entries and set name and colors
+        # Set up input entries and set name and colors
         TestGameController.gui.edit_board_frame.name_entry = ttk.Combobox(
                                                              TestGameController.gui, values=["Central", "Wan Chai", "Stanley", "Shek O", "Mong Kok"])
         TestGameController.gui.edit_board_frame.name_entry.set("Wan Chai")
@@ -355,7 +381,7 @@ class TestGameController(TestCase):
         TestGameController.gui, values=["Blue", "Brown", "Cyan","Dark grey"])
         TestGameController.gui.color_entry.set("Dark grey")
 
-        #edit price and rent(invalid inputs)
+        # Edit price and rent(invalid inputs)
         TestGameController.gui.edit_board_frame.price_entry = tk.Entry(TestGameController.gui)
         TestGameController.gui.edit_board_frame.price_entry.insert(0,"1000a")
         TestGameController.gui.edit_board_frame.rent_entry = tk.Entry(TestGameController.gui)
@@ -363,7 +389,7 @@ class TestGameController(TestCase):
         TestGameController.gui.edit_board_frame.process_user_input()
         self.assertFalse(TestGameController.gui.edit_board_frame.modify_success)
 
-        #edit price and rent(valid inputs)
+        # Edit price and rent(valid inputs)
         TestGameController.gui.edit_board_frame.price_entry = tk.Entry(TestGameController.gui)
         TestGameController.gui.edit_board_frame.price_entry.insert(0, str(1000))
         TestGameController.gui.edit_board_frame.rent_entry = tk.Entry(TestGameController.gui)
@@ -376,6 +402,8 @@ class TestGameController(TestCase):
         self.assertEqual(TestGameController.gui.gameplay_frame.tile_info[1][3], "1200")
 
     # ---------- Test for Save Board Frame ----------#
+
+    # Simulate a saved board slot selection in 'Save Board Frame'
     def test_select_saved_board_slot(self):
         test_controller = GameController(TestGameController.gui)
         before = TestGameController.gui.save_board_frame.slot_item_ids
@@ -391,6 +419,7 @@ class TestGameController(TestCase):
                                                               'image')
             , ref1)
 
+    # Simulate when the functionality of the <Home-Button> in 'Save Board Frame'
     def test_home_in_edit_board(self):
         test_controller = GameController(TestGameController.gui)
         test_controller.edit_board_function()
@@ -403,6 +432,7 @@ class TestGameController(TestCase):
         time.sleep(0.1)
         self.assertTrue(TestGameController.gui.frames["new_game"].winfo_ismapped())
 
+    # Simulate the functionality of the <Save> button in 'Save Board Frame'
     def test_open_board_enter_name_file_frame(self):
         test_controller = GameController(TestGameController.gui)
         test_controller.open_board_enter_name_file_frame()
@@ -411,6 +441,8 @@ class TestGameController(TestCase):
         self.assertTrue(TestGameController.gui.frames["enter_name"].winfo_ismapped())
 
     # ----------- Test for Save Game Frame ----------#
+
+    # Simulate the functionality of the <Home-Button> in 'Save Game Frame'
     def test_home_button(self):
         test_controller = GameController(TestGameController.gui)
         reference_board = Gameboard()
@@ -421,6 +453,7 @@ class TestGameController(TestCase):
         time.sleep(0.1)
         self.assertTrue(TestGameController.gui.frames["main_menu"].winfo_ismapped())
 
+    # Simulate the <Back-Button> functionality in the 'Save Game Frame'
     def test_back_to_game_play_frame(self):
         test_controller = GameController(TestGameController.gui)
         TestGameController.gui.input_handler.validate_and_store_name(1, "player1")
@@ -451,6 +484,7 @@ class TestGameController(TestCase):
             TestGameController.gui.save_game_canvas.itemcget(TestGameController.gui.save_game_frame.slot_item_ids[1],
                                                              'image'), ref)
 
+    # Test the functionality of the <Save-Button> in the 'Save Game Frame'
     def test_open_enter_name_file_frame(self):
         test_controller = GameController(TestGameController.gui)
         test_controller.open_enter_name_file_frame()
@@ -460,10 +494,12 @@ class TestGameController(TestCase):
 
     # ---------- Test for Gameplay Frame ----------#
 
-    # Test whether only jail roll button is when the player has already paid fined
+    # Test whether only jail roll button is when the player has already paid fine
     def test_only_jail_row(self):
         test_controller = GameController(TestGameController.gui)
         test_controller.reset_game_states_and_views()
+
+        #Player1's turn set in jail, and set paid fine
         player_this_turn = self.game_set_up(test_controller, 4)
         test_controller.player_list[1].set_jail_status(True)
         GoToJail.arrest_player(test_controller.player_list[1], test_controller.board.get_jail_tile())
@@ -483,17 +519,22 @@ class TestGameController(TestCase):
         self.assertEqual(money_before_roll, test_controller.player_list[1].get_current_money())
 
     # Test the different conditions with its corresponding state after a round is finished (which player plays next, and what buttons
-    # they can press
+    # they can press. In this case the player next round is in jail, and rolled double, going out of jail and decide not the buy property
+    # after landing
     @patch('tkinter.Tk.wait_variable')
     def test_determine_next_round(self, mock_wait_variable):
         test_controller = GameController(TestGameController.gui)
         player_this_turn = self.game_set_up(test_controller, 2)
         test_controller.player_list[1].set_jail_status(True)
-        mock_wait_variable.side_effect = lambda var: var.set("no_buy")
+        mock_wait_variable.side_effect = lambda var: var.set("no_buy") #not buy after landing
+
+        # Set thr Player 1 in jail
         GoToJail.arrest_player(test_controller.player_list[1], test_controller.board.get_jail_tile())
         self.assertEqual(test_controller.player_list[1].get_jail_status(), True)
         test_controller.determine_next_round(player_this_turn)
         message = "Test for determine next round"
+
+        # Not buy button click simulation
         TestGameController.gui.after(500, lambda: TestGameController.gui.game_canvas.event_generate("<Button-1>", x=250,
                                                                                                     y=300))
         TestGameController.gui.after(7000, self.close_gui_window, message)
@@ -502,7 +543,7 @@ class TestGameController(TestCase):
 
 
 
-    # test different landings in sequence (buy property(but not enough money) -> rent -> not buy property -> go
+    # Test different landings in sequence (buy property(but not enough money) -> rent -> not buy property -> go
     @patch('tkinter.Tk.wait_variable')
     def test_land_and_complete_round(self, mock_wait_variable):
         test_controller = GameController(TestGameController.gui)
@@ -657,7 +698,7 @@ class TestGameController(TestCase):
         self.assertTrue(player_this_turn in test_controller.broke_list)
         self.assertEqual(test_controller.player_list[0].get_name(), "player2")
 
-    #Test for the case when the player does not move out of jail after rolling the dice
+    # Test for the case when the player does not move out of jail after rolling the dice
     def test_player_in_jail_not_moved(self):
         test_controller = GameController(TestGameController.gui)
         player_this_turn = self.game_set_up(test_controller, 4)
@@ -670,18 +711,25 @@ class TestGameController(TestCase):
         self.assertEqual(current_tile, player_this_turn.get_current_position())
 
     # ----------- Test for Edit File Name Frame ----------#
+
+    # Test whether the valid name is entered to save the current game in 'Edit File Name Frame' for saving games
     def test_show_save_game(self):
+        # Set up of current test
         test_controller = GameController(TestGameController.gui)
         test_controller.pass_tile_information_for_display()
         test_controller.pass_color_information_for_display()
         TestGameController.gui.selected_saved_game_slot = 0
         TestGameController.gui.show_frame("enter_name")
         TestGameController.gui.enter_file_name_frame.name_entry = tk.Entry(TestGameController.gui)
+
+        #Test for invalid name for storing game instances
         TestGameController.gui.enter_file_name_frame.name_entry.insert(0, "Invalid save game name more than 20 words")
         test_controller.show_save_game()
         TestGameController.gui.update()
         time.sleep(0.1)
         self.assertTrue(TestGameController.gui.frames["enter_name"].winfo_ismapped())
+
+        #Test for valid name for storing game instances
         TestGameController.gui.enter_file_name_frame.name_entry = tk.Entry(TestGameController.gui)
         TestGameController.gui.enter_file_name_frame.name_entry.insert(0, "Valid Save Game Name")
         test_controller.show_save_game()
@@ -692,18 +740,25 @@ class TestGameController(TestCase):
         os.remove(filepath)
 
     # ----------- Enter Board Name Frame -----------#
+
+    # Test whether the valid name is entered to save the current board in 'Edit File Name Frame' for saving customized boards
     def test_show_saved_board_name(self):
+        # Set up for the current test
         test_controller = GameController(TestGameController.gui)
         test_controller.pass_tile_information_for_display()
         test_controller.pass_color_information_for_display()
         TestGameController.gui.selected_saved_game_slot = 1
         TestGameController.gui.show_frame("enter_name")
         TestGameController.gui.enter_file_name_frame.name_entry = tk.Entry(TestGameController.gui)
+
+        # Test for invalid input save name for a customized board
         TestGameController.gui.enter_file_name_frame.name_entry.insert(0, "This is a word more than 20 characters")
         test_controller.show_saved_board_name()
         TestGameController.gui.update()
         time.sleep(0.1)
         self.assertTrue(TestGameController.gui.frames["enter_name"].winfo_ismapped())
+
+        #Test for valid input save name for a customized board
         TestGameController.gui.enter_file_name_frame.name_entry = tk.Entry(TestGameController.gui)
         TestGameController.gui.enter_file_name_frame.name_entry.insert(0, "Valid Save Name")
         test_controller.show_saved_board_name()
@@ -713,6 +768,7 @@ class TestGameController(TestCase):
         filepath = f'../saves/gameboard_setups/Valid Save Name.json'
         os.remove(filepath)
 
+    # Testing functionality of going back to the 'Save Board Frame' from the 'Edit Board Name' Frame
     def test_enter_board_name_back_button(self):
         test_controller = GameController(TestGameController.gui)
         test_controller.enter_board_name_back_button()
@@ -722,6 +778,7 @@ class TestGameController(TestCase):
 
     # ----------- Load Board Frame Button ----------#
 
+    # Test for the functionality when a previously saved board, represented as a slot in the game, is selected
     def test_select_load_board_slot(self):
         test_controller = GameController(TestGameController.gui)
         before = TestGameController.gui.load_board_frame.slot_item_ids
@@ -733,35 +790,31 @@ class TestGameController(TestCase):
                                                               'image'), ref2)
         self.assertNotEqual(
             TestGameController.gui.load_board_canvas.itemcget(TestGameController.gui.load_board_frame.slot_item_ids[1],
-                                                              'image'), ref)
+                                                          'image'), ref)
 
-    def condition_for_load_board(self, board_name):
-        if board_name is not None:
-            TestGameController.gui.enter_file_name_frame.name_entry.insert(0, board_name)
-            return True
-        return False
 
+    # Test for loading a load from a selected slot in 'Load Board Frame'
     def test_load_board_button(self):
+        # Set up test variables and environment
         test_controller = GameController(TestGameController.gui)
+        # Load the default board
         test_controller.load_board_button(5)
         reference_board = Gameboard()
         self.assertEqual([row.tile_type for row in test_controller.board.tiles],
-                         [row.tile_type for row in reference_board.tiles])
+                         [row.tile_type for row in reference_board.tiles]) # Check if the loaded board equivalent to the default board
+
+        # Test a board is loaded
+        TestGameController.gui.load_board_frame.display_text = [["place_holder1","place_holder2","place_holder3"]]
         test_controller = GameController(TestGameController.gui)
-        test_controller.load_board_button(1)
-        board_info1 = test_controller.board
-        self.condition_for_load_board(board_info1)
-        test_controller.load_board_button(4)
-        board_info = test_controller.board
-        board_name = TestGameController.gui.load_board_frame.load_data(4)
-        TestGameController.gui.enter_file_name_frame.name_entry = tk.Entry(TestGameController.gui)
-        self.condition_for_load_board(board_name)
-        TestGameController.gui.selected_saved_game_slot = 4
-        TestGameController.gui.save_board_frame.delete_data(TestGameController.gui.save_board_canvas)
-        test_controller.board = board_info
-        test_controller.show_saved_board_name()
+        TestGameController.gui.load_board_frame.display_text[0][2] = f"{TestGameController.save_name}.json"
+        test_controller.load_board_button(0)
         TestGameController.gui.update()
         time.sleep(0.1)
         self.assertTrue(TestGameController.gui.frames["new_game"].winfo_ismapped())
+
+        # Test a board is not loaded
+        test_controller.load_board_button(4)
+        self.assertRaises(FileNotFoundError)
+        os.remove(TestGameController.filepath)
 
 

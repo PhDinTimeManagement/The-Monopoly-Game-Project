@@ -1229,6 +1229,7 @@ class LoadFrame(DisplayManager):
         self.button_image = None
         self.display_text = []
         self.save_base_path = None
+        self.message_label = None
         # Saved game slot selection image positions
 
     # ------------------------------------# Load Game Frame #------------------------------------#
@@ -1268,6 +1269,28 @@ class LoadFrame(DisplayManager):
 
 
         return canvas, load_game_clickable_area
+
+    def display_message_respond_to_user_action(self, canvas,message, y_axis, duration=6000,  color="red"):
+        # Remove any existing message
+        if self.message_label:
+            self.message_label.destroy()
+
+        # Create a new label to display the message
+        self.message_label = tk.Label(
+            canvas,
+            text=message,
+            font=("Comic Sans MS", 18),
+            fg=color,
+            bg="#F6F7F6",
+            wraplength=1000,
+        )
+
+        self.message_label.place(
+            x=self.gui.image_width / 2 + 63,
+            y= y_axis
+        )
+
+        self.gui.after(duration, self.message_label.destroy)
 
     def clear_selected_slots(self,canvas):
         for i, slot_id in enumerate(self.slot_item_ids):
