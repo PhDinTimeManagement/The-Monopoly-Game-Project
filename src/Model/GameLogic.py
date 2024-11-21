@@ -217,7 +217,6 @@ class GameLogic:
             else:
                 action = ["not_move",None]
                 player_this_turn.set_in_jail_turns(player_this_turn.get_in_jail_turns() - 1)
-            print("action: ", action[0]) #TODO del later
             action.append(dice_roll1)
             action.append(dice_roll2)
             return action

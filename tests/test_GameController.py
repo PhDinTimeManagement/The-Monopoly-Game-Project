@@ -188,6 +188,7 @@ class TestGameController(TestCase):
         TestGameController.gui.update()
         time.sleep(0.1)
         self.assertFalse(TestGameController.gui.frames["gameplay"].winfo_ismapped())
+        self.assertRaises(FileNotFoundError)
 
         for i in range(0, 3):
             filepath = f'../saves/games/TEST_SAVE{i}.json'

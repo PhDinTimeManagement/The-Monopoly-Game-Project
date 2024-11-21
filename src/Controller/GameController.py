@@ -612,7 +612,6 @@ class GameController:
     def button_play(self, from_load):
         if self.new_name_frame.check_and_start_game(self.input_handler) or from_load:
 
-            print("In the Game!!!", len(self.input_handler.players_names))  # TODO del this line later
             if not from_load:
                 for player_name in self.input_handler.players_names:
                     if player_name is not None:
@@ -641,7 +640,6 @@ class GameController:
 
             # Show the GameBoard frame
             self.gui.show_frame("gameplay")
-            print(player_this_turn.get_name(), " is now playing")  # TODO del this line later
             # hide all the buttons apart from the roll button
             self.hide_yes_buy_image()
             self.hide_no_buy_image()
@@ -683,7 +681,6 @@ class GameController:
         action, winners_list = GameLogic.determine_next_round(self.game_logic, player_this_turn, self.player_list,self.broke_list,self.board)
 
         if action[0] == "game_ends":
-            print(action[1])
             self.update_all_game_info()
             self.gui.gameplay_frame.display_winners_on_canvas(self.gui.game_canvas, winners_list)
             self.gui.after(5000,lambda: self.home_button())
@@ -693,22 +690,12 @@ class GameController:
 
         if action[0] == "jail_roll":
             self.bind_in_jail_roll_button(action[1])
-            print("\nNext round, click roll\n")
-            if action[2] == "fine_payed":
-                print(action[1].get_name(), "is in Jail. Fine already paid. Can move out of Jail after roll") #TODO del
-            elif action[2] == "player_third_turn":
-                print(action[1].get_name(), "is in Jail, and in third turn. Roll first") #TODO del
-            else:
-                print(action[1].get_name(), "is in Jail, and have no money to pay fine") #TODO del
+
         elif action[0] == "pay_fine_and_jail_roll":
             self.bind_in_jail_roll_button(action[1])
             self.bind_pay_fine_button(action[1])
-            print("\nNext round, click roll\n")  # TODO del later
-            print(action[1].get_name(), "Not yet paid and in Jail") #TODO del
         elif action[0] == "roll":
             self.bind_roll_button(action[1]) #selection player next turn to roll the dice
-            print("Current Money: ",player_this_turn.get_current_money()) #TODO del later
-            print("\nNext round,", action[1].get_name(),"'s turn. click roll\n") #TODO del later
         self.bind_save_quit_button()
 
     def land_and_complete_round(self, tile, player_this_turn):
@@ -717,7 +704,6 @@ class GameController:
         if tile_type == "property":
             if tile.get_owner() is None:
                 can_buy = tile.can_buy(player_this_turn)
-                print("buy(Yes) or not buy(No)")
                 self.gui.after(1250, lambda: self.show_buy_tile_hint())
                 if can_buy:
                     self.gui.after(1250, lambda: self.bind_yes_buy_button()) #show and bind the yes(buy) button
@@ -729,9 +715,7 @@ class GameController:
                 if self.click_var.get() == "buy":
                     if can_buy:
                         action = "buy"
-                        print(player_this_turn.get_name()," is now buying") #TODO del later
                     else:
-                        print("Not enough money") #del
                         action = "not_buy"
                 elif self.click_var.get() == "not_buy":
                     action = "not_buy"
@@ -773,7 +757,6 @@ class GameController:
         dice_roll1, dice_roll2 = GameLogic.roll_dice()
         dice_select_image_position1 = (2*dice_roll1-1) - random.randint(0,1) #for choosing image of dice1
         dice_select_image_position2 = (2*dice_roll2-1) - random.randint(0,1) #for choosing image of dice2
-        print(player_this_turn.get_name(), "is Rolling, and rolled: ", dice_roll1 ,dice_roll2, dice_select_image_position1, dice_select_image_position2)
 
         # Save the dice results
         dice_results = []
@@ -835,9 +818,6 @@ class GameController:
         self.unbind_pay_fine_button()
         self.unbind_save_quit_button()
 
-        print(player_this_turn.get_name(), "is Rolling IN JAIL.") # TODO del this line later
-        print("Money: ", player_this_turn.get_current_money())  # TODO del this line later
-        print("Square:", player_this_turn.get_current_position())  # TODO del this line later
 
         #x and y position for the dice image
         x_position = self.gui.image_width * 2 / 7
@@ -865,26 +845,21 @@ class GameController:
                 self.bind_pay_fine_button(player_this_turn) #bind and show the pay_fine button
                 self.gui.wait_variable(self.click_var)  # wait for pay fine button to be clicked
                 if self.click_var.get() == "test_pay_fine": GameLogic.pay_fine(self.game_logic, player_this_turn) #for unit testing
-                #TODO display fine paid
                 if action[1] is not None:
-                    print("Fine paid. Move on")
                     self.show_hint(message,1000,22)
                     #self.gui.gameplay_frame.message_for_jail_roll(self.gui.game_canvas, message, y_position,
                                                                   #sum(action[2:4]))
                     self.gui.gameplay_frame.player_movement(self.gui.game_canvas,
                                                             self.player_list.index(player_this_turn), 5,
                                                             action[1].get_tile_position())
-                    print("Land and complete")
+
                     self.land_and_complete_round(action[1], player_this_turn)
-                    # TODO <show moving animation>
                 else:
                     message = f"Player rolled {action[2] + action[3]}" #player broke by paying fine
                     self.show_hint(message,1000,22)
                     #self.gui.gameplay_frame.message_for_jail_roll(self.gui.game_canvas, message, y_position,
                                                                   #sum(action[2:4]))
             elif action[0] == "move":
-                # TODO <show animation for player moving>
-                print("Out of Jail, Move on")
                 self.gui.gameplay_frame.player_movement(self.gui.game_canvas, self.player_list.index(player_this_turn), 5, action[1].get_tile_position())
                 self.show_hint(message,1000,22)
                 #self.gui.gameplay_frame.message_for_jail_roll(self.gui.game_canvas, message, y_position,
@@ -906,20 +881,15 @@ class GameController:
         self.show_hint(pay_fine_message, 1000, 22)
         self.update_all_game_info()
         self.click_var.set("pay_fine")
-        print("Paying fine")
         self.unbind_pay_fine_button()
-        # TODO <Show the money is deduced>
 
     def buy_button(self):
         self.click_var.set("buy")
-        print("Buying")
 
     def no_buy_button(self):
         self.click_var.set("no_buy")
-        print("Not Buying")
-        # TODO <Show did not buy property>
 
-    # ------------ Enter File Name Frame Button ----------------# TODO
+    # ------------ Enter File Name Frame Button ----------------#
     def show_save_game(self):
         user_input = self.gui.enter_file_name_frame.name_entry.get().strip() #get the entry in the text box
         if self.input_handler.valid_current_game_name(user_input): #if the name is valid
@@ -989,11 +959,11 @@ class GameController:
                 with open(file_path, 'r') as game_data:
                     game_data_dict = json.load(game_data)
             except FileNotFoundError:
-                print("Board layout does not exist.")
-                return
+                message = "Board layout does not exist."
+                return message
             except json.JSONDecodeError:
-                print("Error in reading save file.")
-                return
+                message = "Error in reading save file."
+                return message
 
         # gameboard_setup is a list of dictionaries, will cycle and update appropriately
         gameboard_info = game_data_dict["gameboard_setup"]
@@ -1023,11 +993,11 @@ class GameController:
             with open(file_path, 'r') as game_data:
                 game_data_dict = json.load(game_data)
         except FileNotFoundError:
-            print("Game saved does not exist.")
-            return
+            message = "Game saved does not exist."
+            return message
         except json.JSONDecodeError:
-            print("Error in reading save file.")
-            return
+            message = "Error in reading save file."
+            return message
 
         # pulls information from the dictionary into respective variables
         self.set_save_name(game_data_dict["save_name"])

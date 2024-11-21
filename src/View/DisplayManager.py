@@ -328,21 +328,6 @@ class GameplayFrame(DisplayManager):
 
         display_two_rolls(0)
 
-    # def message_for_jail_roll(self,canvas,message,roll_dice_y_pos,total_dice):
-    #     # Display the total dice result on the canvas
-    #     print("printing status")
-    #     canvas.create_text(
-    #         0.28458 * self.gui.image_width, roll_dice_y_pos + 30,
-    #         text=f"Total Dice is {total_dice}. {message}",
-    #         font=("Comic Sans MS", 22, "bold"),
-    #         fill="#000000",
-    #         tags="total_dice_result_text",
-    #         )
-    #     self.gui.after(1000, lambda: canvas.delete("total_dice_result_text"))
-    #     #self.gui.after(2000, lambda: time.sleep(2))
-
-
-
     def roll_dice_animation(self, canvas, roll_dice_x_pos, roll_dice_y_pos, dice_counter, callback, dice_image_position,total_dice=None):
         # Show each frame of the dice animation
         def show_frame(frame_index):
@@ -660,7 +645,7 @@ class GameplayFrame(DisplayManager):
 
     # from the gameboard information loads the appropriate colors in the game frame
     def load_tile_colors(self):
-        print("The length is: ", len(GameplayFrame.tile_colors))
+        #print("The length is: ", len(GameplayFrame.tile_colors))
         for i in range(0,20):
             color = GameplayFrame.tile_colors[i][0]
             if color:
@@ -1051,13 +1036,11 @@ class NewGameFrame(DisplayManager):
         if len(player_name) <= 20 and self.gui.input_handler.validate_and_store_name(idx, player_name):
             # Clear any previous error messages
             if self.error_labels[idx]:
-                print("Hi")
                 self.error_labels[idx].destroy()
                 self.error_labels[idx] = None
 
             # Remove any displayed name text reference and update with the new name
             if self.player_text_refs[idx]:
-                print("Hi Again")
                 canvas.delete(self.player_text_refs[idx])
                 self.player_text_refs[idx] = None
 
@@ -1087,10 +1070,10 @@ class NewGameFrame(DisplayManager):
                           is_error=True, x_position=self.gui.image_width - 550, y_position=770)
             return False
         # If all checks pass, transition to the GameBoard frame
-        print("Starting game with players:")
-        for idx, name in enumerate(player_names, start=1):
-            if name:
-                print(f"Player {idx}: {name}")
+        #print("Starting game with players:")
+        # for idx, name in enumerate(player_names, start=1):
+        #     if name:
+        #         print(f"Player {idx}: {name}")
         return True
 
     def confirm_exit_new_game(self, canvas):
@@ -2014,7 +1997,8 @@ class EditBoardFrame(GameplayFrame):
                 try:
                     entry.destroy()  # Destroy any existing widgets
                 except Exception as e:
-                    print(f"Error clearing entry: {e}")  # For debugging
+                    #print(f"Error clearing entry: {e}")  # For debugging
+                    pass
             self.clear = []  # Clear the list after all widgets are removed
 
         # Forget to initialize the entry widgets (fixed)

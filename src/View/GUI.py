@@ -88,7 +88,7 @@ class GUI(tk.Tk):
         frame = tk.Frame(self)
         self.frames["save_game"] = frame
         self.save_game_canvas, self.save_delete_click_areas  = self.save_game_frame.setup_save_frame(frame)
-        print("The length of this array is: ", len(self.save_delete_click_areas))
+        #print("The length of this array is: ", len(self.save_delete_click_areas))
 
     def show_load_board_frame(self):
         frame = tk.Frame(self)
