@@ -1334,8 +1334,8 @@ class LoadGameFrame(LoadFrame):
 class LoadBoardFrame(LoadFrame):
     def __init__(self, gui):
         super().__init__(gui)
-        self.button_image = tk.PhotoImage(file=os.path.join(assets_base_path, "load_frame/load_board_button.png"))
-        self.load_frame_background = tk.PhotoImage(file=os.path.join(assets_base_path, "load_frame/load_board_frame_background.png"))
+        self.button_image = tk.PhotoImage(file=os.path.join(assets_base_path, "load_game_frame/load_board_button.png"))
+        self.load_frame_background = tk.PhotoImage(file=os.path.join(assets_base_path, "load_game_frame/load_board_frame_background.png"))
         self.save_base_path = os.path.join(os.path.dirname(__file__), "../../saves/gameboard_setups")
         self.offset = 80 # adds space for an extra slot
         self.load_button_offset = 20
