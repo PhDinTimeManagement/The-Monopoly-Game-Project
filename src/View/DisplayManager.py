@@ -1546,8 +1546,8 @@ class SaveBoardFrame(SaveFrame):
     def __init__(self, gui):
         super().__init__(gui)
 
-        self.save_frame_background = tk.PhotoImage(file=os.path.join(assets_base_path, "save_board_frame/save_board_frame_background.png"))
-        self.save_base_path = os.path.join(os.path.dirname(__file__), "../../saves/board_setups")
+        self.save_frame_background = tk.PhotoImage(file=os.path.join(assets_base_path, "save_game_frame/save_board_frame_background.png"))
+        self.save_base_path = os.path.join(os.path.dirname(__file__), "../../saves/gameboard_setups")
 
 class EnterNameFrame(SaveGameFrame):
     def __init__(self, gui):
