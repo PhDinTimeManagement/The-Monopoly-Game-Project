@@ -7,12 +7,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e63f52e8-b5e2-4b82-8eb0-ddb8c465611b" name="Changes" comment="maintenance + player hints">
-      <change beforePath="$PROJECT_DIR$/.idea/Source Code.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Source Code.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/View/DisplayManager.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/View/DisplayManager.py" afterDir="false" />
-    </list>
+    <list default="true" id="e63f52e8-b5e2-4b82-8eb0-ddb8c465611b" name="Changes" comment="maintenance" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -343,7 +338,7 @@
       <workItem from="1731911150758" duration="36000" />
       <workItem from="1731911201358" duration="3625000" />
       <workItem from="1732170661910" duration="1604000" />
-      <workItem from="1732177458507" duration="1432000" />
+      <workItem from="1732177458507" duration="1864000" />
     </task>
     <task id="LOCAL-00001" summary="gameboard functions">
       <created>1729259402457</created>
@@ -400,22 +395,6 @@
       <option name="presentableId" value="LOCAL-00008" />
       <option name="project" value="LOCAL" />
       <updated>1730113203511</updated>
-    </task>
-    <task id="LOCAL-00026" summary="displayed info on board">
-      <option name="closed" value="true" />
-      <created>1731081428735</created>
-      <option name="number" value="00026" />
-      <option name="presentableId" value="LOCAL-00026" />
-      <option name="project" value="LOCAL" />
-      <updated>1731081428735</updated>
-    </task>
-    <task id="LOCAL-00027" summary="displayed info on board">
-      <option name="closed" value="true" />
-      <created>1731338750688</created>
-      <option name="number" value="00027" />
-      <option name="presentableId" value="LOCAL-00027" />
-      <option name="project" value="LOCAL" />
-      <updated>1731338750688</updated>
     </task>
     <task id="LOCAL-00028" summary="displayed info on board">
       <option name="closed" value="true" />
@@ -729,7 +708,23 @@
       <option name="project" value="LOCAL" />
       <updated>1731914858546</updated>
     </task>
-    <option name="localTasksCounter" value="67" />
+    <task id="LOCAL-00067" summary="maintenance + player hints">
+      <option name="closed" value="true" />
+      <created>1732179461228</created>
+      <option name="number" value="00067" />
+      <option name="presentableId" value="LOCAL-00067" />
+      <option name="project" value="LOCAL" />
+      <updated>1732179461228</updated>
+    </task>
+    <task id="LOCAL-00068" summary="maintenance">
+      <option name="closed" value="true" />
+      <created>1732179472250</created>
+      <option name="number" value="00068" />
+      <option name="presentableId" value="LOCAL-00068" />
+      <option name="project" value="LOCAL" />
+      <updated>1732179472250</updated>
+    </task>
+    <option name="localTasksCounter" value="69" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -784,10 +779,10 @@
     <MESSAGE value="Controller Maintenance" />
     <MESSAGE value="Merge remote-tracking branch 'origin/main'" />
     <MESSAGE value="Default Board + Maintenance on NewGame" />
-    <MESSAGE value="maintenance" />
-    <MESSAGE value="maintenance + player hints" />
     <MESSAGE value="update" />
-    <option name="LAST_COMMIT_MESSAGE" value="update" />
+    <MESSAGE value="maintenance + player hints" />
+    <MESSAGE value="maintenance" />
+    <option name="LAST_COMMIT_MESSAGE" value="maintenance" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
