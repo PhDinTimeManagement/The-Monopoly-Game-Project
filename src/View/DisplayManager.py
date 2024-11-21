@@ -1397,6 +1397,9 @@ class SaveFrame(DisplayManager):
             self.saved_game_image
         ]
 
+        self.back_to_main_menu_with_home_image = tk.PhotoImage(file=os.path.join(assets_base_path, "save_game_frame/back_to_main_menu_with_home.png"))
+        self.back_to_insert_player_with_home_image = tk.PhotoImage(file=os.path.join(assets_base_path, "save_game_frame/back_to_insert_player_with_home.png"))
+
 # ------------------------ # buttons position and initialization # ----------------------#
 
         self.delete_button_x, self.delete_button_y = self.gui.image_width // 3, 835
@@ -1448,6 +1451,8 @@ class SaveFrame(DisplayManager):
         self.hide_save_button(canvas)
         self.clear_selected_slots(canvas)
         self.gui.show_frame(page)
+
+
 
 # ------------------------------------ Functions for Showing Delete and Save Button--------------------------------------#
 
@@ -1537,14 +1542,12 @@ class SaveGameFrame(SaveFrame):
         self.save_frame_background = tk.PhotoImage(file=os.path.join(assets_base_path, "save_game_frame/save_game_frame_background.png"))
         self.save_base_path = os.path.join(os.path.dirname(__file__), "../../saves/games")
 
-
 class SaveBoardFrame(SaveFrame):
     def __init__(self, gui):
         super().__init__(gui)
 
-        self.save_frame_background = tk.PhotoImage(file=os.path.join(assets_base_path, "save_game_frame/save_board_frame_background.png"))
-        self.save_base_path = os.path.join(os.path.dirname(__file__), "../../saves/gameboard_setups")
-
+        self.save_frame_background = tk.PhotoImage(file=os.path.join(assets_base_path, "save_board_frame/save_board_frame_background.png"))
+        self.save_base_path = os.path.join(os.path.dirname(__file__), "../../saves/board_setups")
 
 class EnterNameFrame(SaveGameFrame):
     def __init__(self, gui):
