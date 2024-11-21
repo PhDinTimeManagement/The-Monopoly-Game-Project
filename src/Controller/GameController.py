@@ -400,7 +400,7 @@ class GameController:
         self.gui.show_frame("new_game")
 
     def apply_changes_button(self):
-        if self.gui.edit_board_frame.verify_unique_property_names():
+        if self.gui.edit_board_frame.verify_unique_property_names_and_changes_applied():
             self.gui.edit_board_frame.load_changes_in_gameboard(self.board)
             self.gui.show_frame("new_game")
             # Display message to user
@@ -408,7 +408,7 @@ class GameController:
                 f"Changes have been successfully applied to the game board.\nNow Insert Players to start the game!"))
 
     def save_board_profile_button(self):
-        if self.gui.edit_board_frame.verify_unique_property_names():
+        if self.gui.edit_board_frame.verify_unique_property_names_and_changes_applied():
             for i,slots in enumerate(self.gui.save_board_click_areas[4:]):
                 self.gui.save_board_canvas.tag_bind(slots, "<Button-1>",
                                 lambda e, idx=i: self.select_saved_board_slot(self.gui.save_board_canvas, idx))

@@ -2072,7 +2072,7 @@ class EditBoardFrame(GameplayFrame):
                 canvas.tag_bind(GameplayFrame.tile_info[i][7], '<Button-1>', self.on_game_board_click)
 
     # This method need to be chained once the <Apply Changes> and <Save Board Profile> button is clicked
-    def verify_unique_property_names(self):
+    def verify_unique_property_names_and_changes_applied(self):
         property_position = [1, 2, 4, 6, 7, 9, 11, 13, 14, 16, 17, 19]
         property_names = [GameplayFrame.tile_info[i][1] for i in property_position]
         duplicates = [name for name in property_names if property_names.count(name) > 1 and name != ""]
@@ -2083,6 +2083,26 @@ class EditBoardFrame(GameplayFrame):
             self.show_msg(self.current_frame, duplicate_message, idx=0, is_error=True,
                           x_position=self.gui.image_width * 30 / 1512 + 138, y_position=self.gui.image_height * 148 / 982 + 138)
 
+            return False
+
+        no_changes = True
+        for i in property_position:
+            original = self.last_time_tile_info[i]
+            current = {
+                "name": GameplayFrame.tile_info[i][1],
+                "color": GameplayFrame.tile_colors[i][0],
+                "price": GameplayFrame.tile_info[i][2],
+                "rent": GameplayFrame.tile_info[i][3],
+            }
+            if current != original:  # Compare current attributes with the original
+                no_changes = False
+                break
+
+        # If no changes are detected, display an error message
+        if no_changes:
+            self.show_msg(self.current_frame, "* No property has been changed", idx=0, is_error=True,
+                            x_position=self.gui.image_width * 30 / 1512 + 138,
+                            y_position=self.gui.image_height * 148 / 982 + 138)
             return False
 
         return True
