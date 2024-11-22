@@ -649,9 +649,25 @@ class GameplayFrame(DisplayManager):
             if color:
                 self.modify_tile_color(color, i)
 
+# ---------------- Setup and display ----------------#
     @staticmethod
     def set_color(pos, color):
         GameplayFrame.tile_colors[pos][0] = color
+
+    @staticmethod
+    def modify_tile_color(color, tile_position):
+        # modifies the color of the tile in the board editor
+        # gets the right color path based on the tile position (vertical or horizontal)
+        if 0 < tile_position < 5 or 10 < tile_position < 15:  # tile is horizontal
+            color_path = f"gameplay_frame/color/{color}_h.png"
+        else:
+            color_path = f"gameplay_frame/color/{color}_v.png"
+
+        # gets the appropriate image path
+        image_color_path = os.path.join(assets_base_path, color_path)
+
+        # modifies the list at the appropriate position with the new tile color reference
+        GameplayFrame.tile_colors[tile_position][1] = tk.PhotoImage(file=image_color_path)
 
     def get_color_coord(self, pos):
         return self.__tile_color_coord[pos]
@@ -798,21 +814,6 @@ class GameplayFrame(DisplayManager):
 
         click_area = [roll_dice_click_area, yes_click_area, no_click_area, pay_fine_click_area, save_quit_click_area] #TODO place other click area for other buttons
         return canvas, click_area
-
-    @staticmethod
-    def modify_tile_color(color, tile_position):
-    # modifies the color of the tile in the board editor
-        # gets the right color path based on the tile position (vertical or horizontal)
-        if 0 < tile_position < 5 or 10 < tile_position < 15: #tile is horizontal
-            color_path = f"gameplay_frame/color/{color}_h.png"
-        else:
-            color_path = f"gameplay_frame/color/{color}_v.png"
-
-        #gets the appropriate image path
-        image_color_path = os.path.join(assets_base_path, color_path)
-
-        #modifies the list at the appropriate position with the new tile color reference
-        GameplayFrame.tile_colors[tile_position][1] = tk.PhotoImage(file=image_color_path)
 
 
 class NewGameFrame(DisplayManager):
