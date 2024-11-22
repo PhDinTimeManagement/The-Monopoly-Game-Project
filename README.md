@@ -62,20 +62,20 @@ The project files are organized into a logical structure based on the **course p
 		|---3.4_Video.mp4
 		
 		|---3.5_Requirements Coverage Report.pdf
-
-`|---4_Unit Test Line Coverage Report`
-
-	|---4_Unit Test Line Coverage Report.pdf`
 		
-`|---5_Presentation Slides and Recording`
-
-	|---5.1_Presentation Slides.PPT
+	|---4_Unit Test Line Coverage Report
 	
-	|---5.2_Presentation Recording.mp4
-
-`|---6_AI Usage Declaration Form`
-
-	|---6_AI Usage Declaration Form.pdf
+		|---4_Unit Test Line Coverage Report.pdf
+		
+	|---5_Presentation Slides and Recording
+	
+		|---5.1_Presentation Slides.PPT
+		
+		|---5.2_Presentation Recording.mp4
+		
+	|---6_AI Usage Declaration Form
+	
+		|---6_AI Usage Declaration Form.pdf
 ## How to Navigate This Repository
 ### 1. **Start with the Source Code**
    - Navigate to the `3.1_Source Code/Monopoly-Hong-Kong-Special-Edition` directory.
