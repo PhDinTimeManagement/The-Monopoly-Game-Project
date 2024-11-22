@@ -9,12 +9,7 @@ The project files are organized into a logical structure based on the **course p
 ---
 
 ## Repository Tree Structure
-COMP3211_Course Project_Group1_Deliverables
-
-`|---README.md
-
-			
-`|---Report`
+`|--COMP3211_Course Project_Group1_Deliverables`
 
 	|---1_Software Requirements Specification (SRS)
 	
@@ -25,7 +20,8 @@ COMP3211_Course Project_Group1_Deliverables
 		|---2_Design Document.pdf
 		
 	|---3_Implementation
-		`|---Source Code
+	
+		|---Source Code
 
 		|---3.1_Source Code
 		
@@ -53,7 +49,11 @@ COMP3211_Course Project_Group1_Deliverables
 				
 					|---gameboard_setip
 					
+						|...
+					
 					|---games
+					
+						|...
 	
 		|---3.2_Developer Manual.pdf
 		
@@ -65,7 +65,7 @@ COMP3211_Course Project_Group1_Deliverables
 
 `|---4_Unit Test Line Coverage Report`
 
-	`|---4_Unit Test Line Coverage Report.pdf`
+	|---4_Unit Test Line Coverage Report.pdf`
 		
 `|---5_Presentation Slides and Recording`
 
@@ -75,7 +75,7 @@ COMP3211_Course Project_Group1_Deliverables
 
 `|---6_AI Usage Declaration Form`
 
-	`|---6_AI Usage Declaration Form.pdf
+	|---6_AI Usage Declaration Form.pdf
 ## How to Navigate This Repository
 ### 1. **Start with the Source Code**
    - Navigate to the `3.1_Source Code/Monopoly-Hong-Kong-Special-Edition` directory.
