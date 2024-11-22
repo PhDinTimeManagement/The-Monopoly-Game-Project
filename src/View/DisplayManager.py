@@ -691,7 +691,7 @@ class GameplayFrame(DisplayManager):
             tile_type = GameplayFrame.tile_info[i][0]
             tile_name = GameplayFrame.tile_info[i][1]
             tile_price = str(GameplayFrame.tile_info[i][2])
-            tile_rent = f"{GameplayFrame.tile_info[i][3]} HDK"
+            tile_rent = f"{GameplayFrame.tile_info[i][3]} HKD"
             tile_owner = GameplayFrame.tile_info[i][4]
             name_x_pos = self.__tile_info_coord[i][0]
             name_y_pos = self.__tile_info_coord[i][1]
