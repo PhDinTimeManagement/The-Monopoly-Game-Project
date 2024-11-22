@@ -9,33 +9,7 @@ The project files are organized into a logical structure based on the **course p
 ---
 
 ## Repository Tree Structure
-COMP3211_Course Project_Group1_Deliverables
-
-`|---README.md
-
-`|---COMP3211 Course Project Description 2024.pdf`
-
-`|---Source Code
-
-	|---Monopoly-Hong-Kong-Special-Edition
-	
-		|---play_game.py
-	
-		|---assets
-		
-			|...
-			
-		|---src
-		
-			|...
-			
-		|---tests
-		
-			|...
-			
-			|...4_Unit Tests for the Game Model
-			
-`|---Report`
+`|--COMP3211_Course Project_Group1_Deliverables`
 
 	|---1_Software Requirements Specification (SRS)
 	
@@ -47,23 +21,64 @@ COMP3211_Course Project_Group1_Deliverables
 		
 	|---3_Implementation
 	
-		|---3.1_Developer Manual.pdf
-		
-		|---3.2_User Manual.pdf
-		
-		|---3.3_Video.mp4
-		
-		|---3.4_Requirements Coverage Report.pdf
-		
-`|---5_Presentation Slides and Recording`
+		|---Source Code
 
-	|---5.1_Presentation Slides.PPT
+		|---3.1_Source Code
+		
+			|---Monopoly-Hong-Kong-Special-Edition
+			
+				|---3.5_Requirements Coverage Report.pdf
 	
-	|---5.2_Presentation Recording.mp4
-
+				|---play_game.py
+	
+				|---assets
+		
+					|...
+			
+				|---src
+		
+					|...
+			
+				|---tests
+		
+					|...4_Unit Test Line Coverage Report.pdf
+			
+					|...
+					
+				|---saves
+				
+					|---gameboard_setip
+					
+						|...
+					
+					|---games
+					
+						|...
+	
+		|---3.2_Developer Manual.pdf
+		
+		|---3.3_User Manual.pdf
+		
+		|---3.4_Video.mp4
+		
+		|---3.5_Requirements Coverage Report.pdf
+		
+	|---4_Unit Test Line Coverage Report
+	
+		|---4_Unit Test Line Coverage Report.pdf
+		
+	|---5_Presentation Slides and Recording
+	
+		|---5.1_Presentation Slides.PPT
+		
+		|---5.2_Presentation Recording.mp4
+		
+	|---6_AI Usage Declaration Form
+	
+		|---6_AI Usage Declaration Form.pdf
 ## How to Navigate This Repository
 ### 1. **Start with the Source Code**
-   - Navigate to the `Source Code/Monopoly-Hong-Kong-Special-Edition` directory.
+   - Navigate to the `3.1_Source Code/Monopoly-Hong-Kong-Special-Edition` directory.
    - The following subdirectories are provided to organize the source code and related resources:
      - **`play_game.py`**: The main executable file for running the game.
      - **`assets`**: Contains all multimedia resources, such as images, icons, and animations, used in the game.
@@ -71,7 +86,7 @@ COMP3211_Course Project_Group1_Deliverables
      - **`tests`**: Includes unit tests and documentation to validate the game’s functionality and ensure reliability.
 
 ### 2. **Explore the Reports**
-   - The `Report` directory contains comprehensive documentation of the project:
+   - The directory contains comprehensive documentation of the project:
      - **Software Requirements Specification (SRS)**: Understand the project requirements and scope.
      - **Design Document**: Gain insights into the architecture and design of the system.
      - **Implementation**: Refer to the developer manual, user manual, demonstration video, and requirement coverage report for implementation details.
@@ -94,9 +109,9 @@ This directory structure is designed to ensure:
 
 ## How to Use This Repository
 
-1. **Developers**: Begin with the `Source Code` directory to understand and contribute to the project.
-2. **Instructors/Reviewers**: Refer to the `Report` and `Presentation` directories for a detailed overview of the project.
-3. **End Users**: Check out the `User Manual` in the `Report/3_Implementation` folder for guidance on playing the game.
+1. **Developers**: Begin with the `3.1_Source Code` directory to understand and contribute to the project.
+2. **Instructors/Reviewers**: Refer to the `3.4_Gameplay_Video.mp4` and `5.2_Presentation Recording.mp4` for a detailed overview of the project.
+3. **End Users**: Check out the `3.3_User Manual` in the `3_Implementation` folder for guidance on playing the game.
 
 ---
 
